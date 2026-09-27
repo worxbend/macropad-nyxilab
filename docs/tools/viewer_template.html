@@ -1,0 +1,404 @@
+<title>Nyxilab Macropad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground: #edecf2;
+    --surface: #ffffff;
+    --ink: #1b1a21;
+    --muted: #666372;
+    --line: #dcd9e4;
+    --accent: #5b3e8e;
+    --accent-ink: #ffffff;
+    --cut: #e9a23b;
+    --stage-top: #f8f7fb;
+    --stage-bottom: #dfdde8;
+    --good: #1f8a5b;
+    --radius: 10px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --ground: #111016;
+      --surface: #19181f;
+      --ink: #eceaf3;
+      --muted: #9d99ad;
+      --line: #2b2935;
+      --accent: #a58ddb;
+      --accent-ink: #15131b;
+      --stage-top: #221f2c;
+      --stage-bottom: #0d0c11;
+      --good: #4cc38a;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --ground: #111016;
+    --surface: #19181f;
+    --ink: #eceaf3;
+    --muted: #9d99ad;
+    --line: #2b2935;
+    --accent: #a58ddb;
+    --accent-ink: #15131b;
+    --stage-top: #221f2c;
+    --stage-bottom: #0d0c11;
+    --good: #4cc38a;
+  }
+  [hidden] { display: none !important; }
+  html, body { height: 100%; }
+  body {
+    box-sizing: border-box;
+    padding-inline: 16px;
+    padding-block: 16px;
+    background: var(--ground);
+    color: var(--ink);
+    font: 14px/1.5 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .app {
+    height: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 330px;
+    gap: 16px;
+  }
+  .stage {
+    position: relative;
+    min-height: 0;
+    border-radius: var(--radius);
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, var(--stage-top), var(--stage-bottom));
+    overflow: hidden;
+  }
+  .stage canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  .stage .hint {
+    position: absolute; left: 14px; bottom: 12px; margin: 0;
+    font: 12px/1.4 "IBM Plex Mono", ui-monospace, monospace; color: var(--muted);
+    pointer-events: none;
+  }
+  .stage .status {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font: 13px "IBM Plex Mono", ui-monospace, monospace; color: var(--muted);
+  }
+  .views {
+    position: absolute; top: 12px; left: 12px; right: 12px;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .views button, .chip {
+    font: 500 12px/1 "IBM Plex Sans", system-ui, sans-serif;
+    color: var(--ink); background: var(--surface);
+    border: 1px solid var(--line); border-radius: 999px;
+    padding: 7px 12px; cursor: pointer;
+  }
+  .views button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  button:focus-visible, input:focus-visible, .chip:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  .panel {
+    min-height: 0; overflow-y: auto;
+    background: var(--surface);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding-inline: 20px; padding-block: 20px;
+    display: flex; flex-direction: column; gap: 22px;
+  }
+  .eyebrow {
+    margin: 0; font: 500 11px/1 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+  }
+  h1 { margin: 6px 0 4px; font-size: 24px; line-height: 1.15; font-weight: 600; text-wrap: balance; }
+  .lede { margin: 0; color: var(--muted); }
+  h2 {
+    margin: 0 0 10px; font: 500 11px/1 "IBM Plex Mono", ui-monospace, monospace;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  }
+  .control label { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; font-weight: 500; }
+  .control output { font: 12px "IBM Plex Mono", ui-monospace, monospace; color: var(--muted); font-variant-numeric: tabular-nums; }
+  input[type="range"] { width: 100%; accent-color: var(--accent); }
+  .row { display: flex; align-items: center; gap: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px 6px 8px; }
+  .chip input { margin: 0; accent-color: var(--accent); }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; border: 1px solid var(--line); }
+  dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 7px 14px; }
+  dt { color: var(--muted); }
+  dd { margin: 0; font: 13px/1.45 "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+  .ok { color: var(--good); }
+  .files { margin: 0; padding: 0; list-style: none; display: grid; gap: 4px; font: 12px/1.45 "IBM Plex Mono", ui-monospace, monospace; color: var(--muted); overflow-wrap: anywhere; }
+  .cutkey { display: inline-block; width: 10px; height: 10px; border-radius: 2px; background: var(--cut); margin-right: 6px; vertical-align: -1px; }
+
+  @media (max-width: 860px) {
+    html, body { height: auto; }
+    .app { height: auto; grid-template-columns: minmax(0, 1fr); }
+    .stage { height: 62svh; min-height: 340px; }
+  }
+</style>
+
+<div class="app">
+  <section class="stage" aria-label="3D model of the macropad">
+    <canvas id="view"></canvas>
+    <div class="views" role="group" aria-label="Camera">
+      <button type="button" id="v-iso" data-view="iso" aria-pressed="true">3/4</button>
+      <button type="button" id="v-top" data-view="top" aria-pressed="false">Top</button>
+      <button type="button" id="v-side" data-view="side" aria-pressed="false">Side</button>
+      <button type="button" id="v-back" data-view="back" aria-pressed="false">USB-C</button>
+      <button type="button" id="v-under" data-view="under" aria-pressed="false">Underside</button>
+    </div>
+    <div class="status" id="status">Loading model…</div>
+    <p class="hint">drag to orbit · scroll to zoom · right-drag to pan</p>
+  </section>
+
+  <aside class="panel">
+    <header>
+      <p class="eyebrow">Case design · rev 1</p>
+      <h1>Nyxilab Macropad</h1>
+      <p class="lede">Three-layer wedge for a Pico&nbsp;2, 12 hand-wired MX keys, a 1.9" and a 2.25" display and a thumbstick.</p>
+    </header>
+
+    <div class="control">
+      <label for="explode">Explode layers <output id="explode-out">0 mm</output></label>
+      <input id="explode" type="range" min="0" max="36" step="1" value="0">
+    </div>
+
+    <div class="control">
+      <label for="section-on" class="row" style="justify-content:flex-start">
+        <input id="section-on" type="checkbox"> Section plane
+        <output id="section-out" style="margin-left:auto">x = 80.5 mm</output>
+      </label>
+      <input id="section" type="range" min="2" max="157" step="0.5" value="80.5" aria-label="Section position along the width, mm">
+      <p class="lede" style="font-size:12px;margin-top:6px"><span class="cutkey"></span>cut faces · 80.5 mm passes through the joystick, main display, Pico and USB-C port</p>
+    </div>
+
+    <div>
+      <h2>Show</h2>
+      <div class="chips" id="toggles"></div>
+    </div>
+
+    <div>
+      <h2>Dimensions</h2>
+      <dl>
+        <dt>Footprint</dt><dd>159.0 × 98.0 mm</dd>
+        <dt>Height</dt><dd>18.0 → 35.3 mm, 10° slope</dd>
+        <dt>Layers</dt><dd>plate 5.0 · wall 3.0 · base 3.0</dd>
+        <dt>Keys</dt><dd>12 × MX, 19.05 pitch</dd>
+        <dt>Fasteners</dt><dd>8 × M3×8 csk → inserts</dd>
+        <dt>USB-C</dt><dd>centred, 8.6 mm above desk</dd>
+        <dt>Fit checks</dt><dd class="ok">128 pairs · 0 clashes</dd>
+        <dt>Knob sweep</dt><dd>0.72 mm clear at 25° tilt</dd>
+      </dl>
+    </div>
+
+    <div>
+      <h2>In the repo</h2>
+      <ul class="files">
+        <li>cad/exports/3mf/ — print-ready parts</li>
+        <li>cad/exports/step/ — editable solids</li>
+        <li>cad/exports/freecad/nyxilab_macropad.FCStd</li>
+        <li>cad/exports/drawings/…blueprints.pdf</li>
+        <li>firmware/dist/nyxilab-macropad-pico2.uf2</li>
+      </ul>
+    </div>
+  </aside>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.147.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function () {
+  const GLB_BASE64 = "__GLB_BASE64__";
+  const statusEl = document.getElementById("status");
+  if (!window.THREE || !THREE.GLTFLoader || !THREE.OrbitControls) {
+    statusEl.textContent = "The 3D library did not load. Check the connection and reload.";
+    return;
+  }
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const canvas = document.getElementById("view");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.localClippingEnabled = true;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(30, 1, 0.002, 20);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x6d6680, 0.75));
+  const key = new THREE.DirectionalLight(0xffffff, 0.95);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  key.shadow.bias = -0.0004;
+  scene.add(key, key.target);
+  const fill = new THREE.DirectionalLight(0xdcd6ff, 0.35);
+  scene.add(fill);
+
+  // the section plane keeps x < position (CAD x, metres); cut faces show as back faces
+  const section = new THREE.Plane(new THREE.Vector3(-1, 0, 0), 0.0805);
+  const cutColor = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue("--cut").trim() || "#e9a23b");
+  const materials = [];
+  const edgeMat = new THREE.LineBasicMaterial({ color: 0x1b1a21, transparent: true, opacity: 0.28 });
+  materials.push(edgeMat);
+
+  function sectionMaterial(src) {
+    const m = new THREE.MeshStandardMaterial({
+      color: src.color ? src.color.clone() : new THREE.Color(0x888888),
+      roughness: 0.62, metalness: 0.02, side: THREE.DoubleSide,
+    });
+    m.onBeforeCompile = (shader) => {
+      shader.uniforms.cutColor = { value: cutColor };
+      shader.fragmentShader = "uniform vec3 cutColor;\n" + shader.fragmentShader.replace(
+        "#include <dithering_fragment>",
+        "#include <dithering_fragment>\n if (!gl_FrontFacing) gl_FragColor = vec4(cutColor, 1.0);");
+    };
+    materials.push(m);
+    return m;
+  }
+
+  const groups = [
+    { id: "t-plate", label: "Top plate", color: "#ECEAE4", test: (n) => n === "top_plate" },
+    { id: "t-frame", label: "Frame", color: "#5B3E8E", test: (n) => n === "frame" },
+    { id: "t-base", label: "Base", color: "#E3E0D9", test: (n) => n === "base" },
+    { id: "t-spine", label: "Spine", color: "#8E949A", test: (n) => n === "bar_spine" },
+    { id: "t-keys", label: "Keys", color: "#2B2D33", test: (n) => /^(switch|keycap)/.test(n) },
+    { id: "t-displays", label: "Displays", color: "#1F5FA8", test: (n) => /^display/.test(n) },
+    { id: "t-elec", label: "Pico + stick", color: "#B5122B", test: (n) => /^(pico|joystick)/.test(n) },
+  ];
+  const layerOf = (n) => /^(frame)$/.test(n) ? 1 : (/^(base|pico|joystick)/.test(n) ? 0 : 2);
+
+  const nodes = [];  // {obj, name, z0, layer, group}
+  let model = null, fitRadius = 0.1;
+  const center = new THREE.Vector3();
+
+  function b64ToBuffer(b64) {
+    const bin = atob(b64);
+    const buf = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) buf[i] = bin.charCodeAt(i);
+    return buf.buffer;
+  }
+
+  new THREE.GLTFLoader().parse(b64ToBuffer(GLB_BASE64), "", (gltf) => {
+    model = gltf.scene;
+    const root = model.children[0];
+    root.children.forEach((child) => {
+      const name = child.name || "";
+      child.traverse((o) => {
+        if (!o.isMesh) return;
+        o.material = sectionMaterial(o.material);
+        o.castShadow = true;
+        o.receiveShadow = true;
+        const edges = new THREE.LineSegments(new THREE.EdgesGeometry(o.geometry, 28), edgeMat);
+        o.add(edges);
+      });
+      const g = groups.find((gr) => gr.test(name));
+      nodes.push({ obj: child, name, z0: child.position.z, layer: layerOf(name), group: g ? g.id : null });
+    });
+    scene.add(model);
+
+    const box = new THREE.Box3().setFromObject(model);
+    box.getCenter(center);
+    fitRadius = box.getBoundingSphere(new THREE.Sphere()).radius;
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShadowMaterial({ opacity: 0.16 }));
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.set(center.x, box.min.y - 0.0002, center.z);
+    ground.receiveShadow = true;
+    scene.add(ground);
+    key.position.set(center.x - 0.12, center.y + 0.35, center.z + 0.22);
+    key.target.position.copy(center);
+    const sc = key.shadow.camera;
+    sc.left = sc.bottom = -0.2; sc.right = sc.top = 0.2; sc.near = 0.01; sc.far = 1.2; sc.updateProjectionMatrix();
+    fill.position.set(center.x + 0.3, center.y + 0.1, center.z - 0.2);
+    controls.target.copy(center);
+    resize();
+    setView("iso", true);
+    statusEl.hidden = true;
+    applyToggles();
+    applySection();
+  }, (err) => {
+    statusEl.textContent = "Could not read the embedded model: " + (err && err.message ? err.message : err);
+  });
+
+  // ------------------------------------------------------------ views
+  const VIEWS = {
+    iso: [-0.52, 0.6, 1.0],
+    top: [0, 1, 0.0001],
+    side: [1, 0.1, 0],
+    back: [0.42, 0.28, -1],
+    under: [-0.4, -1, 0.55],
+  };
+  let anim = null;
+  function setView(name, instant) {
+    const d = new THREE.Vector3(...VIEWS[name]).normalize();
+    const vfov = THREE.MathUtils.degToRad(camera.fov);
+    const hfov = 2 * Math.atan(Math.tan(vfov / 2) * Math.max(camera.aspect, 0.2));
+    const dist = fitRadius / Math.sin(Math.min(vfov, hfov) / 2) * 1.04;
+    const to = center.clone().addScaledVector(d, dist);
+    document.querySelectorAll(".views button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.view === name)));
+    if (instant || reduceMotion) { camera.position.copy(to); controls.target.copy(center); controls.update(); return; }
+    anim = { from: camera.position.clone(), to, t0: performance.now() };
+  }
+  document.querySelectorAll(".views button").forEach((b) => b.addEventListener("click", () => setView(b.dataset.view)));
+
+  // ---------------------------------------------------------- explode
+  const explodeEl = document.getElementById("explode");
+  const explodeOut = document.getElementById("explode-out");
+  function applyExplode() {
+    const e = Number(explodeEl.value) / 1000;  // mm -> m
+    explodeOut.textContent = explodeEl.value + " mm";
+    nodes.forEach((n) => { n.obj.position.z = n.z0 + n.layer * e; });
+  }
+  explodeEl.addEventListener("input", applyExplode);
+
+  // ---------------------------------------------------------- section
+  const secOn = document.getElementById("section-on");
+  const secEl = document.getElementById("section");
+  const secOut = document.getElementById("section-out");
+  function applySection() {
+    section.constant = Number(secEl.value) / 1000;
+    secOut.textContent = "x = " + Number(secEl.value).toFixed(1) + " mm";
+    const planes = secOn.checked ? [section] : [];
+    materials.forEach((m) => { m.clippingPlanes = planes; m.needsUpdate = true; });
+  }
+  secOn.addEventListener("change", () => { applySection(); if (secOn.checked) setView("side"); });
+  secEl.addEventListener("input", () => { if (!secOn.checked) { secOn.checked = true; } applySection(); });
+
+  // ---------------------------------------------------------- toggles
+  const togglesEl = document.getElementById("toggles");
+  groups.forEach((g) => {
+    const label = document.createElement("label");
+    label.className = "chip";
+    label.innerHTML = '<input type="checkbox" id="' + g.id + '" checked><span class="swatch" style="background:' + g.color + '"></span>' + g.label;
+    togglesEl.appendChild(label);
+    label.querySelector("input").addEventListener("change", applyToggles);
+  });
+  function applyToggles() {
+    nodes.forEach((n) => {
+      const box = n.group && document.getElementById(n.group);
+      n.obj.visible = box ? box.checked : true;
+    });
+  }
+
+  // ------------------------------------------------------------ loop
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    if (!w || !h) return;
+    if (canvas.width !== Math.floor(w * renderer.getPixelRatio()) || canvas.height !== Math.floor(h * renderer.getPixelRatio())) {
+      renderer.setSize(w, h, false);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
+  }
+  function frame(now) {
+    resize();
+    if (anim) {
+      const t = Math.min((now - anim.t0) / 520, 1);
+      const k = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+      camera.position.lerpVectors(anim.from, anim.to, k);
+      if (t >= 1) anim = null;
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>

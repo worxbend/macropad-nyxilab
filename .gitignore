@@ -1,0 +1,19 @@
+# Python / CAD tooling
+cad/.venv/
+__pycache__/
+*.pyc
+cad/exports/freecad/_job.json
+*.FCBak
+
+# PlatformIO
+firmware/.pio/
+firmware/.vscode/
+.vscode/.browse*
+.vscode/c_cpp_properties.json
+.vscode/launch.json
+.vscode/ipch
+
+# OS / editors
+.DS_Store
+*.swp
+.idea/

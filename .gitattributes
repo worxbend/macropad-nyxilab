@@ -1,0 +1,9 @@
+# Generated CAD outputs are binary; consider `git lfs track` for them if the history grows.
+*.stl    binary linguist-generated
+*.3mf    binary linguist-generated
+*.step   binary linguist-generated
+*.glb    binary linguist-generated
+*.FCStd  binary linguist-generated
+*.pdf    binary
+*.png    binary
+cad/exports/drawings/*.svg linguist-generated
