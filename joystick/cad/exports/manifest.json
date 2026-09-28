@@ -1,0 +1,120 @@
+{
+  "layout": {
+    "edition": "joystick",
+    "W": 158.95,
+    "D": 98.0,
+    "V (slope length)": 99.51,
+    "tilt_deg": 10.0,
+    "front height": 18.0,
+    "back height": 35.28,
+    "u_bar": 17.04,
+    "u_L": 38.53,
+    "u_c": 80.53,
+    "u_R1": 122.53,
+    "u_R2": 141.58,
+    "rows v": [
+      19.52,
+      38.58,
+      57.62,
+      76.67
+    ],
+    "centre v": 27.0,
+    "main display v": 67.15,
+    "bar display v": 46.6,
+    "usb center": [
+      79.47,
+      96.2,
+      8.63
+    ],
+    "plate / wall / base": [
+      5.0,
+      3.0,
+      3.0
+    ],
+    "LED sticks x": [
+      111.47,
+      47.47
+    ],
+    "joystick v": 27.0
+  },
+  "parts": {
+    "top_plate": {
+      "bed_footprint_mm": [
+        159.0,
+        100.1
+      ],
+      "height_mm": 31.1,
+      "volume_cm3": 56.6,
+      "solid_mass_g_pla": 70.0,
+      "notes": "Print top face DOWN (as exported). 0.2 mm layers, 4 walls, 20% gyroid. Heat-set 8x M3 inserts into the boss ends."
+    },
+    "frame": {
+      "bed_footprint_mm": [
+        159.0,
+        98.0
+      ],
+      "height_mm": 27.1,
+      "volume_cm3": 25.9,
+      "solid_mass_g_pla": 32.0,
+      "notes": "Print as exported (flat bottom down). 0.2 mm layers, 3 walls, 15% infill. This is the accent colour."
+    },
+    "base": {
+      "bed_footprint_mm": [
+        158.9,
+        98.0
+      ],
+      "height_mm": 9.8,
+      "volume_cm3": 47.1,
+      "solid_mass_g_pla": 58.0,
+      "notes": "Print as exported. 0.2 mm layers, 3 walls, 20% infill."
+    },
+    "bar_spine": {
+      "bed_footprint_mm": [
+        69.2,
+        19.2
+      ],
+      "height_mm": 6.2,
+      "volume_cm3": 2.6,
+      "solid_mass_g_pla": 3.0,
+      "notes": "Print as exported (flat side down). 100% infill or 5 walls - it is a small spring clamp."
+    }
+  },
+  "fit_tests": {
+    "fit_switch": [
+      61.2,
+      27.1,
+      5.0
+    ],
+    "fit_plate_d19": [
+      72.0,
+      36.0,
+      5.0
+    ],
+    "fit_plate_bar": [
+      28.1,
+      79.2,
+      10.0
+    ],
+    "fit_plate_joy": [
+      43.0,
+      43.0,
+      5.0
+    ],
+    "fit_joystick": [
+      40.7,
+      35.0,
+      9.8
+    ],
+    "fit_usb": [
+      32.0,
+      57.6,
+      14.0
+    ],
+    "fit_led": [
+      16.0,
+      57.0,
+      6.0
+    ]
+  },
+  "freecad": "exports/freecad/nyxilab_macropad_joystick.FCStd"
+}

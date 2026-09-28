@@ -1,13 +1,16 @@
 # Python / CAD tooling
-cad/.venv/
+.venv/
+.build/
+site/
 __pycache__/
+*.egg-info/
 *.pyc
-cad/exports/freecad/_job.json
+*/cad/exports/**/_job.json
 *.FCBak
 
 # PlatformIO
-firmware/.pio/
-firmware/.vscode/
+*/firmware/.pio/
+*/firmware/.vscode/
 .vscode/.browse*
 .vscode/c_cpp_properties.json
 .vscode/launch.json

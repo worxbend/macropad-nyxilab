@@ -1,0 +1,11 @@
+{
+  "name": "nyx_hw",
+  "version": "2.0.0",
+  "description": "Nyxilab macropad hardware: matrix scan, composite USB HID, settings in flash",
+  "license": "MIT",
+  "dependencies": {"nyx_core": "*"},
+  "build": {
+    "flags": ["-Wextra", "-Wno-missing-field-initializers"],
+    "libArchive": false
+  }
+}

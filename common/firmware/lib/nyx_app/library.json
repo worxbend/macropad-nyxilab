@@ -1,0 +1,11 @@
+{
+  "name": "nyx_app",
+  "version": "2.0.0",
+  "description": "Nyxilab macropad application skeleton: core 0 loop, console, UI feed; editions plug in their centre control",
+  "license": "MIT",
+  "dependencies": {"nyx_core": "*", "nyx_hw": "*", "nyx_ui": "*"},
+  "build": {
+    "flags": ["-Wextra", "-Wno-missing-field-initializers"],
+    "libArchive": false
+  }
+}

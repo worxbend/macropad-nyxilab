@@ -1,0 +1,11 @@
+{
+  "name": "nyx_core",
+  "version": "2.0.0",
+  "description": "Pure logic of the Nyxilab macropad: actions, keymap types, debounce, engine (layers, tap-hold, macros, knob), LED effects",
+  "license": "MIT",
+  
+  "build": {
+    "flags": ["-Wextra", "-Wno-missing-field-initializers"],
+    "libArchive": false
+  }
+}
