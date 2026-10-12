@@ -19,7 +19,7 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary ui-sim diagrams viewer site docs all clean
+        test-joystick test-rotary test-hardware ui-sim diagrams viewer site docs all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -86,7 +86,7 @@ monitor:
 	pio device monitor -b 115200
 
 # ---------------------------------------------------------------- tests
-test: test-core test-joystick test-rotary
+test: test-core test-joystick test-rotary test-hardware
 
 test-core:
 	cd common/firmware && pio test -e native
@@ -96,6 +96,9 @@ test-joystick:
 
 test-rotary:
 	cd rotary/firmware && pio test -e native
+
+test-hardware:
+	python3 common/firmware/host_tests/run.py
 
 # ----------------------------------------------------------------- docs
 ui-sim:

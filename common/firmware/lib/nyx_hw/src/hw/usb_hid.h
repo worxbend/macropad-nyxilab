@@ -12,6 +12,7 @@ namespace hw {
 
 void usb_begin();
 void usb_task();  // call every loop iteration
+bool usb_keyboard_delivered();  // all queued button/key states sent; ignores motion-only transfers
 
 void usb_set_keyboard(const mp::HidState& s);  // keys + modifiers + consumer + buttons
 void usb_add_mouse(int8_t dx, int8_t dy, int8_t wheel, int8_t pan);

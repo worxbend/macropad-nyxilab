@@ -46,11 +46,12 @@ class Engine {
   }
 
   void process(const KeyEvent& ev);
-  void tick(uint32_t now);
+  // Pause generated HID transitions until the previous report has been delivered.
+  void tick(uint32_t now, bool output_ready = true);
 
   const HidState& hid() const { return hid_; }
   uint8_t base_layer() const { return base_; }
-  uint32_t layer_mask() const { return mask_ | (1u << base_); }
+  uint32_t layer_mask() const { return mask_ | mo_mask_ | (1u << base_); }
   uint8_t top_layer() const;
   void set_base_layer(uint8_t layer);
   bool key_down(uint8_t r, uint8_t c) const { return down_[r][c]; }
@@ -102,7 +103,8 @@ class Engine {
   EngineHost& host_;
   HidState hid_{};
   uint8_t base_ = 0;
-  uint32_t mask_ = 0;  // momentary + toggled layers
+  uint32_t mask_ = 0;  // toggled layers
+  uint32_t mo_mask_ = 0;  // layers with at least one held MO action
   uint8_t mo_count_[MAX_LAYERS] = {};
 
   bool down_[ROWS][COLS] = {};
@@ -125,6 +127,7 @@ class Engine {
 
   // macro playback
   const char* macro_ = nullptr;
+  bool macro_started_ = false;
   bool macro_key_down_ = false;
   uint32_t macro_next_ = 0;
   uint8_t macro_mods_ = 0, macro_usage_ = 0;

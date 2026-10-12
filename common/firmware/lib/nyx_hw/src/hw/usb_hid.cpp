@@ -19,8 +19,15 @@ uint8_t const kReportDesc[] = {
 Adafruit_USBD_HID g_hid;
 
 mp::HidState g_want{}, g_sent{};
-bool g_kb_dirty = false, g_cc_dirty = false, g_btn_dirty = false;
 uint8_t g_extra_buttons = 0, g_sent_buttons = 0;
+// Preserve press/release order while the shared endpoint is busy. Generated taps
+// and macros also wait for delivery, so they cannot run ahead of this queue.
+constexpr uint8_t kQueueSize = 64;
+mp::HidState g_queue[kQueueSize];
+uint8_t g_head = 0, g_count = 0;
+uint8_t g_resync = 0;  // keyboard / consumer / mouse must be sent after enumeration
+bool g_mounted = false, g_ever_mounted = false;
+bool g_state_inflight = false;  // motion-only reports must not pause macros/tap timers
 int16_t g_dx = 0, g_dy = 0, g_wheel = 0, g_pan = 0;
 volatile uint8_t g_leds = 0;
 
@@ -35,6 +42,17 @@ void on_set_report(uint8_t report_id, hid_report_type_t type, uint8_t const* buf
 }
 
 int8_t clamp8(int16_t v) { return int8_t(v > 127 ? 127 : (v < -127 ? -127 : v)); }
+
+void enqueue_current() {
+  mp::HidState s = g_want;
+  s.mouse_buttons |= g_extra_buttons;
+  mp::HidState last = g_sent;
+  last.mouse_buttons = g_sent_buttons;
+  if (g_count) last = g_queue[(g_head + g_count - 1) % kQueueSize];
+  if (s == last || g_count == kQueueSize) return;
+  g_queue[(g_head + g_count) % kQueueSize] = s;
+  g_count++;
+}
 
 }  // namespace
 
@@ -56,15 +74,13 @@ void usb_begin() {
 }
 
 void usb_set_keyboard(const mp::HidState& s) {
-  if (s.mods != g_sent.mods || memcmp(s.keys, g_sent.keys, 6) != 0) g_kb_dirty = true;
-  if (s.consumer != g_sent.consumer) g_cc_dirty = true;
-  if (uint8_t(s.mouse_buttons | g_extra_buttons) != g_sent_buttons) g_btn_dirty = true;
   g_want = s;
+  enqueue_current();
 }
 
 void usb_set_extra_buttons(uint8_t buttons) {
   g_extra_buttons = buttons;
-  if (uint8_t(g_want.mouse_buttons | g_extra_buttons) != g_sent_buttons) g_btn_dirty = true;
+  enqueue_current();
 }
 
 void usb_add_mouse(int8_t dx, int8_t dy, int8_t wheel, int8_t pan) {
@@ -75,43 +91,75 @@ void usb_add_mouse(int8_t dx, int8_t dy, int8_t wheel, int8_t pan) {
 }
 
 void usb_task() {
-  const bool pending = g_kb_dirty || g_cc_dirty || g_btn_dirty || g_dx || g_dy || g_wheel || g_pan;
-  if (!pending) return;
-  if (!TinyUSBDevice.mounted() || TinyUSBDevice.suspended()) {
+  const bool mounted = TinyUSBDevice.mounted();
+  if (mounted && !g_mounted) {
+    // A new host session has no knowledge of the previous reports. On remount,
+    // discard old-session transitions and publish the currently held inputs.
+    if (g_ever_mounted) g_head = g_count = 0;
+    g_ever_mounted = true;
+    g_resync = 7;
+    if (!g_count) {
+      g_queue[g_head] = g_want;
+      g_queue[g_head].mouse_buttons |= g_extra_buttons;
+      g_count = 1;
+    }
+  }
+  g_mounted = mounted;
+  if (!mounted || TinyUSBDevice.suspended()) {
     // don't let stick motion pile up while nobody is listening (no jump on wake-up)
     g_dx = g_dy = g_wheel = g_pan = 0;
-    if (TinyUSBDevice.mounted() && (g_kb_dirty || g_cc_dirty || g_btn_dirty)) TinyUSBDevice.remoteWakeup();
+    if (mounted && g_count) TinyUSBDevice.remoteWakeup();
     return;
   }
+  enqueue_current();  // after overflow, eventually send the latest state (including releases)
+  if (!g_count && !g_dx && !g_dy && !g_wheel && !g_pan) return;
   if (!g_hid.ready()) return;
-  // one report per call, keyboard first
-  if (g_kb_dirty) {
+  g_state_inflight = false;
+  const mp::HidState& target = g_count ? g_queue[g_head] : g_sent;
+  // Finish this snapshot before advancing to the next press or release.
+  if ((g_resync & 1) || target.mods != g_sent.mods || memcmp(target.keys, g_sent.keys, 6) != 0) {
     uint8_t keys[6];
-    memcpy(keys, g_want.keys, 6);
-    if (g_hid.keyboardReport(RID_KEYBOARD, g_want.mods, keys)) {
-      g_sent.mods = g_want.mods;
-      memcpy(g_sent.keys, g_want.keys, 6);
-      g_kb_dirty = false;
+    memcpy(keys, target.keys, 6);
+    if (g_hid.keyboardReport(RID_KEYBOARD, target.mods, keys)) {
+      g_sent.mods = target.mods;
+      memcpy(g_sent.keys, target.keys, 6);
+      g_resync &= ~1u;
+      g_state_inflight = true;
     }
     return;
   }
-  if (g_cc_dirty) {
-    if (g_hid.sendReport16(RID_CONSUMER, g_want.consumer)) {
-      g_sent.consumer = g_want.consumer;
-      g_cc_dirty = false;
+  if ((g_resync & 2) || target.consumer != g_sent.consumer) {
+    if (g_hid.sendReport16(RID_CONSUMER, target.consumer)) {
+      g_sent.consumer = target.consumer;
+      g_resync &= ~2u;
+      g_state_inflight = true;
     }
     return;
   }
-  const uint8_t buttons = g_want.mouse_buttons | g_extra_buttons;
+  const uint8_t buttons = g_count ? target.mouse_buttons : g_sent_buttons;
   const int8_t dx = clamp8(g_dx), dy = clamp8(g_dy), w = clamp8(g_wheel), p = clamp8(g_pan);
-  if (g_hid.mouseReport(RID_MOUSE, buttons, dx, dy, w, p)) {
+  const bool buttons_pending = (g_resync & 4) || buttons != g_sent_buttons;
+  const bool mouse_pending = buttons_pending || dx || dy || w || p;
+  if (mouse_pending && !g_hid.mouseReport(RID_MOUSE, buttons, dx, dy, w, p)) return;
+  if (mouse_pending) {
     g_dx -= dx;
     g_dy -= dy;
     g_wheel -= w;
     g_pan -= p;
     g_sent_buttons = buttons;
-    g_btn_dirty = false;
+    g_resync &= ~4u;
+    g_state_inflight = buttons_pending;
   }
+  if (g_count) {
+    g_head = (g_head + 1) % kQueueSize;
+    g_count--;
+    enqueue_current();
+  }
+}
+
+bool usb_keyboard_delivered() {
+  return TinyUSBDevice.mounted() && !TinyUSBDevice.suspended() && !g_count && !g_resync &&
+         (!g_state_inflight || g_hid.ready());
 }
 
 bool usb_mounted() { return TinyUSBDevice.mounted(); }

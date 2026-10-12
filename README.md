@@ -215,8 +215,10 @@ we don't just vibe, we verify:
   25° swing or the spinning knob, and every component against every other, LED sticks
   included. **0 clashes.**
 - **printability check** in print orientation: no supports needed, only a few short bridges (the longest is a 10.5 mm foot recess).
-- **33 firmware unit tests** (debounce, layers, tap-hold, macros, knob bindings, LED effects and
+- **37 firmware unit tests** (debounce, layers, tap-hold, macros, knob bindings, LED effects and
   the current limit in the shared core; the stick maths; the knob decoder), all green ✅
+- USB delivery, settings and centre-control regressions for both editions run with
+  mocked hardware via `make test-hardware`.
 - both editions build for **both** boards (Pico 2 / OG Pico) with **zero warnings** under `-Wall -Wextra`.
 - the wiring diagrams are generated from each edition's `config.h`, and the build refuses if the two
   editions ever disagree on a shared pin.

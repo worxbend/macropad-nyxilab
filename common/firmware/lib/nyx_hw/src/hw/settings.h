@@ -12,6 +12,7 @@ struct Settings {
   uint32_t magic;
   uint16_t version;
   uint8_t brightness;
+  uint8_t edition;  // cfg::SETTINGS_EDITION; centre settings cannot cross editions
   // per base layer, 0xFE = the keymap default: stick mode (joystick edition) or knob preset (rotary edition)
   uint8_t centre_modes[mp::MAX_LAYERS];
   uint8_t base_layer;

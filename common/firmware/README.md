@@ -32,6 +32,8 @@ pio test -e native          # this edition's unit tests on the PC
 
 From the repo root: `make firmware` (both editions, Pico 2), `make firmware-all` (all
 four UF2 files), `make test` (all unit tests), `make ui-sim` (render the UI).
+`make test-hardware` runs USB, settings and centre-control regressions with mocked
+hardware; it needs Python 3 and g++, without PlatformIO or board dependencies.
 
 First flash, or if the firmware is broken: hold **BOOTSEL** while plugging the Pico
 in and copy the UF2 for your board and edition to the `RP2350` (or `RPI-RP2`) drive.
@@ -52,7 +54,10 @@ Once the case is closed you do not need BOOTSEL any more:
   counter-clockwise, press). FN + KNOB switches the current layer to a preset (volume,
   scroll, zoom, arrows) and back. The knob is read by pin-change interrupts with a
   detent-synchronised decoder, so bounce never adds steps; key taps from fast turns are
-  queued, so none are lost.
+  queued with a 16-detent backlog. Taps and macros wait for USB delivery; detents
+  beyond the backlog are dropped. Physical key/button transitions have a separate
+  64-state USB queue; if that fills, intermediate states can be dropped, but the
+  latest held/released state is sent once space becomes available.
 - **RGB LED sticks** (2 × 8 WS2812B, both editions): layer colour with a flash on every key
   press or knob click, breathing, or a rainbow running around the case; FN + LED cycles
   the modes. They follow the display brightness and idle dimming and go dark while the host
@@ -65,6 +70,9 @@ Once the case is closed you do not need BOOTSEL any more:
 - Backlight PWM with FN + DIM±, dims after 1 min idle, off after 10 min or when the host sleeps
 - Settings (brightness, per-layer stick mode or knob preset, knob direction, LED mode,
   last layer, joystick calibration) stored in flash
+  (learned joystick travel is saved after changes settle for about 3 s). Changing
+  editions resets centre settings while retaining shared settings. Upgrading from
+  settings version 5 resets all settings once.
 - Dual core: input + USB on core 0; the displays and the LEDs on core 1 (off-screen
   canvases, no flicker)
 
@@ -117,13 +125,14 @@ immediately.
 `pio device monitor` (115200): `help`, `info` (layers, USB, lock LEDs, brightness, LED
 mode, plus the stick calibration or the knob binding), `layer <n>`, `boot`, and the
 edition's own commands: `joy` (raw stick values for 5 s) and `cal` (re-centre), or
-`enc` (knob pins and position for 5 s).
+`enc` (knob pins and position for 5 s). Diagnostics run alongside input processing;
+samples are skipped when the serial transmit buffer is full.
 
 ## Code layout
 
 ```
 common/firmware/lib/
-  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 23 tests)
+  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 27 tests)
     keycodes.h          action encoding (32-bit: type | argument) + HID usages
     keymap.h            layer / key / centre-control types; the layers live in the editions
     debounce.h          per-key deferred debounce
@@ -136,6 +145,7 @@ common/firmware/lib/
 joystick/firmware/      config.h, keymap.cpp, stick.cpp (JoystickCentre), joystick.cpp, main.cpp, 6 tests
 rotary/firmware/        config.h, keymap.cpp, knob.cpp (KnobCentre), quad_decoder.h, main.cpp, 4 tests
 tools/ui_sim/           builds render.cpp + led_fx.cpp + the edition's keymap natively and writes PNGs
+common/firmware/host_tests/  hardware/control regressions against Arduino, USB and EEPROM mocks
 ```
 
 An edition's `main.cpp` is four lines: it hands its `Centre` (the stick or the knob)

@@ -22,6 +22,7 @@ class JoystickCentre : public app::Centre {
 
  private:
   void calibrate(uint32_t now);
+  void save_calibration(uint32_t now);
   static uint16_t read_adc_avg(uint8_t pin);
 
   mp::Engine* engine_ = nullptr;
@@ -30,4 +31,6 @@ class JoystickCentre : public app::Centre {
   uint32_t last_ms_ = 0;
   uint8_t sw_count_ = 0;
   bool sw_ = false;
+  bool diagnostics_ = false;
+  uint32_t diagnostics_start_ = 0, diagnostics_last_ = 0;
 };

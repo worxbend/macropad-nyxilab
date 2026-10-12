@@ -189,7 +189,7 @@ void loop() {
       }
     });
   }
-  g_engine.tick(now);
+  g_engine.tick(now, hw::usb_keyboard_delivered());
   if (g_centre) g_centre->task(now);
   int8_t wheel, pan;
   g_engine.take_wheel(wheel, pan);  // Wheel actions (knob scroll presets, or keys)

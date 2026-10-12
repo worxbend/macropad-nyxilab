@@ -45,6 +45,18 @@ bool KnobCentre::on_sys(mp::SysCmd cmd, uint32_t now) {
 }
 
 void KnobCentre::task(uint32_t now) {
+  if (diagnostics_) {
+    if (now - diagnostics_start_ >= 5000) {
+      diagnostics_ = false;
+    } else if (now - diagnostics_last_ >= 50) {
+      diagnostics_last_ = now;
+      char line[64];
+      const int len = snprintf(line, sizeof line, "CLK=%d DT=%d SW=%d  pos=%ld\n", digitalRead(cfg::ENC_A_PIN),
+                               digitalRead(cfg::ENC_B_PIN), digitalRead(cfg::ENC_SW_PIN) == LOW,
+                               (long)engine_->encoder_position());
+      if (len > 0 && len < int(sizeof line) && Serial.availableForWrite() >= len) Serial.write(line, len);
+    }
+  }
   noInterrupts();
   int32_t steps = s_steps;
   s_steps = 0;
@@ -86,11 +98,8 @@ void KnobCentre::info() {
 
 bool KnobCentre::console(const char* line) {
   if (strcmp(line, "enc") != 0) return false;
-  for (uint32_t t0 = millis(); millis() - t0 < 5000;) {
-    Serial.printf("CLK=%d DT=%d SW=%d  pos=%ld\n", digitalRead(cfg::ENC_A_PIN), digitalRead(cfg::ENC_B_PIN),
-                  digitalRead(cfg::ENC_SW_PIN) == LOW, (long)engine_->encoder_position());
-    task(millis());
-    delay(50);
-  }
+  diagnostics_ = true;
+  diagnostics_start_ = millis();
+  diagnostics_last_ = diagnostics_start_ - 50;
   return true;
 }

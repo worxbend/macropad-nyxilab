@@ -33,4 +33,6 @@ class KnobCentre : public app::Centre {
   uint32_t last_sw_ms_ = 0;
   uint8_t sw_count_ = 0;
   bool sw_ = false;
+  bool diagnostics_ = false;
+  uint32_t diagnostics_start_ = 0, diagnostics_last_ = 0;
 };

@@ -57,9 +57,7 @@ uint8_t Engine::top_layer() const {
 void Engine::set_base_layer(uint8_t layer) {
   if (layer >= NUM_LAYERS) return;
   base_ = layer;
-  mask_ = 0;  // TO()/next-layer semantics: drop toggled layers ...
-  for (uint8_t l = 0; l < MAX_LAYERS; l++)
-    if (mo_count_[l]) mask_ |= 1u << l;  // ... but keep layers whose MO key is still held
+  mask_ = 0;  // TO()/next-layer drops toggles; held MO actions remain active.
 }
 
 Action Engine::resolve(uint8_t r, uint8_t c) const {
@@ -119,21 +117,28 @@ void Engine::resolve_pending_as_hold(uint32_t now) {
   press_action(TAP_HOLDS[pending_.index].hold, now);
 }
 
-void Engine::tick(uint32_t now) {
+void Engine::tick(uint32_t now, bool output_ready) {
   now_ = now;
   bool changed = false;
   if (pending_.active && uint32_t(now - pending_.t0) >= TAP_HOLDS[pending_.index].term_ms) {
     resolve_pending_as_hold(now);
     changed = true;
   }
+  if (!output_ready) {
+    // Start hold/gap timing after USB catches up, rather than expiring an unsent press.
+    tap_t_ = tap_t0_ = now;
+    if (macro_started_) macro_next_ = now + 8;
+  }
   // keep a tapped key down for at least 10 ms so the host sees it
-  if (tap_release_armed_ && uint32_t(now - tap_t_) >= 10) {
+  if (output_ready && tap_release_armed_ && uint32_t(now - tap_t_) >= 10) {
     release_action(tap_release_);
     tap_release_armed_ = false;
     changed = true;
   }
-  if (service_taps(now)) changed = true;
-  if (macro_ && int32_t(now - macro_next_) >= 0) {
+  if (output_ready && service_taps(now)) changed = true;
+  // Start the first character even while suspended: its queued press requests wake-up.
+  if (macro_ && (output_ready || !macro_started_) && int32_t(now - macro_next_) >= 0) {
+    macro_started_ = true;
     if (!macro_key_down_) {
       while (*macro_) {
         ascii_to_hid(*macro_, macro_mods_, macro_usage_);
@@ -167,7 +172,7 @@ void Engine::press_action(Action a, uint32_t now) {
       const uint32_t l = act_arg(a);
       if (l < MAX_LAYERS) {
         mo_count_[l]++;
-        mask_ |= 1u << l;
+        mo_mask_ |= 1u << l;
       }
       break;
     }
@@ -191,6 +196,7 @@ void Engine::press_action(Action a, uint32_t now) {
     case ActType::Macro:
       if (act_arg(a) < NUM_MACROS && !macro_) {
         macro_ = MACROS[act_arg(a)];
+        macro_started_ = false;
         macro_key_down_ = false;
         macro_next_ = now;
       }
@@ -224,7 +230,7 @@ void Engine::release_action(Action a) {
       break;
     case ActType::LayerMo: {
       const uint32_t l = act_arg(a);
-      if (l < MAX_LAYERS && mo_count_[l] && --mo_count_[l] == 0) mask_ &= ~(1u << l);
+      if (l < MAX_LAYERS && mo_count_[l] && --mo_count_[l] == 0) mo_mask_ &= ~(1u << l);
       break;
     }
     default:

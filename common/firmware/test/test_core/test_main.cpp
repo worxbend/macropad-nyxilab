@@ -28,7 +28,7 @@ const Layer LAYERS[] = {
         {{TH(0), "L"}, {K(hid::B), "b"}, {K(hid::C), "c"}},
     }},
     {"SECOND", 0, CENTRE_INHERIT, {
-        {{K(hid::X), "x"}, {___, ""}, {___, ""}},
+        {{K(hid::X), "x"}, {___, ""}, {MO(1), "hold1"}},
         {{___, ""}, {___, ""}, {___, ""}},
         {{___, ""}, {___, ""}, {___, ""}},
         {{TH(0), "L"}, {___, ""}, {___, ""}},
@@ -192,6 +192,65 @@ void test_toggle_layer() {
   TEST_ASSERT_EQUAL(1, e.top_layer());
   e.process(press(0, 0, 20));
   TEST_ASSERT_TRUE(e.hid().has_key(hid::X));
+}
+
+void test_momentary_layer_preserves_toggle() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 2, 0));  // TG(1)
+  e.process(release(1, 2, 10));
+  e.process(press(0, 2, 20));  // MO(1)
+  e.process(release(0, 2, 30));
+  TEST_ASSERT_EQUAL(1, e.top_layer());  // MO release must not clear TG.
+  e.process(press(0, 2, 40));
+  e.process(press(1, 2, 50));  // toggle off, while MO(1) is held
+  e.process(release(1, 2, 60));
+  TEST_ASSERT_EQUAL(1, e.top_layer());  // TG off must not clear MO.
+  e.process(release(0, 2, 70));
+  TEST_ASSERT_EQUAL(0, e.top_layer());
+}
+
+void test_to_clears_toggle_but_keeps_momentary_layer() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 2, 0));
+  e.process(release(1, 2, 10));
+  e.process(press(0, 2, 20));
+  e.set_base_layer(0);
+  TEST_ASSERT_EQUAL(1, e.top_layer());
+  e.process(release(0, 2, 30));
+  TEST_ASSERT_EQUAL(0, e.top_layer());
+}
+
+void test_generated_taps_wait_for_usb_delivery() {
+  Host h;
+  Engine e(h);
+  e.encoder_step(+1, 0);
+  e.encoder_step(+1, 0);
+  e.tick(100, false);
+  TEST_ASSERT_EQUAL_HEX16(cc::VOL_UP, e.hid().consumer);
+  e.tick(106, true);
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);
+  e.tick(200, false);
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);
+  e.tick(206, true);
+  TEST_ASSERT_EQUAL_HEX16(cc::VOL_UP, e.hid().consumer);
+}
+
+void test_macro_waits_for_usb_delivery() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 1, 0));
+  e.tick(0, false);  // first character must queue even if the host needs waking
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::H));
+  e.tick(100, false);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::H));
+  e.tick(108, true);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::H));
+  e.tick(200, false);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::I));
+  e.tick(208, true);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::I));
 }
 
 void test_key_release_uses_press_layer() {
@@ -430,6 +489,10 @@ int main() {
   RUN_TEST(test_transparent_falls_through);
   RUN_TEST(test_to_layer_from_fn);
   RUN_TEST(test_toggle_layer);
+  RUN_TEST(test_momentary_layer_preserves_toggle);
+  RUN_TEST(test_to_clears_toggle_but_keeps_momentary_layer);
+  RUN_TEST(test_generated_taps_wait_for_usb_delivery);
+  RUN_TEST(test_macro_waits_for_usb_delivery);
   RUN_TEST(test_key_release_uses_press_layer);
   RUN_TEST(test_sys_and_centre_callbacks);
   RUN_TEST(test_macro_types_text);

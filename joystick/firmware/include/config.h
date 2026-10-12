@@ -11,6 +11,8 @@
 
 namespace cfg {
 
+constexpr uint8_t SETTINGS_EDITION = 1;  // persistent centre data belongs to the joystick
+
 // ---- key matrix, COL2ROW: diode cathode (black band) towards the ROW wire --
 constexpr uint8_t ROW_PINS[mp::ROWS] = {2, 3, 4, 5};  // R0 = back row ... R3 = front row
 constexpr uint8_t COL_PINS[mp::COLS] = {6, 7, 8};     // C0 = left column, C1/C2 = right block

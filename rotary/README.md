@@ -35,8 +35,8 @@ make test-rotary                  # unit tests of the quadrature decoder on this
 - **Firmware**: `KNOB(cw, ccw, press, "LABEL")` per layer in `keymap.cpp`
   (volume / undo-redo / scroll / screen brightness by default). FN + KNOB cycles the
   current layer through the presets (volume, scroll, zoom, arrows), FN + REV flips
-  the direction. Detents are decoded by interrupts and queued, so fast turns lose
-  nothing.
+  the direction. Detents are decoded by interrupts; key taps wait for USB delivery
+  with a 16-detent backlog. Detents beyond that backlog are dropped.
 - **Wiring**: CLK → GP26, DT → GP27, SW → GP22, + → **3V3**, GND → GND.
 
 ## Files to print

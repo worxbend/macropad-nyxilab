@@ -33,6 +33,7 @@ void JoystickCentre::begin(mp::Engine& engine, uint8_t* saved) {
   joy_.set_cal(cal);
   // the stick is at rest while plugging in: take the centre from here
   joy_.calibrate_center(read_adc_avg(cfg::JOY_X_PIN), read_adc_avg(cfg::JOY_Y_PIN));
+  save_calibration(millis());
 }
 
 JoyMode JoystickCentre::mode() const {
@@ -61,7 +62,12 @@ void JoystickCentre::on_mode(uint8_t mode_arg, uint32_t now) {
 
 void JoystickCentre::calibrate(uint32_t now) {
   joy_.calibrate_center(read_adc_avg(cfg::JOY_X_PIN), read_adc_avg(cfg::JOY_Y_PIN));
+  save_calibration(now);
+}
+
+void JoystickCentre::save_calibration(uint32_t now) {
   const mp::JoyCal cal = joy_.cal();
+  if (memcmp(saved_, &cal, sizeof cal) == 0) return;
   memcpy(saved_, &cal, sizeof cal);
   app::settings_changed(now);
 }
@@ -79,7 +85,20 @@ void JoystickCentre::task(uint32_t now) {
 
   const JoyMode m = mode();
   mp::JoyOutput out;
-  joy_.update(read_adc_avg(cfg::JOY_X_PIN), read_adc_avg(cfg::JOY_Y_PIN), dt > 0.1f ? 0.1f : dt, m, out);
+  const uint16_t raw_x = read_adc_avg(cfg::JOY_X_PIN), raw_y = read_adc_avg(cfg::JOY_Y_PIN);
+  joy_.update(raw_x, raw_y, dt > 0.1f ? 0.1f : dt, m, out);
+  save_calibration(now);  // EEPROM writes remain deferred until changes settle.
+  if (diagnostics_) {
+    if (now - diagnostics_start_ >= 5000) {
+      diagnostics_ = false;
+    } else if (now - diagnostics_last_ >= 100) {
+      diagnostics_last_ = now;
+      char line[96];
+      const int len = snprintf(line, sizeof line, "raw x=%4u y=%4u  norm x=%+.2f y=%+.2f  sw=%d\n", raw_x,
+                               raw_y, joy_.raw_nx(), joy_.raw_ny(), digitalRead(cfg::JOY_SW_PIN) == LOW);
+      if (len > 0 && len < int(sizeof line) && Serial.availableForWrite() >= len) Serial.write(line, len);
+    }
+  }
   if (out.dx || out.dy || out.wheel || out.pan || out.n_keys) app::activity(now);
   hw::usb_add_mouse(out.dx, out.dy, out.wheel, out.pan);
 
@@ -124,11 +143,9 @@ void JoystickCentre::info() {
 
 bool JoystickCentre::console(const char* line) {
   if (!strcmp(line, "joy")) {
-    for (uint32_t t0 = millis(); millis() - t0 < 5000;) {
-      Serial.printf("raw x=%4u y=%4u  norm x=%+.2f y=%+.2f  sw=%d\n", read_adc_avg(cfg::JOY_X_PIN),
-                    read_adc_avg(cfg::JOY_Y_PIN), joy_.raw_nx(), joy_.raw_ny(), digitalRead(cfg::JOY_SW_PIN) == LOW);
-      delay(100);
-    }
+    diagnostics_ = true;
+    diagnostics_start_ = millis();
+    diagnostics_last_ = diagnostics_start_ - 100;
     return true;
   }
   if (!strcmp(line, "cal")) {
