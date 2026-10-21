@@ -96,6 +96,7 @@ void Engine::process(const KeyEvent& ev) {
     if (pending_.active && pending_.row == r && pending_.col == c) {
       pending_.active = false;  // released within the term: it was a tap
       const TapHoldDef& th = TAP_HOLDS[pending_.index];
+      if (tap_release_armed_) release_action(tap_release_);  // the previous tap has not been released yet
       press_action(th.tap, ev.time);
       tap_release_ = th.tap;
       tap_release_armed_ = true;

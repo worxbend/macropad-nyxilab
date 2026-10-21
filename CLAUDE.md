@@ -35,7 +35,7 @@ make cad-joystick CMD=check   # one edition, one step (check | export | render |
 make cad-check          # 169 (joystick) / 191 (rotary) interference pairs + clearances + printability; non-zero exit on failure
 make firmware           # both editions for the Pico 2 -> <ed>/firmware/dist/nyxilab-macropad-<ed>-pico2.uf2
 make firmware-all       # + the RP2040 builds; firmware-joystick, firmware-rotary(-pico), flash-joystick, flash-rotary
-make test               # native tests: common (27), joystick (6), rotary (4), plus mocked hardware/control regressions
+make test               # native tests: common (28), joystick (6), rotary (4), plus mocked hardware/control regressions
 make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figures) + viewer + site
 make site               # site/ for GitHub Pages; python3 -m http.server -d site to look at it
 ```

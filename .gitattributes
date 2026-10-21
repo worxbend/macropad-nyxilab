@@ -6,4 +6,4 @@
 *.FCStd  binary linguist-generated
 *.pdf    binary
 *.png    binary
-cad/exports/drawings/*.svg linguist-generated
+*/cad/exports/drawings/*.svg linguist-generated

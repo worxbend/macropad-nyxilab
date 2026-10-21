@@ -13,7 +13,7 @@ using namespace mp;
 
 // ------------------------------------------------------------ test keymap
 namespace mp {
-const TapHoldDef TAP_HOLDS[] = {{LNEXT, MO(2), 200}};
+const TapHoldDef TAP_HOLDS[] = {{LNEXT, MO(2), 200}, {K(hid::ESC), MO(2), 200}};
 const char* const MACROS[] = {"Hi!"};
 const EncoderDef PRESETS[] = {
     {CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"},  // same as BASE's own
@@ -29,7 +29,7 @@ const Layer LAYERS[] = {
     }},
     {"SECOND", 0, CENTRE_INHERIT, {
         {{K(hid::X), "x"}, {___, ""}, {MO(1), "hold1"}},
-        {{___, ""}, {___, ""}, {___, ""}},
+        {{TH(1), "esc"}, {___, ""}, {___, ""}},
         {{___, ""}, {___, ""}, {___, ""}},
         {{TH(0), "L"}, {___, ""}, {___, ""}},
     }},
@@ -42,7 +42,7 @@ const Layer LAYERS[] = {
 };
 const uint8_t NUM_LAYERS = 3;
 const uint8_t FN_LAYER = 2;
-const uint8_t NUM_TAP_HOLDS = 1;
+const uint8_t NUM_TAP_HOLDS = 2;
 const uint8_t NUM_MACROS = 1;
 }  // namespace mp
 
@@ -251,6 +251,22 @@ void test_macro_waits_for_usb_delivery() {
   TEST_ASSERT_FALSE(e.hid().has_key(hid::I));
   e.tick(208, true);
   TEST_ASSERT_TRUE(e.hid().has_key(hid::I));
+}
+
+void test_repeated_key_taps_while_host_asleep_are_released() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 2, 0));  // TG(1): tap = Esc, hold = FN
+  e.process(release(1, 2, 10));
+  for (uint32_t t = 100; t < 300; t += 100) {  // two taps before USB is ready to release the first
+    e.process(press(1, 0, t));
+    e.tick(t, false);
+    e.process(release(1, 0, t + 50));
+    e.tick(t + 50, false);
+  }
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::ESC));
+  e.tick(400, true);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::ESC));  // not stuck
 }
 
 void test_key_release_uses_press_layer() {
@@ -493,6 +509,7 @@ int main() {
   RUN_TEST(test_to_clears_toggle_but_keeps_momentary_layer);
   RUN_TEST(test_generated_taps_wait_for_usb_delivery);
   RUN_TEST(test_macro_waits_for_usb_delivery);
+  RUN_TEST(test_repeated_key_taps_while_host_asleep_are_released);
   RUN_TEST(test_key_release_uses_press_layer);
   RUN_TEST(test_sys_and_centre_callbacks);
   RUN_TEST(test_macro_types_text);
