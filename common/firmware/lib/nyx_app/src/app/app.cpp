@@ -4,8 +4,10 @@
 
 #include "config.h"
 #include "core/debounce.h"
+#include "core/host_proto.h"
 #include "core/keymap.h"
 #include "core/led_fx.h"
+#include "hw/host_hid.h"
 #include "hw/matrix.h"
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
@@ -18,6 +20,7 @@ class Host : public mp::EngineHost {
  public:
   void on_sys(mp::SysCmd cmd) override;
   void on_centre(uint8_t mode) override;
+  void on_host(uint8_t id, bool pressed) override;
 };
 
 Host g_host;
@@ -31,6 +34,13 @@ ui::UiState g_ui;
 uint8_t g_saved_base = 0xFF;
 uint32_t g_last_hit_ms = 0;
 bool g_hit_seen = false;
+
+// host bridge (see core/host_proto.h and docs/host-bridge.md)
+mp::HostProto g_link;
+uint32_t g_host_layers = 0;  // layers with View::Host: left out of LayerNext while no daemon is connected
+uint8_t g_tx[mp::HOST_PACKET];
+bool g_tx_pending = false;
+uint8_t g_reported[3] = {0xFF, 0xFF, 0xFF};  // last STATE sent: host view, base, top
 
 void Host::on_sys(mp::SysCmd cmd) {
   auto& st = hw::settings();
@@ -71,6 +81,33 @@ void Host::on_centre(uint8_t mode) {
   if (g_centre) g_centre->on_mode(mode, millis());
 }
 
+void Host::on_host(uint8_t id, bool pressed) { g_link.send_key(id, pressed); }
+
+// ------------------------------------------------------------- host bridge
+bool host_view() { return mp::LAYERS[g_engine.top_layer()].view == mp::View::Host; }
+
+void host_task(uint32_t now) {
+  if (!cfg::HOST_LINK) return;
+  uint8_t pkt[mp::HOST_PACKET];
+  uint16_t len;
+  while (hw::host_hid_read(pkt, len)) g_link.on_packet(pkt, len, now);
+  g_link.tick(now);
+  g_engine.set_skip_layers(g_link.linked() ? 0 : g_host_layers);
+  if (!g_link.linked()) {
+    g_tx_pending = false;
+    g_reported[0] = 0xFF;
+    return;
+  }
+  // tell the daemon what is on screen, so it knows when the dashboard is visible
+  const uint8_t state[3] = {uint8_t(host_view()), g_engine.base_layer(), g_engine.top_layer()};
+  if (g_link.take_state_request() || memcmp(state, g_reported, sizeof state) != 0) {
+    memcpy(g_reported, state, sizeof state);
+    g_link.send_state(state[0], state[1], state[2]);
+  }
+  if (!g_tx_pending) g_tx_pending = g_link.next_tx(g_tx);
+  if (g_tx_pending && hw::host_hid_write(g_tx)) g_tx_pending = false;
+}
+
 // ------------------------------------------------------------ serial console
 void print_help() {
   Serial.printf("commands: help | info | %s | layer <n> | boot\n", g_centre ? g_centre->help() : "");
@@ -94,6 +131,8 @@ void console() {
                     g_engine.top_layer(), (unsigned long)g_engine.layer_mask(), hw::usb_mounted(), hw::usb_leds(),
                     hw::settings().brightness, mp::led_mode_name(mp::LedMode(hw::settings().led_mode)));
       if (g_centre) g_centre->info();
+      if (cfg::HOST_LINK)
+        Serial.printf("host %s %s\n", g_link.linked() ? "linked" : "not linked", g_link.data().hostname);
     } else if (!strncmp(line, "layer ", 6)) {
       g_engine.set_base_layer(uint8_t(atoi(line + 6)));
     } else if (!strcmp(line, "boot")) {
@@ -125,6 +164,8 @@ void publish_ui(uint32_t now) {
   u.leds = hw::usb_leds();
   u.displays_on = st.displays_on;
   u.macro_running = g_engine.macro_running();
+  u.view = uint8_t(mp::LAYERS[u.top_layer].view);
+  u.host = g_link.data();
   const uint32_t idle = now - g_last_activity_ms;
   uint8_t b = st.brightness;
   if (idle > cfg::SLEEP_AFTER_MS || u.usb_suspended) b = 0;
@@ -169,6 +210,13 @@ void begin(Centre& centre) {
   centre.begin(g_engine, st.centre);
   g_engine.set_base_layer(st.base_layer < mp::NUM_LAYERS ? st.base_layer : 0);
   g_saved_base = g_engine.base_layer();
+  for (uint8_t l = 0; l < mp::NUM_LAYERS; l++)
+    if (mp::LAYERS[l].view == mp::View::Host) g_host_layers |= 1u << l;
+  g_engine.set_skip_layers(g_host_layers);  // until a daemon connects
+  if (cfg::HOST_LINK) {
+    g_link.set_identity(cfg::SETTINGS_EDITION, mp::NUM_LAYERS, cfg::USB_PRODUCT_NAME);
+    hw::host_hid_begin();  // before usb_begin(), which re-enumerates with every interface
+  }
   hw::usb_begin();
   g_last_activity_ms = millis();
 }
@@ -196,6 +244,7 @@ void loop() {
   if (wheel || pan) hw::usb_add_mouse(0, 0, wheel, pan);
   hw::usb_set_keyboard(g_engine.hid());
   hw::usb_task();
+  host_task(now);
 
   if (g_engine.base_layer() != g_saved_base) {  // remember the last base layer
     g_saved_base = g_engine.base_layer();

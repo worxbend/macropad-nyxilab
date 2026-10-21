@@ -3,8 +3,11 @@
 #include "render.h"
 
 #include <Fonts/FreeSansBold12pt7b.h>
+#include <Fonts/FreeSansBold18pt7b.h>
 #include <Fonts/FreeSansBold9pt7b.h>
 #include <math.h>
+#include <stdio.h>
+#include <string.h>
 
 #include "core/keymap.h"
 
@@ -123,8 +126,234 @@ void knob_widget(GFXcanvas16& c, const UiState& s, uint16_t accent, int cx, int 
   c.fillCircle(cx + int(sinf(a) * (R - 11)), cy - int(cosf(a) * (R - 11)), 5, accent);
 }
 
+
+// ------------------------------------------------------ host dashboard (View::Host)
+uint16_t level_colour(uint8_t pct) { return pct < 60 ? GOOD : (pct < 85 ? WARN : FN_RED); }
+
+void small(GFXcanvas16& c, const char* s, int x, int y, uint16_t col) {
+  c.setFont(nullptr);
+  c.setTextSize(1);
+  c.setTextColor(col);
+  c.setCursor(x, y);
+  c.print(s);
+}
+
+void small_right(GFXcanvas16& c, const char* s, int right, int y, uint16_t col) {
+  small(c, s, right - 6 * int(strlen(s)), y, col);
+}
+
+// "12.3" from tenths, without float printf
+void tenths(char* o, size_t n, uint32_t v10, const char* suffix) {
+  snprintf(o, n, "%lu.%lu%s", (unsigned long)(v10 / 10), (unsigned long)(v10 % 10), suffix);
+}
+
+void fmt_rate(char* o, size_t n, uint32_t bps) {
+  if (bps < 1000) snprintf(o, n, "%luB", (unsigned long)bps);
+  else if (bps < 1000000) tenths(o, n, bps / 100, "K");
+  else if (bps < 1000000000) tenths(o, n, bps / 100000, "M");
+  else tenths(o, n, bps / 100000000, "G");
+}
+
+void fmt_pct(char* o, size_t n, uint8_t pct) {
+  if (pct <= 100) snprintf(o, n, "%u%%", pct);
+  else snprintf(o, n, "--");
+}
+
+void fmt_temp(char* o, size_t n, int16_t c10) {
+  if (c10 == mp::HOST_NO_TEMP) snprintf(o, n, "--C");
+  else snprintf(o, n, "%dC", (c10 + (c10 >= 0 ? 5 : -5)) / 10);
+}
+
+void fmt_uptime(char* o, size_t n, uint32_t s) {
+  const unsigned long d = s / 86400, h = s / 3600 % 24, m = s / 60 % 60;
+  if (d) snprintf(o, n, "%lud %luh", d, h);
+  else if (h) snprintf(o, n, "%luh %lum", h, m);
+  else snprintf(o, n, "%lum", m);
+}
+
+void hbar(GFXcanvas16& c, int x, int y, int w, int h, uint8_t pct) {
+  c.fillRoundRect(x, y, w, h, h / 2, CELL);
+  if (pct > 100) return;
+  const int f = w * pct / 100;
+  if (f > 0) c.fillRoundRect(x, y, f < h ? h : f, h, h / 2, level_colour(pct));
+}
+
+void sparkline(GFXcanvas16& c, const uint8_t* v, int x, int bottom, int h, uint16_t col) {
+  c.drawFastHLine(x, bottom, 2 * mp::HOST_HISTORY, PANEL);
+  for (int i = 0; i < mp::HOST_HISTORY; i++) {
+    const int bh = (v[i] > 100 ? 100 : v[i]) * h / 100;
+    if (bh > 0) c.fillRect(x + i * 2, bottom - bh, 1, bh, scale(col, uint8_t(90 + i * 4)));
+  }
+}
+
+void render_host_main(GFXcanvas16& c, const UiState& s) {
+  const mp::Layer& top = mp::LAYERS[s.top_layer];
+  const uint16_t accent = top.color;
+  const mp::HostData& d = s.host;
+  const mp::HostMetrics& m = d.m;
+  char buf[32];
+  c.fillScreen(BG);
+
+  // header: layer name, host name, host clock, link dot
+  c.fillRect(0, 0, 320, 26, PANEL);
+  c.fillRect(0, 0, 5, 26, accent);
+  text_at(c, top.name, 12, 20, &FreeSansBold12pt7b, accent);
+  if (d.linked) small(c, d.hostname, 100, 10, SUBTLE);
+  if (d.has_metrics && m.clock_h != mp::HOST_UNKNOWN) {
+    snprintf(buf, sizeof buf, "%02u:%02u", m.clock_h, m.clock_m);
+    text_at(c, buf, 238, 19, &FreeSansBold9pt7b, TEXT);
+  }
+  c.fillCircle(304, 13, 5, d.linked ? GOOD : FN_RED);
+
+  if (!d.linked || !d.has_metrics) {
+    text_centered(c, d.linked ? "connected" : "waiting for host", 160, 66, &FreeSansBold12pt7b, TEXT);
+    if (d.linked) {
+      small(c, "waiting for the first metrics...", 64, 96, SUBTLE);
+    } else {
+      small(c, "start the bridge on your computer:", 58, 92, SUBTLE);
+      small(c, "systemctl --user start nyxd", 79, 108, WARN);
+      small(c, "keys and knob keep working; FN = settings", 37, 140, MUTED);
+    }
+    return;
+  }
+
+  // CPU: total, temperature, load
+  c.fillRoundRect(6, 31, 144, 72, 6, PANEL);
+  small(c, "CPU", 14, 37, SUBTLE);
+  fmt_temp(buf, sizeof buf, m.cpu_temp_c10);
+  small_right(c, buf, 142, 37, m.cpu_temp_c10 >= 850 ? FN_RED : SUBTLE);
+  fmt_pct(buf, sizeof buf, m.cpu_pct);
+  text_at(c, buf, 14, 80, &FreeSansBold18pt7b, m.cpu_pct <= 100 ? TEXT : MUTED);
+  tenths(buf, sizeof buf, (m.load1_x100 + 5) / 10, "");
+  small(c, "load", 104, 62, MUTED);
+  small(c, buf, 104, 72, SUBTLE);
+  hbar(c, 14, 90, 128, 6, m.cpu_pct);
+
+  // per-core bars
+  c.fillRoundRect(156, 31, 158, 72, 6, PANEL);
+  small(c, "CORES", 164, 37, SUBTLE);
+  if (m.n_cores) {
+    const int span = 142, gap = m.n_cores > 8 ? 2 : 4, bw = (span - gap * (m.n_cores - 1)) / m.n_cores;
+    for (uint8_t i = 0; i < m.n_cores; i++) {
+      const int x = 164 + i * (bw + gap), h = (m.core_pct[i] > 100 ? 0 : m.core_pct[i]) * 50 / 100;
+      c.fillRect(x, 47, bw, 50, CELL);
+      if (h) c.fillRect(x, 97 - h, bw, h, level_colour(m.core_pct[i]));
+    }
+  }
+
+  // memory, swap, disk
+  c.fillRoundRect(6, 108, 308, 20, 6, PANEL);
+  small(c, "MEM", 14, 114, SUBTLE);
+  hbar(c, 40, 114, 170, 8, m.mem_pct());
+  char used[12], total[12];
+  tenths(used, sizeof used, uint32_t(uint64_t(m.mem_used_mib) * 10 / 1024), "");
+  tenths(total, sizeof total, uint32_t(uint64_t(m.mem_total_mib) * 10 / 1024), "G");
+  snprintf(buf, sizeof buf, "%s/%s", used, total);
+  small_right(c, buf, 308, 114, TEXT);
+
+  c.fillRoundRect(6, 131, 152, 20, 6, PANEL);
+  small(c, "SWAP", 14, 137, SUBTLE);
+  hbar(c, 44, 137, 72, 8, m.swap_pct);
+  fmt_pct(buf, sizeof buf, m.swap_pct);
+  small_right(c, buf, 152, 137, TEXT);
+  c.fillRoundRect(162, 131, 152, 20, 6, PANEL);
+  small(c, "DISK", 170, 137, SUBTLE);
+  hbar(c, 200, 137, 72, 8, m.disk_pct);
+  fmt_pct(buf, sizeof buf, m.disk_pct);
+  small_right(c, buf, 308, 137, TEXT);
+
+  // network and uptime
+  c.setFont(nullptr);
+  c.setTextSize(1);
+  c.setCursor(14, 158);
+  c.setTextColor(GOOD);
+  c.write(0x19);  // down arrow in the built-in font
+  fmt_rate(buf, sizeof buf, m.net_rx_bps);
+  c.setTextColor(TEXT);
+  c.print(buf);
+  c.print("/s  ");
+  c.setTextColor(WARN);
+  c.write(0x18);
+  fmt_rate(buf, sizeof buf, m.net_tx_bps);
+  c.setTextColor(TEXT);
+  c.print(buf);
+  c.print("/s");
+  fmt_uptime(buf, sizeof buf, m.uptime_s);
+  char up[sizeof buf + 4];
+  snprintf(up, sizeof up, "up %s", buf);
+  small_right(c, up, 308, 158, SUBTLE);
+}
+
+void render_host_bar(GFXcanvas16& c, const UiState& s) {
+  const mp::Layer& top = mp::LAYERS[s.top_layer];
+  const mp::HostData& d = s.host;
+  const mp::HostMetrics& m = d.m;
+  char buf[24];
+  c.fillScreen(BG);
+  c.fillCircle(38, 21, 14, top.color);
+  c.fillCircle(45, 15, 12, BG);
+  small(c, "NYXILAB", 17, 42, SUBTLE);
+
+  if (!d.linked || !d.has_metrics) {
+    small(c, d.linked ? "connected" : "no host", 4, 64, d.linked ? GOOD : FN_RED);
+    small(c, "run nyxd on", 4, 84, MUTED);
+    small(c, "the computer", 4, 96, MUTED);
+    return;
+  }
+
+  // CPU and memory history, one sample a second
+  small(c, "CPU", 4, 56, SUBTLE);
+  fmt_pct(buf, sizeof buf, m.cpu_pct);
+  small_right(c, buf, 74, 56, TEXT);
+  sparkline(c, d.cpu_hist, 2, 98, 30, top.color);
+  small(c, "MEM", 4, 108, SUBTLE);
+  fmt_pct(buf, sizeof buf, m.mem_pct());
+  small_right(c, buf, 74, 108, TEXT);
+  sparkline(c, d.mem_hist, 2, 150, 30, top.color);
+
+  int y = 160;
+  if (m.gpu_pct <= 100 || m.gpu_temp_c10 != mp::HOST_NO_TEMP) {
+    small(c, "GPU", 4, y, SUBTLE);
+    char t[8];
+    fmt_pct(buf, sizeof buf, m.gpu_pct);
+    fmt_temp(t, sizeof t, m.gpu_temp_c10);
+    strncat(buf, " ", sizeof buf - strlen(buf) - 1);
+    strncat(buf, t, sizeof buf - strlen(buf) - 1);
+    small_right(c, buf, 74, y, TEXT);
+    y += 14;
+  }
+
+  // text slots pushed with `nyxctl text <slot> ...`: two lines of 12 characters each
+  c.drawFastHLine(8, y, 60, PANEL);
+  y += 6;
+  for (uint8_t i = 0; i < mp::HOST_TEXT_SLOTS && y < 270; i++) {
+    const char* t = d.text[i];
+    if (!*t) continue;
+    for (int line = 0; line < 2 && *t && y < 270; line++) {
+      int n = int(strlen(t));
+      if (n > 12) {  // break at the last space that fits, if there is one
+        n = 12;
+        for (int i = 12; i > 0; i--)
+          if (t[i] == ' ') {
+            n = i;
+            break;
+          }
+      }
+      char part[13];
+      memcpy(part, t, n);
+      part[n] = 0;
+      small(c, part, 2, y, line ? SUBTLE : TEXT);
+      t += n;
+      while (*t == ' ') t++;
+      y += 10;
+    }
+    y += 4;
+  }
+}
+
 // ------------------------------------------------ main display 320 x 170
 void render_main(GFXcanvas16& c, const UiState& s) {
+  if (s.view == uint8_t(mp::View::Host)) return render_host_main(c, s);
   const mp::Layer& top = mp::LAYERS[s.top_layer];
   const uint16_t accent = top.color;
   c.fillScreen(BG);
@@ -199,6 +428,7 @@ void render_main(GFXcanvas16& c, const UiState& s) {
 
 // --------------------------------------------------- bar display 76 x 284
 void render_bar(GFXcanvas16& c, const UiState& s) {
+  if (s.view == uint8_t(mp::View::Host)) return render_host_bar(c, s);
   const mp::Layer& top = mp::LAYERS[s.top_layer];
   c.fillScreen(BG);
 
@@ -211,19 +441,21 @@ void render_bar(GFXcanvas16& c, const UiState& s) {
   c.setCursor(17, 42);
   c.print("NYXILAB");
 
-  // base layers as pills, FN as a banner
+  // base layers as pills, FN as a banner; pills shrink so that both fit above y = 180
+  const int n_base = mp::NUM_LAYERS - (mp::FN_LAYER < mp::NUM_LAYERS ? 1 : 0);
+  const int pitch = n_base > 3 ? (180 - 56 - 26) / n_base : 32, ph = pitch - 6 < 26 ? pitch - 4 : 26;
   int y = 56;
   for (uint8_t l = 0; l < mp::NUM_LAYERS; l++) {
     if (l == mp::FN_LAYER) continue;
     const mp::Layer& L = mp::LAYERS[l];
     if (l == s.base_layer) {
-      c.fillRoundRect(4, y, 68, 26, 13, L.color);
-      text_centered(c, L.name, 38, y + 13, &FreeSansBold9pt7b, BG);
+      c.fillRoundRect(4, y, 68, ph, ph / 2, L.color);
+      text_centered(c, L.name, 38, y + ph / 2, &FreeSansBold9pt7b, BG);
     } else {
-      c.drawRoundRect(4, y, 68, 26, 13, MUTED);
-      text_centered(c, L.name, 38, y + 13, &FreeSansBold9pt7b, SUBTLE);
+      c.drawRoundRect(4, y, 68, ph, ph / 2, MUTED);
+      text_centered(c, L.name, 38, y + ph / 2, &FreeSansBold9pt7b, SUBTLE);
     }
-    y += 32;
+    y += pitch;
   }
   if (s.top_layer == mp::FN_LAYER) {
     c.fillRoundRect(4, y + 2, 68, 22, 6, FN_RED);

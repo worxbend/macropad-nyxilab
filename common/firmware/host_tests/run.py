@@ -13,6 +13,7 @@ with tempfile.TemporaryDirectory(prefix="nyx-hardware-tests-") as tmp:
         fw = REPO / edition / "firmware"
         sources = [HERE / "test_hardware.cpp", LIB / "nyx_core/src/core/engine.cpp",
                    LIB / "nyx_hw/src/hw/settings.cpp", LIB / "nyx_hw/src/hw/usb_hid.cpp",
+                   LIB / "nyx_hw/src/hw/host_hid.cpp", LIB / "nyx_core/src/core/host_proto.cpp",
                    fw / "src" / ("stick.cpp" if edition == "joystick" else "knob.cpp"), fw / "src/keymap.cpp"]
         if edition == "joystick":
             sources.append(fw / "src/joystick.cpp")

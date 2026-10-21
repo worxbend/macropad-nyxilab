@@ -3,6 +3,7 @@
 #pragma once
 #include <stdint.h>
 
+#include "core/host_proto.h"
 #include "core/keymap.h"
 
 namespace ui {
@@ -37,6 +38,10 @@ struct UiState {
   uint8_t led_mode = 0;         // mp::LedMode
   uint32_t last_hit_ms = 0;     // last key press or knob detent (Layer mode flash)
   bool hit_seen = false;        // false until the first press, so boot does not flash
+
+  // host bridge: what the daemon on the computer sent (see core/host_proto.h)
+  uint8_t view = 0;  // mp::View of the top layer: the key labels or the host dashboard
+  mp::HostData host;
 };
 
 void publish(const UiState& s);  // core 0

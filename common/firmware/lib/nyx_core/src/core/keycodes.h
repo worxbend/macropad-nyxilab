@@ -22,6 +22,7 @@ enum class ActType : uint8_t {
   Sys,          // arg = SysCmd
   Wheel,        // arg = (pan << 8) | wheel, both signed 8-bit mouse wheel steps
   Centre,       // arg = a mode of the centre control: a JoyMode (stick) or a knob preset; 0xFF = cycle
+  Host,         // arg = event id sent to the host daemon (nyxd) on press and release
 };
 
 enum SysCmd : uint8_t {
@@ -118,5 +119,7 @@ constexpr Action JOY(JoyMode m) { return act(ActType::Centre, uint8_t(m)); }
 // Rotary edition: pick a knob preset for the current base layer, or cycle through them.
 constexpr Action KNOB_PRESET(uint8_t index) { return act(ActType::Centre, index); }
 constexpr Action KNOB_CYCLE = act(ActType::Centre, ENC_CYCLE);
+// Host bridge: an event for the daemon on the computer (it maps ids to commands); nothing without it.
+constexpr Action HOST(uint8_t id) { return act(ActType::Host, id); }
 
 }  // namespace mp

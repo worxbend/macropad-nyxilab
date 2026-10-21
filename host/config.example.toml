@@ -1,0 +1,21 @@
+# nyxd configuration: copy to ~/.config/nyxd/config.toml.  Every setting is optional.
+
+[general]
+interval = 1.0          # seconds between updates (0.2 .. 4; the macropad drops the link after 5 s)
+# device = "/dev/hidraw5"  # skip auto-discovery
+disk_path = "/"         # the file system the DISK bar shows
+gpu = "auto"            # auto (AMD via sysfs, else nvidia-smi if installed) | amd | nvidia | off
+# net_exclude = ["lo", "veth", "docker", "br-", "virbr"]  # interface name prefixes left out of NET
+
+# HOST(n) keys on the macropad's HOST layer (H1 .. H11 by default) run these on press.
+# Commands run through /bin/sh as you, detached from nyxd.
+[keys]
+# 1 = "playerctl play-pause"
+# 2 = "playerctl next"
+# 3 = "loginctl lock-session"
+# 4 = "xdg-open https://github.com"
+# 5 = "nyxctl text 0 \"$(date +%H:%M) checkpoint\""
+
+# Text shown on the bar display at start-up (slots 0..3); change it with `nyxctl text`.
+[text]
+# 0 = "hello from nyxd"

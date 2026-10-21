@@ -53,6 +53,7 @@ teams later means reprinting the top plate and the base. that's it.
 | 📐 **case** | 3-layer wedge: top plate, contrasting centre frame, base · 10° tilt · 159 × 98 mm · 18 → 35 mm tall |
 | 🔩 **held together by** | 8 × M3×8 countersunk screws into heat-set inserts. zero glue, fully serviceable |
 | ⚡ **firmware** | USB keyboard + media + mouse, layers, tap-hold, macros, joystick modes or per-layer knob bindings, LED effects |
+| 🖥️ **host bridge** | optional: a tiny Linux daemon puts your PC's CPU, RAM, temps, network + your own text on a HOST layer, and its keys run commands |
 
 ## the lore 📜
 
@@ -113,6 +114,16 @@ the 1.9" screen mirrors the physical key layout and lights up what you press. th
 shows the stick, or a dial with 20 ticks that follows the knob and says what it does right
 now. the bar shows your layers, the stick mode or knob function, NUM/CAPS/SCROLL straight
 from your computer, and a keys-per-second graph so you can watch yourself go feral.
+
+### the HOST layer: your PC, on your desk 🖥️
+
+run `nyxd` on linux (python, zero dependencies) and the HOST layer becomes a live dashboard:
+CPU per core, temps, RAM, swap, disk, network, GPU, the clock, plus up to four lines of
+whatever you pipe in with `nyxctl text 0 "build passed"`. its keys fire shell commands
+on your PC. no daemon? the layer just hides itself. setup + protocol:
+[docs/host-bridge.md](docs/host-bridge.md).
+
+<img src="docs/images/rotary/ui/ui_06_host_dashboard.png" alt="HOST layer dashboard" width="70%">
 
 ## soldering, but make it not scary 🔥
 

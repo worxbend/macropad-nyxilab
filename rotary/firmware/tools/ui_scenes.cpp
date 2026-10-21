@@ -24,7 +24,7 @@ void edition_scenes(const char* out) {
   scene("03_edit_history", s, out);
 
   s = knob_state();
-  set_layer(s, 0, 3);
+  set_layer(s, 0, mp::FN_LAYER);
   s.keys_down[3][0] = true;
   s.enc_pos = 7;
   scene("04_fn_bright", s, out);
@@ -35,4 +35,13 @@ void edition_scenes(const char* out) {
   s.led_mode = uint8_t(mp::LedMode::Rainbow);
   s.enc_pos = 12;
   scene("05_media_zoom_rainbow", s, out);
+
+  s = knob_state();
+  set_layer(s, host_layer(), host_layer());
+  host_demo(s);
+  scene("06_host_dashboard", s, out);
+
+  s = knob_state();
+  set_layer(s, host_layer(), host_layer());
+  scene("07_host_waiting", s, out);
 }

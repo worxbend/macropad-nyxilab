@@ -189,7 +189,7 @@ void Engine::press_action(Action a, uint32_t now) {
       uint8_t n = base_;
       for (uint8_t i = 0; i < NUM_LAYERS; i++) {
         n = uint8_t((n + 1) % NUM_LAYERS);
-        if (n != FN_LAYER) break;
+        if (n != FN_LAYER && !(skip_ & (1u << n))) break;
       }
       set_base_layer(n);
       break;
@@ -207,6 +207,9 @@ void Engine::press_action(Action a, uint32_t now) {
       break;
     case ActType::Centre:
       host_.on_centre(uint8_t(act_arg(a)));
+      break;
+    case ActType::Host:
+      host_.on_host(uint8_t(act_arg(a)), true);
       break;
     case ActType::Wheel:
       wheel_ = int16_t(wheel_ + int8_t(act_arg(a) & 0xFF));
@@ -234,6 +237,9 @@ void Engine::release_action(Action a) {
       if (l < MAX_LAYERS && mo_count_[l] && --mo_count_[l] == 0) mo_mask_ &= ~(1u << l);
       break;
     }
+    case ActType::Host:
+      host_.on_host(uint8_t(act_arg(a)), false);
+      break;
     default:
       break;
   }

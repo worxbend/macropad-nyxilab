@@ -1,0 +1,12 @@
+# User service: systemctl --user enable --now nyxd   (see host/README.md)
+[Unit]
+Description=Nyxilab macropad host bridge
+Documentation=https://github.com/worxbend/macropad-nyxilab/blob/main/docs/host-bridge.md
+
+[Service]
+ExecStart=%h/.local/bin/nyxd
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

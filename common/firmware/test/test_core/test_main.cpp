@@ -7,6 +7,7 @@
 
 #include "core/debounce.h"
 #include "core/engine.h"
+#include "core/host_proto.h"
 #include "core/led_fx.h"
 
 using namespace mp;
@@ -30,7 +31,7 @@ const Layer LAYERS[] = {
     {"SECOND", 0, CENTRE_INHERIT, {
         {{K(hid::X), "x"}, {___, ""}, {MO(1), "hold1"}},
         {{TH(1), "esc"}, {___, ""}, {___, ""}},
-        {{___, ""}, {___, ""}, {___, ""}},
+        {{HOST(7), "h7"}, {___, ""}, {___, ""}},
         {{TH(0), "L"}, {___, ""}, {___, ""}},
     }},
     {"FN", 0, KNOB(K(hid::RIGHT), K(hid::LEFT), K(hid::ENTER), "ARROWS"), {
@@ -50,12 +51,14 @@ const uint8_t NUM_MACROS = 1;
 struct Host : EngineHost {
   std::vector<int> sys;
   std::vector<int> centre;
+  std::vector<int> host;  // id * 2 + pressed
   Engine* eng = nullptr;
   void on_sys(SysCmd c) override { sys.push_back(c); }
   void on_centre(uint8_t m) override {
     centre.push_back(m);
     if (m == ENC_CYCLE && eng) eng->cycle_enc_preset(eng->base_layer());
   }
+  void on_host(uint8_t id, bool pressed) override { host.push_back(id * 2 + (pressed ? 1 : 0)); }
 };
 
 
@@ -494,6 +497,159 @@ void test_led_rainbow_and_breathe() {
   TEST_ASSERT_EQUAL_STRING("RAINBOW", led_mode_name(LedMode::Rainbow));
 }
 
+// ------------------------------------------------------------- host bridge
+void test_host_action_reports_press_and_release() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 2, 0));  // TG(1)
+  e.process(release(1, 2, 5));
+  e.process(press(2, 0, 10));
+  e.process(release(2, 0, 20));
+  TEST_ASSERT_EQUAL(2, int(h.host.size()));
+  TEST_ASSERT_EQUAL(7 * 2 + 1, h.host[0]);
+  TEST_ASSERT_EQUAL(7 * 2, h.host[1]);
+  TEST_ASSERT_EQUAL(0, e.hid().keys[0]);  // nothing for the USB keyboard
+}
+
+void test_layer_next_skips_masked_layers() {
+  Host h;
+  Engine e(h);
+  e.set_skip_layers(1u << 1);  // e.g. a host layer while no daemon is connected
+  e.process(press(3, 0, 0));
+  e.process(release(3, 0, 50));
+  TEST_ASSERT_EQUAL(0, e.base_layer());  // 1 skipped, 2 is FN: stays
+  e.set_skip_layers(0);
+  e.tick(100);
+  e.process(press(3, 0, 200));
+  e.process(release(3, 0, 250));
+  TEST_ASSERT_EQUAL(1, e.base_layer());
+}
+
+static std::vector<uint8_t> pkt(std::initializer_list<uint8_t> head) {
+  std::vector<uint8_t> p(HOST_PACKET, 0);
+  size_t i = 0;
+  for (uint8_t b : head) p[i++] = b;
+  return p;
+}
+static void put32(std::vector<uint8_t>& p, int at, uint32_t v) {
+  for (int i = 0; i < 4; i++) p[at + i] = uint8_t(v >> (8 * i));
+}
+
+void test_host_hello_links_and_acks() {
+  HostProto hp;
+  hp.set_identity(2, 5, "Nyxilab rotary");
+  uint8_t out[HOST_PACKET];
+  TEST_ASSERT_FALSE(hp.linked());
+  hp.send_key(1, true);  // not linked: dropped
+  TEST_ASSERT_FALSE(hp.next_tx(out));
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'd', 'e', 's', 'k', 0xC3, 0xA9});  // UTF-8 is not printable here
+  TEST_ASSERT_TRUE(hp.on_packet(hello.data(), uint16_t(hello.size()), 1000));
+  TEST_ASSERT_TRUE(hp.linked());
+  TEST_ASSERT_EQUAL_STRING("desk??", hp.data().hostname);
+  TEST_ASSERT_TRUE(hp.take_state_request());
+  TEST_ASSERT_FALSE(hp.take_state_request());
+  TEST_ASSERT_TRUE(hp.next_tx(out));
+  TEST_ASSERT_EQUAL_HEX8(PKT_HELLO_ACK, out[0]);
+  TEST_ASSERT_EQUAL(PROTO_VERSION, out[1]);
+  TEST_ASSERT_EQUAL(2, out[2]);
+  TEST_ASSERT_EQUAL(5, out[3]);
+  TEST_ASSERT_EQUAL_STRING("Nyxilab rotary", reinterpret_cast<const char*>(out + 5));
+  TEST_ASSERT_FALSE(hp.next_tx(out));
+}
+
+void test_host_metrics_text_and_timeout() {
+  HostProto hp;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'h'});
+  hp.on_packet(hello.data(), HOST_PACKET, 0);
+  // byte layout of host/nyxd/protocol.py metrics(); host/tests/test_interop.py runs both together
+  auto m = pkt({PKT_METRICS, PROTO_VERSION, 37, 4, 10, 20, 30, 250});
+  put32(m, 20, 6144);
+  put32(m, 24, 16384);
+  m[28] = 5;
+  m[29] = 61;
+  m[30] = 0xC5; m[31] = 0x01;  // 45.3 degC
+  m[32] = 0x7B; m[33] = 0x00;  // load 1.23
+  put32(m, 34, 1500000);
+  put32(m, 38, 2048);
+  put32(m, 42, 93784);
+  m[46] = 0xFF;
+  m[47] = 0x00; m[48] = 0x80;  // no GPU temperature
+  m[49] = 14; m[50] = 7;
+  TEST_ASSERT_TRUE(hp.on_packet(m.data(), HOST_PACKET, 1000));
+  const HostData& d = hp.data();
+  TEST_ASSERT_TRUE(d.has_metrics);
+  TEST_ASSERT_EQUAL(37, d.m.cpu_pct);
+  TEST_ASSERT_EQUAL(4, d.m.n_cores);
+  TEST_ASSERT_EQUAL(30, d.m.core_pct[2]);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, d.m.core_pct[3]);  // > 100 is not a percentage
+  TEST_ASSERT_EQUAL(37, d.m.mem_pct());
+  TEST_ASSERT_EQUAL(453, d.m.cpu_temp_c10);
+  TEST_ASSERT_EQUAL(123, d.m.load1_x100);
+  TEST_ASSERT_EQUAL_UINT32(1500000, d.m.net_rx_bps);
+  TEST_ASSERT_EQUAL_UINT32(93784, d.m.uptime_s);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, d.m.gpu_pct);
+  TEST_ASSERT_EQUAL(HOST_NO_TEMP, d.m.gpu_temp_c10);
+  TEST_ASSERT_EQUAL(14, d.m.clock_h);
+  TEST_ASSERT_EQUAL(37, d.cpu_hist[HOST_HISTORY - 1]);
+  TEST_ASSERT_EQUAL(37, d.mem_hist[HOST_HISTORY - 1]);
+
+  auto t = pkt({PKT_TEXT, PROTO_VERSION, 2, 'b', 'u', 'i', 'l', 'd', ' ', 'o', 'k'});
+  TEST_ASSERT_TRUE(hp.on_packet(t.data(), HOST_PACKET, 1500));
+  TEST_ASSERT_EQUAL_STRING("build ok", d.text[2]);
+  auto bad_slot = pkt({PKT_TEXT, PROTO_VERSION, 9, 'x'});
+  TEST_ASSERT_FALSE(hp.on_packet(bad_slot.data(), HOST_PACKET, 1500));
+  auto other_version = pkt({PKT_TEXT, 2, 1, 'x'});
+  TEST_ASSERT_FALSE(hp.on_packet(other_version.data(), HOST_PACKET, 1500));
+  TEST_ASSERT_EQUAL_STRING("", d.text[1]);
+
+  hp.tick(1500 + HOST_TIMEOUT_MS - 1);
+  TEST_ASSERT_TRUE(hp.linked());
+  hp.tick(1500 + HOST_TIMEOUT_MS);
+  TEST_ASSERT_FALSE(hp.linked());  // silence: back to "waiting for host"
+  TEST_ASSERT_FALSE(d.has_metrics);
+  TEST_ASSERT_EQUAL_STRING("", d.text[2]);
+}
+
+void test_host_relink_without_hello_asks_for_it() {
+  HostProto hp;
+  auto m = pkt({PKT_METRICS, PROTO_VERSION, 10});
+  TEST_ASSERT_TRUE(hp.on_packet(m.data(), HOST_PACKET, 0));  // e.g. after a timeout while the host slept
+  TEST_ASSERT_TRUE(hp.linked());
+  uint8_t out[HOST_PACKET];
+  TEST_ASSERT_TRUE(hp.next_tx(out));
+  TEST_ASSERT_EQUAL_HEX8(PKT_HELLO_ACK, out[0]);  // the daemon replays HELLO + text on this
+  TEST_ASSERT_TRUE(hp.take_state_request());
+  TEST_ASSERT_TRUE(hp.on_packet(m.data(), HOST_PACKET, 1000));
+  TEST_ASSERT_FALSE(hp.next_tx(out));  // only once
+}
+
+void test_host_key_state_queue_and_bye() {
+  HostProto hp;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION});
+  hp.on_packet(hello.data(), HOST_PACKET, 0);
+  uint8_t out[HOST_PACKET];
+  TEST_ASSERT_TRUE(hp.next_tx(out));  // HELLO_ACK
+  hp.send_state(true, 3, 3);
+  hp.send_key(9, true);
+  TEST_ASSERT_TRUE(hp.next_tx(out));
+  TEST_ASSERT_EQUAL_HEX8(PKT_STATE, out[0]);
+  TEST_ASSERT_EQUAL(1, out[2]);
+  TEST_ASSERT_EQUAL(3, out[3]);
+  TEST_ASSERT_TRUE(hp.next_tx(out));
+  TEST_ASSERT_EQUAL_HEX8(PKT_KEY, out[0]);
+  TEST_ASSERT_EQUAL(9, out[2]);
+  TEST_ASSERT_EQUAL(1, out[3]);
+  for (int i = 0; i < 20; i++) hp.send_key(1, i & 1);  // more than the queue holds
+  int n = 0;
+  while (hp.next_tx(out)) n++;
+  TEST_ASSERT_EQUAL(HostProto::TX_QUEUE, n);
+  hp.send_key(2, true);
+  auto bye = pkt({PKT_BYE, PROTO_VERSION});
+  TEST_ASSERT_TRUE(hp.on_packet(bye.data(), HOST_PACKET, 10));
+  TEST_ASSERT_FALSE(hp.linked());
+  TEST_ASSERT_FALSE(hp.next_tx(out));  // pending events dropped with the link
+}
+
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_debounce_filters_bounce);
@@ -524,5 +680,11 @@ int main() {
   RUN_TEST(test_led_layer_colour_and_flash);
   RUN_TEST(test_led_levels_budget_and_off);
   RUN_TEST(test_led_rainbow_and_breathe);
+  RUN_TEST(test_host_action_reports_press_and_release);
+  RUN_TEST(test_layer_next_skips_masked_layers);
+  RUN_TEST(test_host_hello_links_and_acks);
+  RUN_TEST(test_host_metrics_text_and_timeout);
+  RUN_TEST(test_host_relink_without_hello_asks_for_it);
+  RUN_TEST(test_host_key_state_queue_and_bye);
   return UNITY_END();
 }
