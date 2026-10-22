@@ -67,6 +67,10 @@ Once the case is closed you do not need BOOTSEL any more:
   function, CAPS and USB state
 - Bar display (2.25"): layer list, joystick mode or knob function, NUM/CAPS/SCROLL LEDs
   from the host, key-press activity graph
+- **Host bridge** (optional): with the `nyxd` daemon on a Linux computer, the HOST layer
+  shows its CPU (total, per core, temperature), memory, swap, disk, network, GPU, clock
+  and your own text, and `HOST(n)` keys run commands there. Without the daemon the HOST
+  layer stays out of the LAYER cycle. See [the host bridge](../../docs/host-bridge.md).
 - Backlight PWM with FN + DIM±, dims after 1 min idle, off after 10 min or when the host sleeps
 - Settings (brightness, per-layer stick mode or knob preset, knob direction, LED mode,
   last layer, joystick calibration) stored in flash
@@ -85,6 +89,7 @@ Rows are listed back (row 0) to front (row 3); column 0 is the single column nex
 | **MEDIA** | MUTE / PREV / STOP / LAYER | VOL− / PLAY / BRI− / BACK | VOL+ / NEXT / BRI+ / FWD | mouse | volume up / down / mute |
 | **EDIT** | UNDO / CUT / FIND / LAYER | REDO / COPY / HOME / ENTER | SAVE / PASTE / END / BKSP | arrows | redo / undo / save |
 | **F13-24** | F13 / F16 / F19 / LAYER | F14 / F17 / F20 / F22 | F15 / F18 / F21 / F23 | scroll | scroll down / up / middle click |
+| **HOST** (with `nyxd`) | H1 / H4 / H7 / LAYER | H2 / H5 / H8 / H10 | H3 / H6 / H9 / H11 | mouse | volume up / down / mute |
 | **FN** (hold LAYER) | BOOT / JOY or KNOB / MEDIA / (held) | DIM− / CAL or REV / EDIT / HELLO | DIM+ / SCRN / FKEYS / LED | – | screen brightness + / − / screens on-off |
 
 LAYER (front-left key): **tap** = next layer, **hold** = FN. Holding LAYER and turning the
@@ -108,14 +113,16 @@ preset for this layer) and **REV** (flip the turning direction) in the rotary ke
 Action helpers for the keymap (`lib/nyx_core/src/core/keycodes.h`):
 `K(hid::A)`, `KC(MOD_LCTRL, hid::C)`, `CC(cc::VOL_UP)`, `MB(MB_LEFT)`, `WHEEL(-1)`,
 `MO(n)`, `TG(n)`, `TO(n)`, `LNEXT`, `TH(i)`, `MACRO(i)`, `SYS(SYS_BOOTLOADER)`,
-`JOY(JoyMode::Scroll)`, `KNOB_PRESET(i)`, `KNOB_CYCLE`, `___` (transparent), `XX`
+`JOY(JoyMode::Scroll)`, `KNOB_PRESET(i)`, `KNOB_CYCLE`, `HOST(n)` (an event for the
+host daemon), `___` (transparent), `XX`
 (nothing). Shortcuts use Ctrl – on macOS use `MOD_LGUI`.
 
 A layer is `{"NAME", colour, centre, {keys}}`. `centre` is `STICK(JoyMode::Mouse)` in
 the joystick keymap, `KNOB(clockwise, counter-clockwise, press, "LABEL")` in the rotary
 keymap, or `CENTRE_INHERIT` to fall through to the layer below. Each knob detent taps a
 key, consumer or mouse-button action once, and runs a wheel step or system command
-immediately.
+immediately. A fifth field, `View::Host`, makes a layer show the host dashboard instead
+of its key labels (the HOST layer does this).
 
 **Display orientation**: if an image is upside down, change `MAIN_ROTATION` (1 ↔ 3) or
 `BAR_ROTATION` (2 ↔ 0). Wrong colours: toggle `*_INVERT`; red/blue swapped: set `*_BGR`.
@@ -123,7 +130,7 @@ immediately.
 ## Serial console
 
 `pio device monitor` (115200): `help`, `info` (layers, USB, lock LEDs, brightness, LED
-mode, plus the stick calibration or the knob binding), `layer <n>`, `boot`, and the
+mode, plus the stick calibration or the knob binding, and the host link), `layer <n>`, `boot`, and the
 edition's own commands: `joy` (raw stick values for 5 s) and `cal` (re-centre), or
 `enc` (knob pins and position for 5 s). Diagnostics run alongside input processing;
 samples are skipped when the serial transmit buffer is full.
@@ -132,13 +139,14 @@ samples are skipped when the serial transmit buffer is full.
 
 ```
 common/firmware/lib/
-  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 27 tests)
+  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 34 tests)
     keycodes.h          action encoding (32-bit: type | argument) + HID usages
     keymap.h            layer / key / centre-control types; the layers live in the editions
     debounce.h          per-key deferred debounce
     engine.h/.cpp       layers, tap-hold, macros, knob bindings and queued taps -> HID report state
     led_fx.h/.cpp       LED effects and the current budget
-  nyx_hw/src/hw/        matrix scan, USB HID report scheduler, settings in flash
+    host_proto.h/.cpp   host bridge protocol: packets, link timeout, the data the dashboard shows
+  nyx_hw/src/hw/        matrix scan, USB HID report scheduler, host-link HID interface, settings in flash
   nyx_ui/src/ui/        UI state hand-over between the cores, rendering, ST7789 panels, WS2812 sticks
   nyx_app/src/app/      the application: core 0 loop, console, UI feed; core 1 displays + LEDs
                         app::Centre is the interface an edition's centre control implements

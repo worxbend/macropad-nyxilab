@@ -15,6 +15,11 @@
 //  falls through to the layer below.  FN + KNOB swaps the current layer's
 //  binding for one of the presets below (saved in flash), FN + REV flips
 //  the turning direction.
+//
+//  The HOST layer shows the computer's CPU, memory, ... instead of key labels
+//  (View::Host).  It needs the daemon in host/ (nyxd) and is left out of the
+//  LAYER cycle until it connects.  HOST(n) keys send event n to the daemon,
+//  which runs the command its config maps to n.
 // ============================================================================
 #include "presets.h"
 
@@ -24,7 +29,7 @@ constexpr uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
   return uint16_t(((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));
 }
 
-enum LayerId : uint8_t { L_MEDIA, L_EDIT, L_FKEYS, L_FN };
+enum LayerId : uint8_t { L_MEDIA, L_EDIT, L_FKEYS, L_HOST, L_FN };
 enum TapHoldId : uint8_t { TH_LAYER };
 enum MacroId : uint8_t { M_HELLO };
 
@@ -66,6 +71,12 @@ const Layer LAYERS[] = {
         {{K(hid::F19), "F19"},    {K(hid::F20), "F20"}, {K(hid::F21), "F21"}},
         {{TH(TH_LAYER), "LAYER"}, {K(hid::F22), "F22"}, {K(hid::F23), "F23"}},
     }},
+    /* L_HOST */ {"HOST", rgb565(56, 189, 248), KNOB(CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"), {
+        {{HOST(1), "H1"},         {HOST(2), "H2"},   {HOST(3), "H3"}},
+        {{HOST(4), "H4"},         {HOST(5), "H5"},   {HOST(6), "H6"}},
+        {{HOST(7), "H7"},         {HOST(8), "H8"},   {HOST(9), "H9"}},
+        {{TH(TH_LAYER), "LAYER"}, {HOST(10), "H10"}, {HOST(11), "H11"}},
+    }, View::Host},
     /* L_FN */ {"FN", rgb565(239, 68, 68),
                 KNOB(SYS(SYS_BRIGHT_UP), SYS(SYS_BRIGHT_DOWN), SYS(SYS_DISPLAYS_TOGGLE), "BRIGHT"), {
         {{SYS(SYS_BOOTLOADER), "BOOT"},   {SYS(SYS_BRIGHT_DOWN), "DIM-"},   {SYS(SYS_BRIGHT_UP), "DIM+"}},

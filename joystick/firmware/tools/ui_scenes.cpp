@@ -20,7 +20,7 @@ void edition_scenes(const char* out) {
   scene("03_edit_caps", s, out, 150);
 
   s = base_state();
-  set_layer(s, 0, 3);
+  set_layer(s, 0, mp::FN_LAYER);
   s.keys_down[3][0] = true;
   scene("04_fn_held", s, out);
 
@@ -31,4 +31,13 @@ void edition_scenes(const char* out) {
   s.usb_suspended = true;
   s.led_mode = uint8_t(mp::LedMode::Rainbow);
   scene("05_fkeys_scroll", s, out);
+
+  s = base_state();
+  set_layer(s, host_layer(), host_layer());
+  host_demo(s);
+  scene("06_host_dashboard", s, out);
+
+  s = base_state();
+  set_layer(s, host_layer(), host_layer());
+  scene("07_host_waiting", s, out);
 }

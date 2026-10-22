@@ -12,6 +12,11 @@
 //  Each layer also says what the stick does while it is on top: STICK(mode)
 //  with Mouse / Scroll / Arrows / Off, or CENTRE_INHERIT to keep the current
 //  choice.  FN + JOY cycles the mode of the current layer (saved in flash).
+//
+//  The HOST layer shows the computer's CPU, memory, ... instead of key labels
+//  (View::Host).  It needs the daemon in host/ (nyxd) and is left out of the
+//  LAYER cycle until it connects.  HOST(n) keys send event n to the daemon,
+//  which runs the command its config maps to n.
 // ============================================================================
 #include "core/keymap.h"
 
@@ -21,7 +26,7 @@ constexpr uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
   return uint16_t(((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));
 }
 
-enum LayerId : uint8_t { L_MEDIA, L_EDIT, L_FKEYS, L_FN };
+enum LayerId : uint8_t { L_MEDIA, L_EDIT, L_FKEYS, L_HOST, L_FN };
 enum TapHoldId : uint8_t { TH_LAYER };
 enum MacroId : uint8_t { M_HELLO };
 
@@ -54,6 +59,12 @@ const Layer LAYERS[] = {
         {{K(hid::F19), "F19"},    {K(hid::F20), "F20"}, {K(hid::F21), "F21"}},
         {{TH(TH_LAYER), "LAYER"}, {K(hid::F22), "F22"}, {K(hid::F23), "F23"}},
     }},
+    /* L_HOST */ {"HOST", rgb565(56, 189, 248), STICK(JoyMode::Mouse), {
+        {{HOST(1), "H1"},         {HOST(2), "H2"},   {HOST(3), "H3"}},
+        {{HOST(4), "H4"},         {HOST(5), "H5"},   {HOST(6), "H6"}},
+        {{HOST(7), "H7"},         {HOST(8), "H8"},   {HOST(9), "H9"}},
+        {{TH(TH_LAYER), "LAYER"}, {HOST(10), "H10"}, {HOST(11), "H11"}},
+    }, View::Host},
     /* L_FN */ {"FN", rgb565(239, 68, 68), CENTRE_INHERIT, {
         {{SYS(SYS_BOOTLOADER), "BOOT"},   {SYS(SYS_BRIGHT_DOWN), "DIM-"},   {SYS(SYS_BRIGHT_UP), "DIM+"}},
         {{JOY(JoyMode::Cycle), "JOY"},    {SYS(SYS_JOY_CALIBRATE), "CAL"},  {SYS(SYS_DISPLAYS_TOGGLE), "SCRN"}},

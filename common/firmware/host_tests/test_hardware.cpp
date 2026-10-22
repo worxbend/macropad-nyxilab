@@ -5,6 +5,8 @@
 #include <Adafruit_TinyUSB.h>
 #include <EEPROM.h>
 #include "config.h"
+#include "core/host_proto.h"
+#include "hw/host_hid.h"
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
 #ifdef TEST_JOYSTICK
@@ -205,6 +207,41 @@ static void test_diagnostics_do_not_block_input() {
 #endif
 }
 
+static void test_host_link_round_trip() {
+  hw::host_hid_begin();
+  Adafruit_USBD_HID* vendor = mock_hids.back();
+  assert(vendor->vendor && vendor->set_report);
+  uint8_t pkt[mp::HOST_PACKET] = {mp::PKT_HELLO, mp::PROTO_VERSION, 'p', 'c'};
+  vendor->set_report(0, HID_REPORT_TYPE_OUTPUT, pkt, sizeof pkt);  // from TinyUSB's interrupt
+  uint8_t in[mp::HOST_PACKET];
+  uint16_t len = 0;
+  assert(hw::host_hid_read(in, len) && len == mp::HOST_PACKET);
+  assert(!hw::host_hid_read(in, len));
+  mp::HostProto proto;
+  proto.set_identity(cfg::SETTINGS_EDITION, mp::NUM_LAYERS, cfg::USB_PRODUCT_NAME);
+  assert(proto.on_packet(in, len, 0) && proto.linked());
+  uint8_t out[mp::HOST_PACKET];
+  assert(proto.next_tx(out));
+  mock_vendor_reports.clear();
+  mock_vendor_ready = true;
+  assert(hw::host_hid_write(out));
+  assert(!hw::host_hid_write(out));  // endpoint busy until the transfer completes
+  assert(mock_vendor_reports.size() == 1 && mock_vendor_reports[0][0] == mp::PKT_HELLO_ACK);
+  assert(mock_vendor_reports[0][2] == cfg::SETTINGS_EDITION);
+  mock_vendor_ready = true;
+  TinyUSBDevice.asleep = true;
+  assert(!hw::host_hid_write(out));  // nothing is sent to a sleeping host
+  TinyUSBDevice.asleep = false;
+
+  for (int i = 0; i < 6; ++i) vendor->set_report(0, HID_REPORT_TYPE_OUTPUT, pkt, 8);  // short packets, ring full
+  int n = 0;
+  while (hw::host_hid_read(in, len)) {
+    assert(len == 8);
+    ++n;
+  }
+  assert(n == 3);  // a full ring drops packets instead of overwriting one being read
+}
+
 int main() {
   test_usb_preserves_press_and_release();
   test_usb_retries_failed_reports();
@@ -214,5 +251,6 @@ int main() {
   test_suspended_click_requests_wake();
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
-  puts("8 hardware/control regression groups passed");
+  test_host_link_round_trip();
+  puts("9 hardware/control regression groups passed");
 }

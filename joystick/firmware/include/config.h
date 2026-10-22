@@ -62,5 +62,8 @@ constexpr uint8_t BRIGHTNESS_DIMMED = 24;
 // ---- USB --------------------------------------------------------------------------
 constexpr const char* USB_VENDOR_NAME = "Nyxilab";
 constexpr const char* USB_PRODUCT_NAME = "Nyxilab Macropad";
+// Host bridge: a second (vendor) HID interface for the daemon in host/, which feeds
+// the HOST layer's dashboard.  false = no extra interface, HOST layers stay hidden.
+constexpr bool HOST_LINK = true;
 
 }  // namespace cfg

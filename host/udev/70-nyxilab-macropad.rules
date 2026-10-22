@@ -1,0 +1,5 @@
+# Lets the logged-in user open the Nyxilab macropad's host-link interface
+# (/dev/hidrawN) without root.  Only the vendor interface matches, not the keyboard.
+#   sudo cp 70-nyxilab-macropad.rules /etc/udev/rules.d/
+#   sudo udevadm control --reload && sudo udevadm trigger
+SUBSYSTEM=="hidraw", ATTRS{interface}=="Nyxilab Host Link", TAG+="uaccess"

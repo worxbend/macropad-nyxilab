@@ -34,6 +34,11 @@ class EngineHost {
   virtual void on_sys(SysCmd cmd) = 0;
   // A Centre action (JOY() / KNOB_PRESET() / *_CYCLE) was pressed; the edition decides what it means.
   virtual void on_centre(uint8_t mode) = 0;
+  // A HOST(id) action was pressed or released: forwarded to the daemon on the computer.
+  virtual void on_host(uint8_t id, bool pressed) {
+    (void)id;
+    (void)pressed;
+  }
 };
 
 // Translate an ASCII character to (modifiers, usage) on a US layout.  usage 0 = unsupported.
@@ -59,6 +64,8 @@ class Engine {
 
   // Keys injected by other inputs (e.g. the joystick in Arrows mode).
   void set_extra_keys(const uint8_t* usages, uint8_t n);
+  // Layers LayerNext skips besides FN (bit l = layer l), e.g. host layers while no daemon is connected.
+  void set_skip_layers(uint32_t mask) { skip_ = mask; }
 
   struct LastPress {
     uint8_t row = 0xFF, col = 0xFF, layer = 0;
@@ -106,6 +113,7 @@ class Engine {
   uint32_t mask_ = 0;  // toggled layers
   uint32_t mo_mask_ = 0;  // layers with at least one held MO action
   uint8_t mo_count_[MAX_LAYERS] = {};
+  uint32_t skip_ = 0;  // LayerNext skips these
 
   bool down_[ROWS][COLS] = {};
   Action active_[ROWS][COLS] = {};  // action bound to each held key

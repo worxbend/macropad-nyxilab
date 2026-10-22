@@ -52,11 +52,19 @@ constexpr CentreDef KNOB(Action cw, Action ccw, Action press, const char* label)
 }
 constexpr CentreDef CENTRE_INHERIT = {};
 
+// What the displays show while a layer is on top.
+enum class View : uint8_t {
+  Keys,  // the key labels and the centre control (default)
+  Host,  // the host dashboard fed by the daemon on the computer (CPU, memory, ...);
+         // such layers are skipped by LayerNext while no daemon is connected
+};
+
 struct Layer {
   const char* name;  // shown on both displays
   uint16_t color;    // RGB565 accent colour for the UI and the LEDs
   CentreDef centre;  // stick mode or knob binding while this layer is on top
   KeyDef keys[ROWS][COLS];
+  View view = View::Keys;
 };
 
 struct TapHoldDef {

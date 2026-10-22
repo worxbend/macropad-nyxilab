@@ -7,7 +7,7 @@
 #   make setup             one-time: Python venv (CAD tools) + PlatformIO
 #   make cad               both editions: checks, STEP/STL/3MF/GLB (+FreeCAD), renders, blueprints
 #   make firmware          both editions for the Pico 2 (UF2 files in <edition>/firmware/dist)
-#   make test              all unit tests on this PC (shared core, joystick maths, encoder decoder)
+#   make test              all unit tests on this PC (shared core, joystick maths, encoder decoder, host daemon)
 #   make docs              wiring diagrams, soldering figures, UI renders, 3D viewer, the website in site/
 #   make site              the website only (what GitHub Pages serves), then: python3 -m http.server -d site
 #   make all               everything above
@@ -19,13 +19,14 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary test-hardware ui-sim diagrams viewer site docs all clean
+        test-joystick test-rotary test-hardware test-host host-run ui-sim diagrams viewer site docs all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
 	@echo "  per edition:  cad-joystick cad-rotary (CMD=check|export|render|drawings|all)"
 	@echo "                firmware-joystick firmware-rotary (+ -pico), flash-joystick flash-rotary"
-	@echo "  more:         cad-check firmware-all test-core test-joystick test-rotary ui-sim diagrams viewer clean"
+	@echo "  more:         cad-check firmware-all test-core test-joystick test-rotary test-host ui-sim diagrams viewer clean"
+	@echo "  host bridge:  host-run (nyxd from the source tree, verbose); install: see docs/host-bridge.md"
 
 setup:
 	python3 -m venv .venv
@@ -86,7 +87,7 @@ monitor:
 	pio device monitor -b 115200
 
 # ---------------------------------------------------------------- tests
-test: test-core test-joystick test-rotary test-hardware
+test: test-core test-joystick test-rotary test-hardware test-host
 
 test-core:
 	cd common/firmware && pio test -e native
@@ -99,6 +100,13 @@ test-rotary:
 
 test-hardware:
 	python3 common/firmware/host_tests/run.py
+
+# ----------------------------------------------------------- host bridge
+test-host:
+	cd host && python3 -m unittest discover -s tests -t .
+
+host-run:
+	cd host && python3 -m nyxd -v
 
 # ----------------------------------------------------------------- docs
 ui-sim:

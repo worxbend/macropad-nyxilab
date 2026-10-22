@@ -37,6 +37,7 @@ PAGES = [
     ("joystick/README.md", "joystick", "Joystick edition"),
     ("rotary/README.md", "rotary", "Rotary edition"),
     ("common/firmware/README.md", "firmware", "Firmware"),
+    ("docs/host-bridge.md", "host-bridge", "Host bridge"),
     ("common/cad/README.md", "cad", "CAD"),
 ]
 EXTRA_NAV = [("viewer.html", "3D viewer"), ("downloads.html", "Downloads")]
