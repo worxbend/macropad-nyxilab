@@ -573,7 +573,7 @@ void test_host_metrics_text_and_timeout() {
   HostProto hp;
   auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'h'});
   hp.on_packet(hello.data(), HOST_PACKET, 0);
-  // byte layout of host/nyxd/protocol.py metrics(); host/tests/test_interop.py runs both together
+  // byte layout of host/src/protocol.rs metrics(); host/tests/interop.rs runs both together
   auto m = pkt({PKT_METRICS, PROTO_VERSION, 37, 4, 10, 20, 30, 250});
   put32(m, 20, 6144);
   put32(m, 24, 16384);

@@ -17,9 +17,9 @@ cycle, and the macropad is the same keyboard as before.
 
 1. **Flash** firmware with the host link: the current UF2 of your edition (`make firmware`).
    `HOST_LINK` in `include/config.h` turns it off.
-2. **Install the daemon.** It needs only Python 3.9+, plus `tomli` for a config file on Python < 3.11:
+2. **Install the daemon.** It is a Rust crate; [rustup](https://rustup.rs) provides `cargo`:
    ```bash
-   pipx install ./host          # or: pip install --user ./host
+   cargo install --path host    # nyxd and nyxctl in ~/.cargo/bin (or: make host-install)
    ```
 3. **Allow access.** This lets your user open the macropad's host interface (`/dev/hidrawN`) without root:
    ```bash
@@ -83,8 +83,8 @@ with `View::Host` as its last field. See the keymap of your edition.
   - `nyx_app` connects them: it reads packets, reports state, sends `HOST(n)`
     events, and hides HOST layers from the LAYER cycle while no daemon is connected.
   - The renderer draws `View::Host` layers from the UI snapshot, like everything else.
-- **Daemon.** One thread runs a selector over the hidraw node, the control socket
-  and two timers. It sends metrics every second, reconnects after unplugging or a
+- **Daemon** (Rust, `host/src`). One thread runs `poll(2)` over the hidraw node, the
+  control socket and two timers. It sends metrics every second, reconnects after unplugging or a
   macropad reset, and sends `BYE` when stopped.
 
 ### Why not …
@@ -101,7 +101,7 @@ with `View::Host` as its last field. See the keymap of your edition.
 Every packet in both directions is 64 bytes: `[0]` type, `[1]` protocol version,
 `[2..63]` payload, little-endian. Packets with another version are ignored. The
 source of truth is [`host_proto.h`](../common/firmware/lib/nyx_core/src/core/host_proto.h);
-`host/nyxd/protocol.py` must match it. `host/tests/test_interop.py` runs the
+`host/src/protocol.rs` must match it. `host/tests/interop.rs` runs the
 firmware's parser against the daemon's encoder.
 
 **Host → device**
@@ -153,7 +153,8 @@ METRICS (`0xFF` = unknown percentage or clock field, `-32768` = unknown temperat
 | protocol, link timeout, queues, `HOST` action, LAYER-cycle skipping | `make test-core` (Unity, `common/firmware/test/test_core`) |
 | the USB interface code (ring buffer, busy endpoint, suspended host) | `make test-hardware` (mocked TinyUSB) |
 | both screens in host view | `make ui-sim` → `docs/images/<edition>/ui/ui_06_*`, `ui_07_*` |
-| daemon: metrics, discovery, reconnects, key commands, nyxctl, firmware ↔ daemon bytes | `make test-host` |
+| daemon: metrics, discovery, reconnects, key commands, nyxctl, firmware ↔ daemon bytes; clippy, rustfmt | `make test-host` (`cargo test`) |
+| the C++ tests again under AddressSanitizer + UndefinedBehaviorSanitizer | `make test-sanitize` |
 
 On a real machine, `nyxd -v` logs every connection and state change, and the
 macropad's `info` console command prints `host linked <hostname>`.
@@ -161,7 +162,7 @@ macropad's `info` console command prints `host linked <hostname>`.
 ## Limits and next steps
 
 - **Linux only.** Windows and macOS can open the same vendor interface: hidapi
-  works there and needs no driver. A port is mostly `device.py` and `metrics.py`.
+  works there and needs no driver. A port is mostly `src/device.rs` and `src/metrics.rs`.
 - **Not tested on real hardware.** This bridge was built and verified without a
   macropad: unit tests, mocks, the UI simulator and the cross-language test. The
   first flash should check the following:

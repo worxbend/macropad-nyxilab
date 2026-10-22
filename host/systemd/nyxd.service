@@ -4,7 +4,7 @@ Description=Nyxilab macropad host bridge
 Documentation=https://github.com/worxbend/macropad-nyxilab/blob/main/docs/host-bridge.md
 
 [Service]
-ExecStart=%h/.local/bin/nyxd
+ExecStart=%h/.cargo/bin/nyxd
 Restart=on-failure
 RestartSec=3
 

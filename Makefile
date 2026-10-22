@@ -19,14 +19,14 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary test-hardware test-sanitize test-host host-run ui-sim diagrams viewer site docs all clean
+        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site docs all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
 	@echo "  per edition:  cad-joystick cad-rotary (CMD=check|export|render|drawings|all)"
 	@echo "                firmware-joystick firmware-rotary (+ -pico), flash-joystick flash-rotary"
 	@echo "  more:         cad-check firmware-all test-core test-joystick test-rotary test-sanitize test-host ui-sim diagrams viewer clean"
-	@echo "  host bridge:  host-run (nyxd from the source tree, verbose); install: see docs/host-bridge.md"
+	@echo "  host bridge:  host-run (nyxd from the source tree, verbose), host-install (cargo install); docs/host-bridge.md"
 
 setup:
 	python3 -m venv .venv
@@ -107,10 +107,13 @@ test-sanitize: test-core
 
 # ----------------------------------------------------------- host bridge
 test-host:
-	cd host && python3 -m unittest discover -s tests -t .
+	cd host && cargo test && cargo clippy --all-targets -- -D warnings && cargo fmt --check
 
 host-run:
-	cd host && python3 -m nyxd -v
+	cd host && cargo run --release --bin nyxd -- -v
+
+host-install:
+	cargo install --path host
 
 # ----------------------------------------------------------------- docs
 ui-sim:

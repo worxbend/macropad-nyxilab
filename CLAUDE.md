@@ -21,8 +21,9 @@ Four projects plus the shared code, and the host bridge:
 - `common/firmware/lib` - the shared firmware as PlatformIO libraries: `nyx_core` (engine, keymap types, LED effects;
   pure C++, tests in `common/firmware/test`), `nyx_hw` (matrix, USB HID, settings), `nyx_ui` (renderer, panels, LEDs),
   `nyx_app` (the application loop; `app::Centre` is the edition interface).
-- `host/` - `nyxd`, the optional Linux daemon (Python, stdlib only) that feeds the HOST layer's dashboard over a
-  vendor HID interface and runs commands for `HOST(n)` keys; `nyxctl` talks to it. Design + protocol: `docs/host-bridge.md`.
+- `host/` - `nyxd`, the optional Linux daemon (a Rust crate: `nyxd` + `nyxctl` binaries) that feeds the HOST layer's
+  dashboard over a vendor HID interface and runs commands for `HOST(n)` keys; `nyxctl` talks to it over a Unix socket.
+  Design + protocol: `docs/host-bridge.md`.
 - `docs/` - guides (design, printing, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
   `docs/images/` (wiring diagrams, wiring maps, soldering figures), `docs/viewer.html` (both editions).
 - `tools/` - `ui_sim/`, `wiring_diagram.py`, `wiring_map.py`, `soldering_figures.py`, `build_viewer.py`,
@@ -37,7 +38,9 @@ make cad-joystick CMD=check   # one edition, one step (check | export | render |
 make cad-check          # 169 (joystick) / 191 (rotary) interference pairs + clearances + printability; non-zero exit on failure
 make firmware           # both editions for the Pico 2 -> <ed>/firmware/dist/nyxilab-macropad-<ed>-pico2.uf2
 make firmware-all       # + the RP2040 builds; firmware-joystick, firmware-rotary(-pico), flash-joystick, flash-rotary
-make test               # native tests: common (34), joystick (6), rotary (4), mocked hardware (9 groups), host daemon (12)
+make test               # native tests: common (35), joystick (6), rotary (4), mocked hardware (9 groups), host daemon (18, cargo)
+make test-sanitize      # the native C++ tests again under ASan + UBSan
+make host-run           # nyxd from the source tree (cargo run); host-install = cargo install --path host
 make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figures) + viewer + site
 make site               # site/ for GitHub Pages; python3 -m http.server -d site to look at it
 ```
@@ -73,8 +76,9 @@ unchanged unless asked (its STLs are the regression reference).
 - The project's `include/config.h` is on the include path of the libraries (`-I${PROJECT_DIR}/include`). Pin maps are
   only there; `tools/wiring_diagram.py` parses both and asserts the shared pins agree - keep `docs/wiring.md` in sync.
 - The core defines `USB_MANUFACTURER`/`USB_PRODUCT` macros; don't reuse those names.
-- Host bridge: `core/host_proto.h` is the protocol's source of truth and `host/nyxd/protocol.py` must match it
-  (`host/tests/test_interop.py` runs one against the other). `hw/host_hid` is a second HID interface (usage page
+- Host bridge: `core/host_proto.h` is the protocol's source of truth and `host/src/protocol.rs` must match it
+  (`host/tests/interop.rs` compiles the C++ parser and runs it against the Rust encoder). `make test-host` also runs
+  clippy with `-D warnings` and `cargo fmt --check` (rustfmt.toml: 120 columns). `hw/host_hid` is a second HID interface (usage page
   0xFF4E) registered before `usb_begin()`; its receive callback runs in TinyUSB's soft IRQ, hence the SPSC ring.
   `Layer.view = View::Host` selects the dashboard; such layers are skipped by `LNEXT` while no daemon is linked.
   Adding a layer shifts `FN_LAYER`: UI scenes use `mp::FN_LAYER`, never a number.

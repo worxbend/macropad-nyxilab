@@ -1,5 +1,5 @@
 // The firmware's protocol code (core/host_proto.cpp) as a stand-in macropad for
-// tests/test_interop.py: 64-byte packets from the daemon on stdin, the device's
+// tests/interop.rs: 64-byte packets from the daemon on stdin, the device's
 // replies on stdout, and what it understood as JSON on stderr at the end.
 #include <stdio.h>
 

@@ -20,3 +20,5 @@ __pycache__/
 .DS_Store
 *.swp
 .idea/
+# Rust build output
+host/target/
