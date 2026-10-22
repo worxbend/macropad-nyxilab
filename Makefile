@@ -19,13 +19,13 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary test-hardware test-host host-run ui-sim diagrams viewer site docs all clean
+        test-joystick test-rotary test-hardware test-sanitize test-host host-run ui-sim diagrams viewer site docs all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
 	@echo "  per edition:  cad-joystick cad-rotary (CMD=check|export|render|drawings|all)"
 	@echo "                firmware-joystick firmware-rotary (+ -pico), flash-joystick flash-rotary"
-	@echo "  more:         cad-check firmware-all test-core test-joystick test-rotary test-host ui-sim diagrams viewer clean"
+	@echo "  more:         cad-check firmware-all test-core test-joystick test-rotary test-sanitize test-host ui-sim diagrams viewer clean"
 	@echo "  host bridge:  host-run (nyxd from the source tree, verbose); install: see docs/host-bridge.md"
 
 setup:
@@ -100,6 +100,10 @@ test-rotary:
 
 test-hardware:
 	python3 common/firmware/host_tests/run.py
+
+# all native tests again with AddressSanitizer + UndefinedBehaviorSanitizer (needs Unity from test-core)
+test-sanitize: test-core
+	python3 common/firmware/host_tests/run.py --sanitize
 
 # ----------------------------------------------------------- host bridge
 test-host:
