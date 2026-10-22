@@ -171,7 +171,7 @@ void Engine::press_action(Action a, uint32_t now) {
       break;
     case ActType::LayerMo: {
       const uint32_t l = act_arg(a);
-      if (l < MAX_LAYERS) {
+      if (l < NUM_LAYERS) {  // a layer the keymap does not define would be read past LAYERS[]
         mo_count_[l]++;
         mo_mask_ |= 1u << l;
       }
@@ -179,7 +179,7 @@ void Engine::press_action(Action a, uint32_t now) {
     }
     case ActType::LayerTg: {
       const uint32_t l = act_arg(a);
-      if (l < MAX_LAYERS) mask_ ^= 1u << l;
+      if (l < NUM_LAYERS) mask_ ^= 1u << l;
       break;
     }
     case ActType::LayerTo:
