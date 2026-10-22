@@ -25,7 +25,6 @@ struct UiState {
   bool displays_on = true;
   uint8_t last_row = 0xFF, last_col = 0xFF, last_layer = 0;
   uint8_t activity[ACTIVITY_SAMPLES] = {};  // key presses per second, oldest first
-  uint32_t presses_total = 0;
   bool macro_running = false;
 
   // rotary edition: the knob replaces the stick widget

@@ -13,26 +13,14 @@ import math
 
 from build123d import (
     Align,
-    Axis,
     Box,
-    Circle,
     Cylinder,
-    Face,
-    Location,
     Part,
-    Plane,
-    Polyline,
     Pos,
     Rectangle,
     RectangleRounded,
-    RegularPolygon,
     Rot,
-    Solid,
-    Sphere,
-    Wire,
     extrude,
-    make_face,
-    revolve,
 )
 
 from .layout import Layout

@@ -12,18 +12,13 @@ and its own parts (``L.ed.parts``, e.g. the rotary knob).
 
 from __future__ import annotations
 
-import math
 from functools import lru_cache
 
 from build123d import (
-    Align,
-    Axis,
-    Box,
     Cone,
     Cylinder,
     Face,
     FontStyle,
-    Location,
     Part,
     Pos,
     RectangleRounded,
@@ -32,10 +27,9 @@ from build123d import (
     Vector,
     chamfer,
     extrude,
-    offset,
 )
 
-from .components import CXY, MIN, box, cyl
+from .components import CXY, box, cyl
 from .layout import Layout
 
 BIG = 400.0
@@ -226,7 +220,7 @@ def _pico_cradle(L: Layout, body: Part) -> Part:
     """Standoffs at the two debug-end holes, a centre rail and a forward stop.
     The USB end is held by the receptacle sitting in the frame's port."""
     p = L.p
-    c, fas, pc = p.case, p.fas, p.pico
+    fas, pc = p.fas, p.pico
     ploc = L.loc_pico
     rail = box(14.0, 42.0, -2.5, 2.5, -pc.standoff_h - 0.5, 0)
     stop = box(pc.length + 0.3, pc.length + 2.8, -4.0, 4.0, -pc.standoff_h - 0.5, pc.t + 1.0)

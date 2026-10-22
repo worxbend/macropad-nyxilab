@@ -1,0 +1,20 @@
+[package]
+name = "nyxd"
+version = "1.0.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Host bridge for the Nyxilab macropad: CPU, memory and more on its HOST layer"
+license = "MIT"
+publish = false
+
+[dependencies]
+libc = "0.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+signal-hook = "0.3"
+toml = { version = "0.8", default-features = false, features = ["parse"] }
+unicode-normalization = "0.1"
+
+[profile.release]
+lto = true
+strip = true

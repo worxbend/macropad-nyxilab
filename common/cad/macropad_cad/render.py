@@ -46,7 +46,6 @@ def tessellate(shape, tol: float = 0.03, ang: float = 0.2):
         # make sure normals face outward: compare with the B-rep normal at the centre
         try:
             ref = face.normal_at()
-            c = v.mean(axis=0)
             if (fn.sum(axis=0) @ np.array([ref.X, ref.Y, ref.Z])) < 0:
                 t = t[:, ::-1]
                 vn = -vn

@@ -1,0 +1,102 @@
+# Tests, firmware builds, CAD checks and the docs site on every push and pull request.
+# (pages.yml deploys the site from main; this workflow only checks.)
+# Python tools come from hash-locked wheel-only requirement files (.github/requirements/*.txt).
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Tests (native C++, sanitizers, host daemon)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: 'pip install --only-binary :all: --require-hashes -r .github/requirements/tools.txt'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-native-${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
+      - name: Rust toolchain
+        run: rustup update stable && rustup default stable && rustup component add clippy rustfmt
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            host/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('host/Cargo.lock') }}
+      - name: make test (Unity suites, mocked hardware, nyxd with clippy + rustfmt)
+        run: make test
+      - name: make test-sanitize (ASan + UBSan)
+        run: make test-sanitize
+
+  firmware:
+    name: Firmware ${{ matrix.edition }} / ${{ matrix.env }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        edition: [joystick, rotary]
+        env: [pico2, pico]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: 'pip install --only-binary :all: --require-hashes -r .github/requirements/tools.txt'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.platformio
+          key: pio-rp2-${{ runner.os }}-${{ hashFiles('**/platformio.ini') }}
+      - name: Build (warnings in our code fail the job)
+        working-directory: ${{ matrix.edition }}/firmware
+        run: |
+          pio run -e ${{ matrix.env }} 2>&1 | tee build.log
+          if grep -E 'warning:' build.log | grep -v -E '\.platformio/|\.pio/libdeps/'; then
+            echo "::error::compiler warnings in the project's code"; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nyxilab-macropad-${{ matrix.edition }}-${{ matrix.env }}
+          path: ${{ matrix.edition }}/firmware/.pio/build/${{ matrix.env }}/firmware.uf2
+
+  cad:
+    name: CAD checks (interference, clearances, printability)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: .github/requirements/cad.txt
+      - run: 'pip install --only-binary :all: --require-hashes -r .github/requirements/cad.txt'  # build.py puts common/cad on sys.path itself
+      - run: python joystick/cad/build.py check
+      - run: python rotary/cad/build.py check
+
+  docs:
+    name: Docs site and Python lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: 'pip install --only-binary :all: --require-hashes -r .github/requirements/tools.txt'
+      - name: Python lint (pyflakes rules only)
+        run: ruff check --select F --line-length 120 tools common/cad joystick/cad rotary/cad
+      - name: Build the site
+        run: python tools/build_site.py

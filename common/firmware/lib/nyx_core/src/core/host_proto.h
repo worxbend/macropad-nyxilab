@@ -1,4 +1,5 @@
-// Host bridge protocol: the macropad <-> the daemon on the computer (host/nyxd).
+// Host bridge protocol: the macropad <-> the daemon on the computer (host/, nyxd).
+// host/src/protocol.rs is the daemon's side; host/tests/interop.rs runs it against this code.
 // Pure C++ (no Arduino), unit-tested in common/firmware/test/test_core.
 //
 // Transport: a vendor HID interface (usage page 0xFF4E, usage 0x58) with 64-byte

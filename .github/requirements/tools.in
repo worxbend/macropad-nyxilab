@@ -1,0 +1,5 @@
+# CI tools (tests, firmware builds, docs).  Lock with:
+#   uv pip compile --generate-hashes --python-version 3.12 --only-binary :all: -c <constraints> tools.in -o tools.txt
+platformio
+markdown
+ruff

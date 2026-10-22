@@ -117,7 +117,7 @@ from your computer, and a keys-per-second graph so you can watch yourself go fer
 
 ### the HOST layer: your PC, on your desk 🖥️
 
-run `nyxd` on linux (python, zero dependencies) and the HOST layer becomes a live dashboard:
+run `nyxd` on linux (one small rust binary) and the HOST layer becomes a live dashboard:
 CPU per core, temps, RAM, swap, disk, network, GPU, the clock, plus up to four lines of
 whatever you pipe in with `nyxctl text 0 "build passed"`. its keys fire shell commands
 on your PC. no daemon? the layer just hides itself. setup + protocol:
@@ -198,7 +198,7 @@ make docs               # UI renders, wiring diagrams + maps, soldering figures,
 
 one edition at a time: `make cad-rotary`, `make firmware-joystick`, `make test-rotary`, and so on.
 the FreeCAD files rebuild when `freecadcmd` is on your PATH (or set `FREECAD_CMD=/path/to/freecadcmd`).
-everything else only needs Python and PlatformIO. the website in `site/` is what
+everything else only needs Python and PlatformIO (and Rust for the optional host bridge). the website in `site/` is what
 [GitHub Pages](https://worxbend.github.io/macropad-nyxilab/) serves; it redeploys on every push to `main`.
 
 ```mermaid

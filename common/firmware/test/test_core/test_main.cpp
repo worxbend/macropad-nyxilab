@@ -197,6 +197,18 @@ void test_toggle_layer() {
   TEST_ASSERT_TRUE(e.hid().has_key(hid::X));
 }
 
+void test_layer_actions_ignore_undefined_layers() {
+  Host h;
+  Engine e(h);
+  // a keymap typo like TG(5) with 3 layers must not put a non-existent layer on top
+  const Action bad[] = {TG(5), MO(7), TG(MAX_LAYERS), MO(MAX_LAYERS + 1)};
+  for (Action a : bad) {
+    e.queue_tap(a, 0);
+    TEST_ASSERT_EQUAL(0, e.top_layer());
+    TEST_ASSERT_EQUAL_HEX32(1, e.layer_mask());
+  }
+}
+
 void test_momentary_layer_preserves_toggle() {
   Host h;
   Engine e(h);
@@ -561,7 +573,7 @@ void test_host_metrics_text_and_timeout() {
   HostProto hp;
   auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'h'});
   hp.on_packet(hello.data(), HOST_PACKET, 0);
-  // byte layout of host/nyxd/protocol.py metrics(); host/tests/test_interop.py runs both together
+  // byte layout of host/src/protocol.rs metrics(); host/tests/interop.rs runs both together
   auto m = pkt({PKT_METRICS, PROTO_VERSION, 37, 4, 10, 20, 30, 250});
   put32(m, 20, 6144);
   put32(m, 24, 16384);
@@ -661,6 +673,7 @@ int main() {
   RUN_TEST(test_transparent_falls_through);
   RUN_TEST(test_to_layer_from_fn);
   RUN_TEST(test_toggle_layer);
+  RUN_TEST(test_layer_actions_ignore_undefined_layers);
   RUN_TEST(test_momentary_layer_preserves_toggle);
   RUN_TEST(test_to_clears_toggle_but_keeps_momentary_layer);
   RUN_TEST(test_generated_taps_wait_for_usb_delivery);

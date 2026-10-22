@@ -14,19 +14,23 @@ with the Pico and the two LED sticks.
 
 from __future__ import annotations
 
-import math
+import os
 import sys
 from pathlib import Path
 
 import matplotlib
 
+# reproducible output: stable SVG ids and no timestamps, so regenerated files only change with the drawing
+matplotlib.rcParams["svg.hashsalt"] = "nyxilab"
+os.environ.setdefault("SOURCE_DATE_EPOCH", "0")
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
-from matplotlib.patches import Circle, FancyBboxPatch, Polygon, Rectangle  # noqa: E402
+from matplotlib.patches import Circle, FancyBboxPatch, Rectangle  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from editions import EDITIONS, REPO, layouts  # noqa: E402
-from wiring_diagram import COL, parse_config  # noqa: E402
+from wiring_diagram import parse_config  # noqa: E402
 
 OUT = REPO / "docs" / "images"
 FONT = "DejaVu Sans"

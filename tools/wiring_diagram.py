@@ -12,10 +12,15 @@ editions.  Run from anywhere:  python3 tools/wiring_diagram.py
 
 from __future__ import annotations
 
+import os
 import re
 from pathlib import Path
 
 import matplotlib
+
+# reproducible output: stable SVG ids and no timestamps, so regenerated files only change with the drawing
+matplotlib.rcParams["svg.hashsalt"] = "nyxilab"
+os.environ.setdefault("SOURCE_DATE_EPOCH", "0")
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
