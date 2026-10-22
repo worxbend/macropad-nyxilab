@@ -1,0 +1,8 @@
+# The CAD checks' dependencies (common/cad/pyproject.toml, without the render extra).  Lock like tools.in.
+build123d>=0.9
+manifold3d>=2.5
+trimesh>=4.0
+numpy>=1.26
+matplotlib>=3.8
+networkx
+rtree

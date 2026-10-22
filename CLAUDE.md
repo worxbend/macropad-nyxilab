@@ -45,6 +45,10 @@ make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figu
 make site               # site/ for GitHub Pages; python3 -m http.server -d site to look at it
 ```
 
+CI (`.github/workflows/ci.yml`) installs Python tools only from the hash-locked, wheel-only files in
+`.github/requirements/*.txt`; to change a version, edit the `.in` file and re-run the `uv pip compile` command
+in its header.
+
 FreeCAD export runs only when `freecadcmd` is on PATH or `FREECAD_CMD` is set (otherwise the previous document
 is kept). Renders need EGL (GPU or Mesa).
 
