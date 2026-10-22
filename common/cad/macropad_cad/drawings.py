@@ -12,12 +12,17 @@ The edition supplies its centre-control notes, callouts and extra views (``L.ed`
 
 from __future__ import annotations
 
+import os
 import datetime
 import math
 from dataclasses import dataclass, field
 from pathlib import Path
 
 import matplotlib
+
+# reproducible output: stable SVG ids and no timestamps, so regenerated files only change with the drawing
+matplotlib.rcParams["svg.hashsalt"] = "nyxilab"
+os.environ.setdefault("SOURCE_DATE_EPOCH", "0")
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
@@ -380,7 +385,7 @@ def sheet_top_plate(L: Layout) -> Sheet:
         f"MX cut-outs 12x  {p.sw.hole:.1f} x {p.sw.hole:.1f} through, clip relief {p.sw.pocket_u:.1f} x {p.sw.pocket_v:.1f} "
         f"from below, skin {p.sw.skin:.1f}",
         f"Key pitch {p.sw.pitch:.2f}  | columns u = {L.u_L:.2f} / {L.u_R1:.2f} / {L.u_R2:.2f}",
-        f"Rows v = " + " / ".join(f"{r:.2f}" for r in L.rows),
+        "Rows v = " + " / ".join(f"{r:.2f}" for r in L.rows),
         f"1.9in window {d19.aa_l + 2 * (d19.va_margin + c.window_margin):.2f} x {d19.aa_w + 2 * (d19.va_margin + c.window_margin):.2f}"
         f" centred (u {L.u_c:.2f}, v {L.v_w:.2f}), {c.window_chamfer:.1f} x 45 bevel",
         f"2.25in window {bar.aa_w + 2 * (bar.va_margin + c.window_margin):.2f} x {bar.aa_l + 2 * (bar.va_margin + c.window_margin):.2f}"
