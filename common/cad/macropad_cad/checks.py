@@ -105,6 +105,11 @@ def overhang_report(L: Layout, max_angle_deg: float = 50.0, bed_z: float = 0.3) 
     """Downward-facing area steeper than ``max_angle_deg`` from vertical, per part,
     in print orientation.  Horizontal down-facing areas are bridges; the report
     lists their largest single patch so they can be judged (short bridges are fine).
+
+    short_span estimates the distance the printer has to bridge: the shorter
+    bounding-box side, or 4 x area / perimeter if smaller.  The second term matters
+    for rings and frames: a 0.8 mm wide engraved ring of 36 mm diameter is a ~1.6 mm
+    bridge, not a 36 mm one (its bounding box).  It equals the side for a square.
     """
     import math
 
@@ -127,7 +132,12 @@ def overhang_report(L: Layout, max_angle_deg: float = 50.0, bed_z: float = 0.3) 
             sub = mesh.submesh([np.nonzero(flat)[0]], append=True)
             for comp in sub.split(only_watertight=False):
                 ext = comp.bounds[1] - comp.bounds[0]
-                patches.append((round(float(comp.area), 1), round(float(min(ext[0], ext[1])), 1)))
+                span = min(ext[0], ext[1])
+                edges = comp.edges_sorted[trimesh.grouping.group_rows(comp.edges_sorted, require_count=1)]
+                perimeter = float(np.linalg.norm(comp.vertices[edges[:, 0]] - comp.vertices[edges[:, 1]], axis=1).sum())
+                if perimeter > 0:
+                    span = min(span, 4 * comp.area / perimeter)
+                patches.append((round(float(comp.area), 1), round(float(span), 1)))
         patches.sort(reverse=True)
         out[name] = {"steep_down_area_mm2": round(area, 1), "bridges(area,short_span)": patches[:6]}
     return out
