@@ -509,6 +509,44 @@ void test_knob_turns_while_host_asleep_are_not_replayed() {
   TEST_ASSERT_EQUAL(20, e.encoder_position());
 }
 
+void test_knob_taps_wait_for_a_running_macro() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 1, 0));  // MACRO(0): "Hi!"
+  e.process(release(1, 1, 5));
+  int ctrl_c_reports = 0;
+  HidState last{};
+  for (uint32_t t = 6; t < 300; t++) {
+    if (t == 12) e.queue_tap(KC(MOD_LCTRL, hid::C), t);  // a detent while the text is going out
+    e.tick(t);
+    const HidState& s = e.hid();
+    if (!(s.mods & MOD_LCTRL)) {
+      last = s;
+      continue;
+    }
+    TEST_ASSERT_EQUAL_HEX8(hid::C, s.keys[0]);  // Ctrl never lands on a macro character
+    TEST_ASSERT_EQUAL_HEX8(0, s.keys[1]);
+    TEST_ASSERT_FALSE(e.macro_running());
+    if (s != last) ctrl_c_reports++;
+    last = s;
+  }
+  TEST_ASSERT_EQUAL(1, ctrl_c_reports);  // delayed, not dropped
+}
+
+void test_knob_cycle_on_a_base_layer_without_its_own_knob() {
+  Host h;
+  Engine e(h);
+  e.set_encoder_presets(PRESETS, 3);
+  e.set_base_layer(1);  // SECOND: CENTRE_INHERIT, and nothing below a base layer
+  TEST_ASSERT_EQUAL_STRING("VOLUME", e.encoder_binding().label);  // falls back to the first preset
+  TEST_ASSERT_EQUAL(1, e.cycle_enc_preset(1));  // not preset 0: that is what the knob already does
+  TEST_ASSERT_EQUAL_STRING("SCROLL", e.encoder_binding().label);
+  TEST_ASSERT_EQUAL(2, e.cycle_enc_preset(1));
+  TEST_ASSERT_EQUAL_STRING("ZOOM", e.encoder_binding().label);
+  TEST_ASSERT_EQUAL(ENC_LAYER_DEFAULT, e.cycle_enc_preset(1));
+  TEST_ASSERT_EQUAL_STRING("VOLUME", e.encoder_binding().label);
+}
+
 // -------------------------------------------------------------------- LEDs
 void test_led_layer_colour_and_flash() {
   LedInput in;
@@ -745,6 +783,8 @@ int main() {
   RUN_TEST(test_knob_queue_overflow_drops_steps);
   RUN_TEST(test_knob_turn_while_pressed_does_not_repeat_the_press);
   RUN_TEST(test_knob_turns_while_host_asleep_are_not_replayed);
+  RUN_TEST(test_knob_taps_wait_for_a_running_macro);
+  RUN_TEST(test_knob_cycle_on_a_base_layer_without_its_own_knob);
   RUN_TEST(test_led_layer_colour_and_flash);
   RUN_TEST(test_led_levels_budget_and_off);
   RUN_TEST(test_led_rainbow_and_breathe);

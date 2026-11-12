@@ -246,6 +246,42 @@ static void turn_knob(int leading_pin, int trailing_pin) {  // one detent from r
   }
 }
 
+// What one clockwise turn_knob gives with the builder's switches in config.h, so flipping one keeps the suite green.
+constexpr int CW_DETENT = (cfg::ENC_REVERSE ? -1 : 1) * (cfg::ENC_STEPS_PER_DETENT == 2 ? 2 : 1);
+constexpr uint16_t CW_USAGE = cfg::ENC_REVERSE ? mp::cc::VOL_DOWN : mp::cc::VOL_UP;
+constexpr uint16_t CCW_USAGE = cfg::ENC_REVERSE ? mp::cc::VOL_UP : mp::cc::VOL_DOWN;
+
+static void test_enc_diagnostic_reports_the_pins() {
+  for (int& pin : mock_pins) pin = 1;
+  Host host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  assert(!centre.console("joy"));  // unknown commands fall through to help
+  assert(!centre.console("encoder"));
+  turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);
+  Serial.space = 128;
+  Serial.output.clear();
+  centre.task(900);
+  assert(Serial.output.empty());  // nothing until `enc`
+  char info[64], line[64];
+  snprintf(info, sizeof info, "knob VOLUME pos=%d reversed=%d\n", CW_DETENT, cfg::ENC_REVERSE);
+  snprintf(line, sizeof line, "CLK=0 DT=1 SW=1  pos=%d\n", CW_DETENT);
+  centre.info();
+  assert(Serial.output == info);
+  mock_pins[cfg::ENC_A_PIN] = 0;  // CLK low, DT high, switch pressed; no ISR, so pos stays
+  mock_pins[cfg::ENC_SW_PIN] = LOW;
+  mock_now = 1000;
+  assert(centre.console("enc"));
+  Serial.output.clear();
+  centre.task(1000);  // the first line at once
+  assert(Serial.output == line);
+  centre.task(1049);  // then one every 50 ms
+  assert(Serial.output == line);
+  centre.task(1050);
+  assert(Serial.output == std::string(line) + line);
+}
+
 static void test_knob_turns_reverses_and_keeps_its_preset() {
   for (int& pin : mock_pins) pin = 1;
   hw::settings_load();  // drop what earlier groups left in the settings
@@ -256,29 +292,30 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   const int activity = g_activity_calls, hits = g_hit_calls;
   turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);  // CLK first = clockwise
   centre.task(100);
-  assert(engine.encoder_position() == 1 && engine.hid().consumer == mp::cc::VOL_UP);
+  assert(engine.encoder_position() == CW_DETENT && engine.hid().consumer == CW_USAGE);
   assert(g_activity_calls > activity && g_hit_calls > hits);  // a detent wakes the displays, flashes the LEDs
   turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
   centre.task(120);
   assert(engine.encoder_position() == 0);
   for (int i = 0; i < 3; i++) turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);  // a fast turn: three detents before one pass
   centre.task(122);
-  assert(engine.encoder_position() == 3);
+  assert(engine.encoder_position() == 3 * CW_DETENT);
   for (int i = 0; i < 3; i++) turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
   centre.task(124);
   assert(engine.encoder_position() == 0);
 
   assert(!centre.on_sys(mp::SYS_BRIGHT_UP, 130));
   assert(centre.on_sys(mp::SYS_ENC_REVERSE, 130));
-  assert(hw::settings().centre[0] == 1 && centre.reversed());
+  assert(hw::settings().centre[0] == 1 && centre.reversed() == !cfg::ENC_REVERSE);
   unsigned commits = EEPROM.commits;
   hw::settings_task(3130);  // still inside the save delay
   assert(EEPROM.commits == commits);
   hw::settings_task(3131);
   assert(EEPROM.commits == commits + 1);  // the direction reaches flash
+  engine.clear_queued_taps();  // or the next tap out is one still queued from the turns above
   turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);
   centre.task(140);
-  assert(engine.encoder_position() == -1 && engine.hid().consumer == mp::cc::VOL_DOWN);
+  assert(engine.encoder_position() == -CW_DETENT && engine.hid().consumer == CCW_USAGE);
 
   engine.set_base_layer(1);  // the preset belongs to the base layer, not to layer 0
   const uint8_t base = engine.base_layer();
@@ -287,6 +324,10 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   assert(modes[base] == engine.enc_preset(base) && modes[base] != mp::ENC_LAYER_DEFAULT);
   centre.on_mode(3, 160);  // not the next one in the cycle
   assert(modes[base] == 3);
+  ui::UiState u;  // the displays name the preset the knob now sends, not the layer's own knob
+  centre.fill_ui(u);
+  assert(u.centre_encoder && strcmp(u.enc_label, "ARROWS") == 0);
+  assert(u.enc_pos == engine.encoder_position() && !u.enc_press);
   commits = EEPROM.commits;
   hw::settings_task(3161);
   assert(EEPROM.commits == commits + 1);  // so does the preset
@@ -297,7 +338,8 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   assert(base == 1 && modes[0] == mp::ENC_LAYER_DEFAULT);
   assert(strcmp(rebooted_engine.encoder_binding().label, "VOLUME") == 0);  // layer 0 kept its own knob
   rebooted_engine.set_base_layer(base);
-  assert(strcmp(rebooted_engine.encoder_binding().label, "ARROWS") == 0 && rebooted.reversed());
+  assert(strcmp(rebooted_engine.encoder_binding().label, "ARROWS") == 0);
+  assert(rebooted.reversed() == !cfg::ENC_REVERSE);
   hw::settings().centre[0] = 0;  // back to the defaults for the groups that follow
   hw::settings().centre_modes[base] = mp::ENC_LAYER_DEFAULT;
   hw::settings_touch(4000);
@@ -328,6 +370,9 @@ static void test_knob_switch_is_debounced() {
   assert(!muted());
   centre.task(114);  // the 4th equal sample
   assert(muted() && engine.encoder_pressed());
+  ui::UiState pressed;
+  centre.fill_ui(pressed);
+  assert(pressed.enc_press);
   assert(g_activity_calls == activity + 1 && g_hit_calls == hits + 1);
   mock_pins[cfg::ENC_SW_PIN] = 1;
   for (uint32_t now = 116; now <= 120; now += 2) centre.task(now);
@@ -361,7 +406,7 @@ static void test_keymap_fn_keys_reach_the_knob() {
   assert(engine.top_layer() == mp::FN_LAYER);
   engine.process({1, 1, true, 310});  // REV
   engine.process({1, 1, false, 320});
-  assert(centre.reversed());
+  assert(centre.reversed() == !cfg::ENC_REVERSE);
   engine.process({1, 0, true, 330});  // KNOB
   engine.process({1, 0, false, 340});
   assert(hw::settings().centre_modes[base] != mp::ENC_LAYER_DEFAULT);
@@ -376,8 +421,13 @@ static void test_keymap_fn_keys_reach_the_knob() {
   mock_pins[cfg::ENC_SW_PIN] = 1;
   for (uint32_t now = 362; now <= 368; now += 2) centre.task(now);
   // with FN held the knob dims and blanks; a press must never reach SYS_BOOTLOADER
-  const std::vector<mp::SysCmd> expected = {mp::SYS_ENC_REVERSE, mp::SYS_BRIGHT_UP, mp::SYS_BRIGHT_DOWN,
-                                            mp::SYS_DISPLAYS_TOGGLE};
+  const mp::SysCmd cw = cfg::ENC_REVERSE ? mp::SYS_BRIGHT_DOWN : mp::SYS_BRIGHT_UP;
+  const mp::SysCmd ccw = cfg::ENC_REVERSE ? mp::SYS_BRIGHT_UP : mp::SYS_BRIGHT_DOWN;
+  const size_t steps = CW_DETENT < 0 ? -CW_DETENT : CW_DETENT;
+  std::vector<mp::SysCmd> expected = {mp::SYS_ENC_REVERSE};
+  expected.insert(expected.end(), steps, cw);
+  expected.insert(expected.end(), steps, ccw);
+  expected.push_back(mp::SYS_DISPLAYS_TOGGLE);
   assert(host.sys == expected);
 }
 #endif
@@ -432,10 +482,11 @@ int main() {
   test_host_link_round_trip();
   puts("11 hardware/control regression groups passed");
 #else
+  test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("14 hardware/control regression groups passed");
+  puts("15 hardware/control regression groups passed");
 #endif
 }

@@ -316,9 +316,11 @@ uint8_t Engine::cycle_enc_preset(uint8_t base_layer) {
   const uint8_t cur = enc_preset_[base_layer];
   const EncoderDef& own = LAYERS[base_layer < NUM_LAYERS ? base_layer : 0].centre.knob;
   const bool has_own = act_type(own.cw) != ActType::Transparent;
+  // What ENC_LAYER_DEFAULT resolves to on a base layer: its own knob, else presets_[0] (see encoder_binding).
+  const EncoderDef* fallback = has_own ? &own : (n_presets_ ? &presets_[0] : nullptr);
   uint8_t next = ENC_LAYER_DEFAULT;
   for (uint8_t i = cur < n_presets_ ? uint8_t(cur + 1) : 0; i < n_presets_; i++) {
-    if (!has_own || !same_binding(presets_[i], own)) {  // skip presets identical to the layer's own
+    if (!fallback || !same_binding(presets_[i], *fallback)) {  // skip presets identical to the default
       next = i;
       break;
     }
@@ -392,7 +394,7 @@ bool Engine::service_taps(uint32_t now) {
     changed = true;
   }
   if (tap_phase_ == TapPhase::Gap && uint32_t(now - tap_t0_) >= TAP_MS) tap_phase_ = TapPhase::Idle;
-  if (tap_phase_ == TapPhase::Idle && tapq_n_) {
+  if (tap_phase_ == TapPhase::Idle && tapq_n_ && !macro_) {  // a tap's modifiers must not land on macro text
     tap_cur_ = tapq_[tapq_head_];
     tapq_head_ = uint8_t((tapq_head_ + 1) % TAP_QUEUE);
     tapq_n_--;
