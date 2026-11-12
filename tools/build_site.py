@@ -31,6 +31,7 @@ PAGES = [
     ("README.md", "index", "Home"),
     ("docs/design.md", "design", "Design"),
     ("docs/printing.md", "printing", "Printing"),
+    ("docs/build-guide.md", "build-guide", "Build guide"),
     ("docs/soldering.md", "soldering", "Soldering"),
     ("docs/wiring.md", "wiring", "Wiring"),
     ("docs/assembly.md", "assembly", "Assembly"),

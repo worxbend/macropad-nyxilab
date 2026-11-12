@@ -166,8 +166,9 @@ tools/               UI simulator, wiring diagrams + maps, soldering figures, vi
 3. **print the case**: `top_plate` (color A, top face down), `frame` (color B, translucent if you
    want the glow), `base` (color A), the tiny `bar_spine`, and the `knob` for the rotary edition.
    settings in [docs/printing.md](docs/printing.md).
-4. **solder it and put it together**: [docs/soldering.md](docs/soldering.md) →
-   [docs/wiring.md](docs/wiring.md) → [docs/assembly.md](docs/assembly.md).
+4. **solder it and put it together**: the [build guide](docs/build-guide.md) is the route, with
+   [docs/soldering.md](docs/soldering.md) → [docs/wiring.md](docs/wiring.md) →
+   [docs/assembly.md](docs/assembly.md) for the details.
    the LED sticks need one diode and one resistor, no board.
 5. **flash it**: hold BOOTSEL while plugging in the Pico, drop
    `joystick/firmware/dist/nyxilab-macropad-joystick-pico2.uf2` (or the rotary one) onto the
@@ -266,6 +267,7 @@ everything below is also on the **[docs site](https://worxbend.github.io/macropa
 - **[3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html)**: both editions. orbit, explode, section, toggle parts
 - [design notes](docs/design.md): layout, the 3-layer stack, how each part is held, what the checks verify
 - [printing](docs/printing.md): orientation, settings, colors, the knob, the dimensions to verify first
+- [build guide](docs/build-guide.md): solder, wire, flash, assemble, in order, with a test after every stage
 - [soldering](docs/soldering.md): tools, the matrix, diodes step by step, displays, LEDs, the Pico, wiring maps, troubleshooting
 - [wiring](docs/wiring.md): Pico pin map, matrix, displays, joystick, encoder, LED sticks
 - [assembly](docs/assembly.md): bill of materials + step-by-step build, both editions
