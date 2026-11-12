@@ -17,9 +17,10 @@ using Centre = JoystickCentre;
 using Centre = KnobCentre;
 #endif
 
+static int g_activity_calls = 0, g_hit_calls = 0;  // what the centre control reports to the app
 namespace app {
-void activity(uint32_t) {}
-void hit(uint32_t) {}
+void activity(uint32_t) { ++g_activity_calls; }
+void hit(uint32_t) { ++g_hit_calls; }
 void settings_changed(uint32_t now) { hw::settings_touch(now); }
 }
 struct Host : mp::EngineHost {
@@ -233,9 +234,11 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   mp::Engine engine(host);
   Centre centre;
   centre.begin(engine, hw::settings().centre);
+  const int activity = g_activity_calls, hits = g_hit_calls;
   turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);  // CLK first = clockwise
   centre.task(100);
   assert(engine.encoder_position() == 1 && engine.hid().consumer == mp::cc::VOL_UP);
+  assert(g_activity_calls > activity && g_hit_calls > hits);  // a detent wakes the displays, flashes the LEDs
   turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
   centre.task(120);
   assert(engine.encoder_position() == 0);
@@ -243,6 +246,11 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   assert(!centre.on_sys(mp::SYS_BRIGHT_UP, 130));
   assert(centre.on_sys(mp::SYS_ENC_REVERSE, 130));
   assert(hw::settings().centre[0] == 1 && centre.reversed());
+  unsigned commits = EEPROM.commits;
+  hw::settings_task(3130);  // still inside the save delay
+  assert(EEPROM.commits == commits);
+  hw::settings_task(3131);
+  assert(EEPROM.commits == commits + 1);  // the direction reaches flash
   turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);
   centre.task(140);
   assert(engine.encoder_position() == -1 && engine.hid().consumer == mp::cc::VOL_DOWN);
@@ -253,11 +261,18 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   assert(modes[base] == engine.enc_preset(base) && modes[base] != mp::ENC_LAYER_DEFAULT);
   centre.on_mode(3, 160);  // not the next one in the cycle
   assert(modes[base] == 3);
+  commits = EEPROM.commits;
+  hw::settings_task(3161);
+  assert(EEPROM.commits == commits + 1);  // so does the preset
+  hw::settings_load();  // a reboot reads flash, not RAM
   mp::Engine rebooted_engine(host);
   Centre rebooted;
   rebooted.begin(rebooted_engine, hw::settings().centre);
   assert(strcmp(rebooted_engine.encoder_binding().label, "ARROWS") == 0 && rebooted.reversed());
-  hw::settings_load();  // nothing was committed: back to the stored settings
+  hw::settings().centre[0] = 0;  // back to the defaults for the groups that follow
+  hw::settings().centre_modes[base] = mp::ENC_LAYER_DEFAULT;
+  hw::settings_touch(4000);
+  hw::settings_task(7001);
 }
 
 static void test_knob_switch_is_debounced() {
@@ -267,6 +282,7 @@ static void test_knob_switch_is_debounced() {
   Centre centre;
   centre.begin(engine, hw::settings().centre);
   const auto muted = [&] { return engine.hid().consumer == mp::cc::MUTE; };
+  const int activity = g_activity_calls, hits = g_hit_calls;
   mock_pins[cfg::ENC_SW_PIN] = LOW;
   for (uint32_t now = 100; now <= 104; now += 2) centre.task(now);  // 3 samples: not yet
   assert(!muted() && !engine.encoder_pressed());
@@ -279,11 +295,40 @@ static void test_knob_switch_is_debounced() {
   assert(!muted());
   centre.task(114);  // the 4th equal sample
   assert(muted() && engine.encoder_pressed());
+  assert(g_activity_calls == activity + 1 && g_hit_calls == hits + 1);
   mock_pins[cfg::ENC_SW_PIN] = 1;
   for (uint32_t now = 116; now <= 120; now += 2) centre.task(now);
   assert(muted());  // the release is debounced too
   centre.task(122);
   assert(!muted() && !engine.encoder_pressed());
+  assert(g_activity_calls == activity + 2 && g_hit_calls == hits + 1);  // a release is activity, not a hit
+}
+
+// Forwards like app.cpp's Host, which these tests do not compile: this pins the keymap's FN cells, not that glue.
+struct KnobHost : Host {
+  KnobCentre* centre = nullptr;
+  void on_sys(mp::SysCmd cmd) override { centre->on_sys(cmd, mock_now); }
+  void on_centre(uint8_t mode) override { centre->on_mode(mode, mock_now); }
+};
+
+static void test_keymap_fn_keys_reach_the_knob() {
+  for (int& pin : mock_pins) pin = 1;
+  KnobHost host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  host.centre = &centre;
+  const uint8_t base = engine.base_layer();
+  engine.process({3, 0, true, 0});  // LAYER
+  engine.tick(300);                 // held past the tap-hold term: FN
+  assert(engine.top_layer() == mp::FN_LAYER);
+  engine.process({1, 1, true, 310});  // REV
+  engine.process({1, 1, false, 320});
+  assert(centre.reversed());
+  engine.process({1, 0, true, 330});  // KNOB
+  engine.process({1, 0, false, 340});
+  assert(hw::settings().centre_modes[base] != mp::ENC_LAYER_DEFAULT);
+  hw::settings_load();  // nothing was committed: back to the stored settings
 }
 #endif
 
@@ -338,7 +383,8 @@ int main() {
 #else
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
+  test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("12 hardware/control regression groups passed");
+  puts("13 hardware/control regression groups passed");
 #endif
 }

@@ -391,6 +391,21 @@ void test_knob_fn_layer_binding_and_hold_on_turn() {
   TEST_ASSERT_EQUAL_STRING("VOL", e.encoder_binding().label);
 }
 
+void test_knob_press_resolves_pending_layer_hold() {
+  Host h;
+  Engine e(h);
+  e.process(press(3, 0, 0));   // LAYER key down, tap-hold undecided
+  e.encoder_button(true, 20);  // pressing the knob resolves it as FN
+  TEST_ASSERT_EQUAL(2, e.top_layer());
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::ENTER));
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);  // not the base layer's MUTE
+  e.encoder_button(false, 40);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::ENTER));
+  e.process(release(3, 0, 50));
+  e.tick(70);
+  TEST_ASSERT_EQUAL(0, e.base_layer());  // no LNEXT tap from that hold
+}
+
 void test_knob_transparent_layer_falls_through() {
   Host h;
   Engine e(h);
@@ -723,6 +738,7 @@ int main() {
   RUN_TEST(test_knob_taps_consumer_keys_one_after_another);
   RUN_TEST(test_knob_press_is_held_and_latched);
   RUN_TEST(test_knob_fn_layer_binding_and_hold_on_turn);
+  RUN_TEST(test_knob_press_resolves_pending_layer_hold);
   RUN_TEST(test_knob_transparent_layer_falls_through);
   RUN_TEST(test_knob_cycle_skips_duplicates_and_notifies);
   RUN_TEST(test_knob_wheel_steps_and_preset_restore);
