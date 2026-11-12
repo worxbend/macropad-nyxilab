@@ -134,6 +134,24 @@ static void test_suspended_click_requests_wake() {
   assert(mock_reports[0].value == mp::MB_LEFT && mock_reports[1].value == 0);
 }
 
+static void test_wheel_step_is_sent_once_and_dropped_while_suspended() {
+  drain();
+  mock_reports.clear();
+  hw::usb_add_mouse(0, 0, -1, 0);  // one knob detent on a WHEEL binding
+  drain();
+  assert(mock_reports.size() == 1);
+  assert(mock_reports[0].wheel == -1 && mock_reports[0].dx == 0 && mock_reports[0].dy == 0 && mock_reports[0].pan == 0);
+  drain();
+  assert(mock_reports.size() == 1);  // not replayed
+  TinyUSBDevice.asleep = true;
+  hw::usb_add_mouse(0, 0, 1, 0);
+  hw::usb_task();
+  TinyUSBDevice.asleep = false;
+  mock_reports.clear();
+  drain();
+  assert(mock_reports.empty());  // a detent turned while the host sleeps does not scroll on wake-up
+}
+
 static void test_settings_isolate_editions() {
   hw::settings_load();
   auto saved = hw::settings();
@@ -316,6 +334,9 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);
   centre.task(140);
   assert(engine.encoder_position() == -CW_DETENT && engine.hid().consumer == CCW_USAGE);
+  assert(centre.on_sys(mp::SYS_ENC_REVERSE, 141));  // a second REV turns it back
+  assert(hw::settings().centre[0] == 0 && centre.reversed() == cfg::ENC_REVERSE);
+  assert(centre.on_sys(mp::SYS_ENC_REVERSE, 142));  // and the rest of the group runs reversed
 
   engine.set_base_layer(1);  // the preset belongs to the base layer, not to layer 0
   const uint8_t base = engine.base_layer();
@@ -474,19 +495,20 @@ int main() {
   test_usb_overflow_eventually_releases();
   test_motion_does_not_pause_generated_keys();
   test_suspended_click_requests_wake();
+  test_wheel_step_is_sent_once_and_dropped_while_suspended();
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
   test_settings_flush_saves_before_a_reboot();
 #ifdef TEST_JOYSTICK
   test_host_link_round_trip();
-  puts("11 hardware/control regression groups passed");
+  puts("12 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("15 hardware/control regression groups passed");
+  puts("16 hardware/control regression groups passed");
 #endif
 }

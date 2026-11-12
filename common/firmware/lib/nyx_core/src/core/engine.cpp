@@ -55,7 +55,7 @@ uint8_t Engine::top_layer() const {
 }
 
 void Engine::set_base_layer(uint8_t layer) {
-  if (layer >= NUM_LAYERS) return;
+  if (layer >= NUM_LAYERS || layer == FN_LAYER) return;  // FN as the base leaves no LAYER key to get out
   base_ = layer;
   mask_ = 0;  // TO()/next-layer drops toggles; held MO actions remain active.
 }
@@ -86,6 +86,13 @@ void Engine::process(const KeyEvent& ev) {
     if (act_type(a) == ActType::TapHold && act_arg(a) < NUM_TAP_HOLDS) {
       pending_ = {true, r, c, uint8_t(act_arg(a)), ev.time};
       return;
+    }
+    // A knob tap's modifiers must not land on this key: end the tap early (its press is already in the USB queue).
+    if (act_type(a) == ActType::Key && tap_phase_ == TapPhase::Down && act_type(tap_cur_) == ActType::Key &&
+        (act_arg(tap_cur_) >> 8) != 0) {
+      release_action(tap_cur_);
+      tap_phase_ = TapPhase::Gap;
+      tap_t0_ = ev.time;
     }
     press_action(a, ev.time);
   } else {
@@ -138,7 +145,8 @@ void Engine::tick(uint32_t now, bool output_ready) {
   }
   if (output_ready && service_taps(now)) changed = true;
   // Start the first character even while suspended: its queued press requests wake-up.
-  if (macro_ && (output_ready || !macro_started_) && int32_t(now - macro_next_) >= 0) {
+  // Not while a knob tap is down: its modifiers would land on the character.
+  if (macro_ && tap_phase_ != TapPhase::Down && (output_ready || !macro_started_) && int32_t(now - macro_next_) >= 0) {
     macro_started_ = true;
     if (!macro_key_down_) {
       while (*macro_) {
@@ -209,6 +217,7 @@ void Engine::press_action(Action a, uint32_t now) {
         macro_started_ = false;
         macro_key_down_ = false;
         macro_next_ = now;
+        clear_queued_taps();  // detents turned before the key must not fire after the text
       }
       break;
     case ActType::Sys:

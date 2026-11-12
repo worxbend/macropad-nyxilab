@@ -12,6 +12,7 @@ struct MockReport {
   int id;
   uint16_t value;
   std::array<uint8_t, 6> keys{};
+  int8_t dx = 0, dy = 0, wheel = 0, pan = 0;
 };
 inline bool mock_ready = true, mock_accept = true;
 inline std::vector<MockReport> mock_reports;
@@ -66,9 +67,9 @@ struct Adafruit_USBD_HID {
     mock_ready = false;
     return true;
   }
-  bool mouseReport(int id, uint8_t buttons, int8_t, int8_t, int8_t, int8_t) {
+  bool mouseReport(int id, uint8_t buttons, int8_t dx, int8_t dy, int8_t wheel, int8_t pan) {
     if (!mock_accept) return false;
-    mock_reports.push_back({id, buttons, {}});
+    mock_reports.push_back({id, buttons, {}, dx, dy, wheel, pan});
     mock_ready = false;
     return true;
   }

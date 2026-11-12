@@ -533,6 +533,78 @@ void test_knob_taps_wait_for_a_running_macro() {
   TEST_ASSERT_EQUAL(1, ctrl_c_reports);  // delayed, not dropped
 }
 
+void test_macro_waits_for_a_knob_tap_that_is_down() {
+  Host h;
+  Engine e(h);
+  e.queue_tap(KC(MOD_LCTRL, hid::C), 10);  // the tap is down from t=10
+  e.process(press(1, 1, 12));              // MACRO(0): "Hi!" while it is down
+  e.process(release(1, 1, 14));
+  for (uint32_t t = 12; t < 300; t++) {
+    e.tick(t);
+    const HidState& s = e.hid();
+    if (!(s.mods & MOD_LCTRL)) continue;
+    TEST_ASSERT_EQUAL_HEX8(hid::C, s.keys[0]);  // Ctrl only ever with the tap's own key
+    TEST_ASSERT_EQUAL_HEX8(0, s.keys[1]);
+  }
+  TEST_ASSERT_FALSE(e.macro_running());  // delayed, not dropped
+}
+
+void test_macro_drops_knob_taps_queued_before_it() {
+  Host h;
+  Engine e(h);
+  for (int i = 0; i < 3; i++) e.queue_tap(KC(MOD_LCTRL, hid::C), 10);  // one down, two waiting
+  e.process(press(1, 1, 12));  // MACRO(0): "Hi!"
+  e.process(release(1, 1, 14));
+  bool typed = false;
+  for (uint32_t t = 12; t < 300; t++) {
+    e.tick(t);
+    if (e.macro_running()) {
+      typed = true;
+    } else if (typed) {
+      TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);  // an old Ctrl+Z detent would undo the text
+    }
+  }
+  TEST_ASSERT_TRUE(typed);
+}
+
+void test_key_press_ends_a_knob_tap_with_modifiers() {
+  Host h;
+  Engine e(h);
+  e.set_encoder_presets(PRESETS, 3);
+  e.set_enc_preset(0, 2);  // ZOOM: Ctrl+= / Ctrl+-
+  e.encoder_step(+1, 0);
+  e.encoder_step(+1, 0);
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::EQUAL));
+  e.process(press(0, 0, 2));  // 'a' while the first tap is down
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);  // not Ctrl+A
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::EQUAL));
+  e.process(release(0, 0, 4));
+  e.tick(7);
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);  // the gap is kept
+  e.tick(8);
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);  // the second detent still goes out
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::EQUAL));
+}
+
+void test_key_press_leaves_a_knob_tap_without_modifiers() {
+  Host h;
+  Engine e(h);
+  e.queue_tap(K(hid::RIGHT), 0);
+  e.process(press(0, 0, 2));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::RIGHT));  // full length: nothing to keep off the key
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
+}
+
+void test_fn_layer_is_never_the_base_layer() {
+  Host h;
+  Engine e(h);
+  e.set_base_layer(1);
+  e.set_base_layer(FN_LAYER);  // console "layer <n>" or a bad saved byte
+  TEST_ASSERT_EQUAL(1, e.base_layer());
+}
+
 void test_knob_cycle_on_a_base_layer_without_its_own_knob() {
   Host h;
   Engine e(h);
@@ -784,6 +856,11 @@ int main() {
   RUN_TEST(test_knob_turn_while_pressed_does_not_repeat_the_press);
   RUN_TEST(test_knob_turns_while_host_asleep_are_not_replayed);
   RUN_TEST(test_knob_taps_wait_for_a_running_macro);
+  RUN_TEST(test_macro_waits_for_a_knob_tap_that_is_down);
+  RUN_TEST(test_macro_drops_knob_taps_queued_before_it);
+  RUN_TEST(test_key_press_ends_a_knob_tap_with_modifiers);
+  RUN_TEST(test_key_press_leaves_a_knob_tap_without_modifiers);
+  RUN_TEST(test_fn_layer_is_never_the_base_layer);
   RUN_TEST(test_knob_cycle_on_a_base_layer_without_its_own_knob);
   RUN_TEST(test_led_layer_colour_and_flash);
   RUN_TEST(test_led_levels_budget_and_off);

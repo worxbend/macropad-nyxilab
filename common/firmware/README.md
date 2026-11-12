@@ -55,7 +55,8 @@ Once the case is closed you do not need BOOTSEL any more:
   scroll, zoom, arrows) and back. The knob is read by pin-change interrupts with a
   detent-synchronised decoder, so bounce never adds steps; key taps from fast turns are
   queued with a 16-detent backlog. Taps and macros wait for USB delivery, and taps
-  for a running macro; detents beyond the backlog are dropped. Physical key/button
+  for a running macro; detents beyond the backlog, or still queued when a macro starts,
+  are dropped. Physical key/button
   transitions have a separate
   64-state USB queue; if that fills, intermediate states can be dropped, but the
   latest held/released state is sent once space becomes available.
