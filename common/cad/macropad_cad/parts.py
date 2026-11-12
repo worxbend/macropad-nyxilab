@@ -17,13 +17,14 @@ from functools import lru_cache
 from build123d import (
     Cone,
     Cylinder,
+    Circle,
     Face,
-    FontStyle,
     Part,
+    Polygon,
     Pos,
     RectangleRounded,
     Rot,
-    Text,
+    Sketch,
     Vector,
     chamfer,
     extrude,
@@ -108,11 +109,26 @@ def top_plate(L: Layout) -> Part:
     body -= L.loc_bar * bar_cuts(L)
     body -= L.ed.plate_cuts(L)  # joystick opening or encoder mount
 
-    if c.logo:
-        txt = Text(c.logo, font_size=c.logo_h, font_style=FontStyle.BOLD)
+    if c.logo_h:
         v_logo = (L.rows[3] + p.sw.cap / 2 + L.V) / 2
-        body -= L.ploc * Pos(L.u_c, v_logo, -c.logo_depth) * extrude(txt, amount=c.logo_depth + 1)
+        body -= L.ploc * Pos(L.u_c, v_logo, -c.logo_depth) * extrude(logo_mark(c.logo_h), amount=c.logo_depth + 1)
     return body
+
+
+def logo_mark(height: float) -> Sketch:
+    """Crescent moon with a four-point star in its opening, centred on the origin.
+
+    At 9 mm the strokes and the walls between them are 1.4 mm or wider, so a 0.4 mm nozzle
+    prints the mark; engraved letters of the same height do not survive.
+    """
+    r = height / 2
+    crescent = Circle(r) - Pos(0.42 * r, 0) * Circle(0.82 * r)
+    tip, waist = 0.48 * r, 0.22 * r
+    star = Polygon((tip, 0), (waist, waist), (0, tip), (-waist, waist),
+                   (-tip, 0), (-waist, -waist), (0, -tip), (waist, -waist))
+    # the star stops short of x = 0: section A-A of the drawings cuts the plate there, and a cut
+    # through the bare tip is a zero-area face
+    return crescent + Pos(0.52 * r, 0) * star
 
 
 def d19_cuts(L: Layout) -> Part:

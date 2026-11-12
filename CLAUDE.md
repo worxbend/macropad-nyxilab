@@ -24,7 +24,7 @@ Four projects plus the shared code, and the host bridge:
 - `host/` - `nyxd`, the optional Linux daemon (a Rust crate: `nyxd` + `nyxctl` binaries) that feeds the HOST layer's
   dashboard over a vendor HID interface and runs commands for `HOST(n)` keys; `nyxctl` talks to it over a Unix socket.
   Design + protocol: `docs/host-bridge.md`.
-- `docs/` - guides (design, printing, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
+- `docs/` - guides (design, printing, build guide, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
   `docs/images/` (wiring diagrams, wiring maps, soldering figures), `docs/viewer.html` (both editions).
 - `tools/` - `ui_sim/`, `wiring_diagram.py`, `wiring_map.py`, `soldering_figures.py`, `build_viewer.py`,
   `build_site.py` (the website; `.github/workflows/pages.yml` deploys `site/` to GitHub Pages on push to main).
