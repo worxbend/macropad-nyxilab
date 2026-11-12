@@ -49,7 +49,7 @@ modules. Typical edits:
 | tighter or looser switch fit | `MXSwitch.hole` |
 | modules loose in their pockets | `PrintTol.pocket` |
 | different insert size / self-tapping | `Fasteners.insert_d`, `insert_depth` |
-| no logo | `Case.logo = ""` |
+| no logo, or a bigger one | `Case.logo_h` (0 = none) |
 | move the centre control / displays | `Case.centre_v`, `Case.bar_v`, `Case.center_half` |
 | move the LED sticks | `Case.led_dx` (from the Pico axis), `Case.led_y` |
 | LED stick with other holes | `LedStick.hole_pitch`, `hole_y`, `hole_d` |

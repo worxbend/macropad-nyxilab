@@ -46,7 +46,7 @@ Key pitch is 19.05 mm (standard 1u). The centre gap between the key columns is s
 by the 1.9" module (62 mm PCB), and the window is kept centred over the joystick (or
 knob) even though the active area is off-centre on that PCB. Plate borders are ~8 mm left/right,
 10.5 mm front, 13.8 mm back (the back border carries the engraved logo, set
-`logo = ""` in `params.py` to remove it).
+`logo_h = 0` in `params.py` to remove it).
 
 ## The stack
 
@@ -164,7 +164,7 @@ Every build runs:
   (6.5 mm), frame wall behind a boss (1.95 mm), insert engagement (4.7 mm). The numbers
   are saved to `<edition>/cad/exports/checks.json` on every build.
 * **Printability report** in print orientation: flags any down-facing surface steeper than
-  50° and lists bridges. Current result: only small bridges (logo letters, the USB
+  50° and lists bridges. Current result: only small bridges (the logo, the USB
   openings ≤ 8 mm, the Ø10.5 feet recesses, the engraved ring's 0.8 mm groove) and a
   1 mm edge chamfer at 50°.
 

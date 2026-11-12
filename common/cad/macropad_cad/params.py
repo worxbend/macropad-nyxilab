@@ -235,8 +235,7 @@ class Case:
     feet_d: float = 10.5
     feet_depth: float = 1.0
     feet_inset: float = 16.0
-    logo: str = "NYXILAB"
-    logo_h: float = 3.6
+    logo_h: float = 9.0  # engraved moon-and-star mark on the back border; 0 = no logo
     logo_depth: float = 0.6
 
 
