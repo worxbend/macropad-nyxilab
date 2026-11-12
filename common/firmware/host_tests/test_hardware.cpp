@@ -1,6 +1,7 @@
 // Compile production hardware/control code against narrow Arduino/USB/EEPROM mocks.
 #include <cassert>
 #include <cstdio>
+#include <vector>
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h>
 #include <EEPROM.h>
@@ -219,6 +220,24 @@ static void test_settings_save_waits_after_a_late_stamp() {
   assert(EEPROM.commits == commits + 1);
 }
 
+static void test_settings_flush_saves_before_a_reboot() {
+  const unsigned commits = EEPROM.commits;
+  hw::settings_flush();  // nothing changed: no write
+  assert(EEPROM.commits == commits);
+  const uint8_t brightness = hw::settings().brightness;
+  hw::settings().brightness = uint8_t(brightness + 1);
+  hw::settings_touch(9000);
+  hw::settings_flush();  // inside the save delay
+  assert(EEPROM.commits == commits + 1);
+  hw::settings_task(20000);
+  assert(EEPROM.commits == commits + 1);  // already saved: not written twice
+  hw::settings_load();
+  assert(hw::settings().brightness == uint8_t(brightness + 1));
+  hw::settings().brightness = brightness;  // back to what the groups that follow expect
+  hw::settings_touch(20000);
+  hw::settings_flush();
+}
+
 #ifndef TEST_JOYSTICK
 static void turn_knob(int leading_pin, int trailing_pin) {  // one detent from rest, as four edges
   for (int pin : {leading_pin, trailing_pin, leading_pin, trailing_pin}) {
@@ -242,6 +261,12 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
   centre.task(120);
   assert(engine.encoder_position() == 0);
+  for (int i = 0; i < 3; i++) turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);  // a fast turn: three detents before one pass
+  centre.task(122);
+  assert(engine.encoder_position() == 3);
+  for (int i = 0; i < 3; i++) turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
+  centre.task(124);
+  assert(engine.encoder_position() == 0);
 
   assert(!centre.on_sys(mp::SYS_BRIGHT_UP, 130));
   assert(centre.on_sys(mp::SYS_ENC_REVERSE, 130));
@@ -255,6 +280,7 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   centre.task(140);
   assert(engine.encoder_position() == -1 && engine.hid().consumer == mp::cc::VOL_DOWN);
 
+  engine.set_base_layer(1);  // the preset belongs to the base layer, not to layer 0
   const uint8_t base = engine.base_layer();
   const uint8_t* modes = hw::settings().centre_modes;
   centre.on_mode(mp::ENC_CYCLE, 150);
@@ -268,6 +294,9 @@ static void test_knob_turns_reverses_and_keeps_its_preset() {
   mp::Engine rebooted_engine(host);
   Centre rebooted;
   rebooted.begin(rebooted_engine, hw::settings().centre);
+  assert(base == 1 && modes[0] == mp::ENC_LAYER_DEFAULT);
+  assert(strcmp(rebooted_engine.encoder_binding().label, "VOLUME") == 0);  // layer 0 kept its own knob
+  rebooted_engine.set_base_layer(base);
   assert(strcmp(rebooted_engine.encoder_binding().label, "ARROWS") == 0 && rebooted.reversed());
   hw::settings().centre[0] = 0;  // back to the defaults for the groups that follow
   hw::settings().centre_modes[base] = mp::ENC_LAYER_DEFAULT;
@@ -280,7 +309,11 @@ static void test_knob_switch_is_debounced() {
   Host host;
   mp::Engine engine(host);
   Centre centre;
+  for (int& mode : mock_pin_mode) mode = 0;  // an earlier group's begin() must not satisfy the asserts
+  for (int& mode : mock_isr_mode) mode = 0;
   centre.begin(engine, hw::settings().centre);
+  for (int pin : {cfg::ENC_A_PIN, cfg::ENC_B_PIN, cfg::ENC_SW_PIN}) assert(mock_pin_mode[pin] == INPUT_PULLUP);
+  assert(mock_isr_mode[cfg::ENC_A_PIN] == CHANGE && mock_isr_mode[cfg::ENC_B_PIN] == CHANGE);  // all four edges
   const auto muted = [&] { return engine.hid().consumer == mp::cc::MUTE; };
   const int activity = g_activity_calls, hits = g_hit_calls;
   mock_pins[cfg::ENC_SW_PIN] = LOW;
@@ -307,7 +340,11 @@ static void test_knob_switch_is_debounced() {
 // Forwards like app.cpp's Host, which these tests do not compile: this pins the keymap's FN cells, not that glue.
 struct KnobHost : Host {
   KnobCentre* centre = nullptr;
-  void on_sys(mp::SysCmd cmd) override { centre->on_sys(cmd, mock_now); }
+  std::vector<mp::SysCmd> sys;
+  void on_sys(mp::SysCmd cmd) override {
+    sys.push_back(cmd);
+    centre->on_sys(cmd, mock_now);
+  }
   void on_centre(uint8_t mode) override { centre->on_mode(mode, mock_now); }
 };
 
@@ -329,6 +366,19 @@ static void test_keymap_fn_keys_reach_the_knob() {
   engine.process({1, 0, false, 340});
   assert(hw::settings().centre_modes[base] != mp::ENC_LAYER_DEFAULT);
   hw::settings_load();  // nothing was committed: back to the stored settings
+
+  turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);
+  centre.task(350);
+  turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
+  centre.task(352);
+  mock_pins[cfg::ENC_SW_PIN] = LOW;
+  for (uint32_t now = 354; now <= 360; now += 2) centre.task(now);
+  mock_pins[cfg::ENC_SW_PIN] = 1;
+  for (uint32_t now = 362; now <= 368; now += 2) centre.task(now);
+  // with FN held the knob dims and blanks; a press must never reach SYS_BOOTLOADER
+  const std::vector<mp::SysCmd> expected = {mp::SYS_ENC_REVERSE, mp::SYS_BRIGHT_UP, mp::SYS_BRIGHT_DOWN,
+                                            mp::SYS_DISPLAYS_TOGGLE};
+  assert(host.sys == expected);
 }
 #endif
 
@@ -377,14 +427,15 @@ int main() {
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
+  test_settings_flush_saves_before_a_reboot();
 #ifdef TEST_JOYSTICK
   test_host_link_round_trip();
-  puts("10 hardware/control regression groups passed");
+  puts("11 hardware/control regression groups passed");
 #else
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("13 hardware/control regression groups passed");
+  puts("14 hardware/control regression groups passed");
 #endif
 }

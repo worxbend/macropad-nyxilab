@@ -42,17 +42,22 @@ const char* const MACROS[] = {
     /* M_HELLO */ "Hello from the Nyxilab macropad!",
 };
 
+// Bindings that are both a preset and a layer's own knob: FN + KNOB hides a preset only while the two are equal.
+constexpr EncoderDef KNOB_VOLUME = {CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"};
+constexpr EncoderDef KNOB_SCROLL = {WHEEL(-1), WHEEL(1), MB(MB_MIDDLE), "SCROLL"};
+
 // Knob presets: FN + KNOB cycles the base layer between its own binding and these.
+// The index is saved in flash (Settings.centre_modes): append only, or bump kVersion in settings.cpp.
 const EncoderDef ENC_PRESETS[] = {
-    {CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"},
-    {WHEEL(-1), WHEEL(1), MB(MB_MIDDLE), "SCROLL"},
+    KNOB_VOLUME,
+    KNOB_SCROLL,
     {KC(MOD_LCTRL, hid::EQUAL), KC(MOD_LCTRL, hid::MINUS), KC(MOD_LCTRL, hid::N0), "ZOOM"},
     {K(hid::RIGHT), K(hid::LEFT), K(hid::ENTER), "ARROWS"},
 };
 
 // Shortcuts use Ctrl; on macOS swap MOD_LCTRL for MOD_LGUI.
 const Layer LAYERS[] = {
-    /* L_MEDIA */ {"MEDIA", rgb565(139, 92, 246), KNOB(CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"), {
+    /* L_MEDIA */ {"MEDIA", rgb565(139, 92, 246), CentreDef{JoyMode::Inherit, KNOB_VOLUME}, {
         {{CC(cc::MUTE), "MUTE"},   {CC(cc::VOL_DOWN), "VOL-"},     {CC(cc::VOL_UP), "VOL+"}},
         {{CC(cc::PREV), "PREV"},   {CC(cc::PLAY_PAUSE), "PLAY"},   {CC(cc::NEXT), "NEXT"}},
         {{CC(cc::STOP), "STOP"},   {CC(cc::BRIGHT_DOWN), "BRI-"},  {CC(cc::BRIGHT_UP), "BRI+"}},
@@ -65,13 +70,13 @@ const Layer LAYERS[] = {
         {{KC(MOD_LCTRL, hid::F), "FIND"}, {K(hid::HOME), "HOME"},                          {K(hid::END), "END"}},
         {{TH(TH_LAYER), "LAYER"},         {K(hid::ENTER), "ENTER"},                        {K(hid::BSPC), "BKSP"}},
     }},
-    /* L_FKEYS */ {"F13-24", rgb565(245, 158, 11), KNOB(WHEEL(-1), WHEEL(1), MB(MB_MIDDLE), "SCROLL"), {
+    /* L_FKEYS */ {"F13-24", rgb565(245, 158, 11), CentreDef{JoyMode::Inherit, KNOB_SCROLL}, {
         {{K(hid::F13), "F13"},    {K(hid::F14), "F14"}, {K(hid::F15), "F15"}},
         {{K(hid::F16), "F16"},    {K(hid::F17), "F17"}, {K(hid::F18), "F18"}},
         {{K(hid::F19), "F19"},    {K(hid::F20), "F20"}, {K(hid::F21), "F21"}},
         {{TH(TH_LAYER), "LAYER"}, {K(hid::F22), "F22"}, {K(hid::F23), "F23"}},
     }},
-    /* L_HOST */ {"HOST", rgb565(56, 189, 248), KNOB(CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"), {
+    /* L_HOST */ {"HOST", rgb565(56, 189, 248), CentreDef{JoyMode::Inherit, KNOB_VOLUME}, {
         {{HOST(1), "H1"},         {HOST(2), "H2"},   {HOST(3), "H3"}},
         {{HOST(4), "H4"},         {HOST(5), "H5"},   {HOST(6), "H6"}},
         {{HOST(7), "H7"},         {HOST(8), "H8"},   {HOST(9), "H9"}},

@@ -48,12 +48,14 @@ void Host::on_sys(mp::SysCmd cmd) {
   if (g_centre && g_centre->on_sys(cmd, now)) return;
   switch (cmd) {
     case mp::SYS_BOOTLOADER:
+      hw::settings_flush();  // a change made in the last 3 s survives the reboot
       Serial.println("rebooting into the UF2 bootloader");
       Serial.flush();
       delay(50);
       rp2040.rebootToBootloader();
       break;
     case mp::SYS_REBOOT:
+      hw::settings_flush();
       rp2040.reboot();
       break;
     case mp::SYS_BRIGHT_UP:

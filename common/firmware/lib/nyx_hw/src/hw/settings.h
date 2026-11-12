@@ -26,5 +26,6 @@ Settings& settings();
 void settings_load();
 void settings_touch(uint32_t now);  // mark dirty; saved ~3 s after the last change
 void settings_task(uint32_t now);
+void settings_flush();  // write now if dirty (before a reboot)
 
 }  // namespace hw

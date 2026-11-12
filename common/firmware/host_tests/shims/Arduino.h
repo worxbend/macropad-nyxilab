@@ -10,13 +10,17 @@ inline unsigned mock_delays = 0;
 inline int mock_adc[32] = {}, mock_pins[32] = {};
 inline uint32_t millis() { return mock_now; }
 inline void delay(int) { ++mock_delays; }
-inline void pinMode(int, int) {}
+inline int mock_pin_mode[32] = {}, mock_isr_mode[32] = {};
+inline void pinMode(int pin, int mode) { mock_pin_mode[pin] = mode; }
 inline int digitalRead(int pin) { return mock_pins[pin]; }
 inline int analogRead(int pin) { return mock_adc[pin]; }
 inline void analogReadResolution(int) {}
 inline int digitalPinToInterrupt(int pin) { return pin; }
 inline void (*mock_isr[32])() = {};
-inline void attachInterrupt(int pin, void (*handler)(), int) { mock_isr[pin] = handler; }
+inline void attachInterrupt(int pin, void (*handler)(), int mode) {
+  mock_isr[pin] = handler;
+  mock_isr_mode[pin] = mode;
+}
 inline void noInterrupts() {}
 inline void interrupts() {}
 struct MockSerial {

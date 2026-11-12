@@ -55,11 +55,14 @@ void settings_touch(uint32_t now) {
 
 void settings_task(uint32_t now) {
   // signed: a stamp taken inside this loop pass can be newer than the pass's `now`
-  if (g_dirty && int32_t(now - g_dirty_since) > 3000) {
-    EEPROM.put(0, g_settings);
-    EEPROM.commit();
-    g_dirty = false;
-  }
+  if (g_dirty && int32_t(now - g_dirty_since) > 3000) settings_flush();
+}
+
+void settings_flush() {
+  if (!g_dirty) return;
+  EEPROM.put(0, g_settings);
+  EEPROM.commit();
+  g_dirty = false;
 }
 
 }  // namespace hw
