@@ -94,6 +94,8 @@ class Engine {
   // One-shot action, e.g. a knob detent: Key / Consumer / MouseBtn actions are
   // queued and tapped one after the other, everything else runs at once.
   void queue_tap(Action a, uint32_t now);
+  // Forget the taps still waiting (not the one already down): no backlog while nobody is listening.
+  void clear_queued_taps();
   // Mouse wheel steps produced by Wheel actions since the last call.
   void take_wheel(int8_t& wheel, int8_t& pan);
 

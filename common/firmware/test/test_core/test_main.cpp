@@ -457,6 +457,43 @@ void test_knob_queue_overflow_drops_steps() {
   TEST_ASSERT_EQUAL(40, e.encoder_position());  // the dial still shows every detent
 }
 
+void test_knob_turn_while_pressed_does_not_repeat_the_press() {
+  Host h;
+  Engine e(h);
+  e.encoder_button(true, 0);
+  TEST_ASSERT_EQUAL_HEX16(cc::MUTE, e.hid().consumer);
+  e.encoder_step(+1, 5);
+  TEST_ASSERT_EQUAL_HEX16(cc::VOL_UP, e.hid().consumer);
+  for (uint32_t t = 6; t < 40; t++) {
+    e.tick(t);
+    TEST_ASSERT_NOT_EQUAL(cc::MUTE, e.hid().consumer);  // one usage per report: MUTE again = a second mute
+  }
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);
+  e.encoder_button(false, 40);
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);
+}
+
+void test_knob_turns_while_host_asleep_are_not_replayed() {
+  Host h;
+  Engine e(h);
+  for (uint32_t t = 0; t < 200; t += 10) {  // 20 detents, nobody listening
+    e.tick(t, false);
+    e.encoder_step(+1, t);
+    e.clear_queued_taps();
+  }
+  TEST_ASSERT_EQUAL_HEX16(cc::VOL_UP, e.hid().consumer);  // the first one stays down: it requests wake-up
+  int presses = 0;
+  uint16_t prev = e.hid().consumer;
+  for (uint32_t t = 200; t < 1200; t++) {
+    e.tick(t);
+    if (e.hid().consumer && !prev) presses++;
+    prev = e.hid().consumer;
+  }
+  TEST_ASSERT_EQUAL(0, presses);
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);
+  TEST_ASSERT_EQUAL(20, e.encoder_position());
+}
+
 // -------------------------------------------------------------------- LEDs
 void test_led_layer_colour_and_flash() {
   LedInput in;
@@ -690,6 +727,8 @@ int main() {
   RUN_TEST(test_knob_cycle_skips_duplicates_and_notifies);
   RUN_TEST(test_knob_wheel_steps_and_preset_restore);
   RUN_TEST(test_knob_queue_overflow_drops_steps);
+  RUN_TEST(test_knob_turn_while_pressed_does_not_repeat_the_press);
+  RUN_TEST(test_knob_turns_while_host_asleep_are_not_replayed);
   RUN_TEST(test_led_layer_colour_and_flash);
   RUN_TEST(test_led_levels_budget_and_off);
   RUN_TEST(test_led_rainbow_and_breathe);

@@ -165,10 +165,19 @@ void Engine::tick(uint32_t now, bool output_ready) {
 void Engine::press_action(Action a, uint32_t now) {
   switch (act_type(a)) {
     case ActType::Key:
-    case ActType::Consumer:
     case ActType::MouseBtn:
       if (n_held_ < MAX_HELD) held_[n_held_++] = a;
       break;
+    case ActType::Consumer: {
+      // One usage per report: a newer press replaces the older one, so the older is
+      // not pressed again when the newer ends (knob turned while its press is held).
+      uint8_t kept = 0;
+      for (uint8_t i = 0; i < n_held_; i++)
+        if (act_type(held_[i]) != ActType::Consumer) held_[kept++] = held_[i];
+      if (kept < MAX_HELD) held_[kept++] = a;
+      n_held_ = kept;
+      break;
+    }
     case ActType::LayerMo: {
       const uint32_t l = act_arg(a);
       if (l < NUM_LAYERS) {  // a layer the keymap does not define would be read past LAYERS[]
@@ -262,7 +271,7 @@ void Engine::rebuild() {
         add_key(uint8_t(act_arg(a) & 0xFF));
         break;
       case ActType::Consumer:
-        h.consumer = uint16_t(act_arg(a));  // the most recent one wins
+        h.consumer = uint16_t(act_arg(a));  // at most one is held: press_action drops the older
         break;
       case ActType::MouseBtn:
         h.mouse_buttons |= uint8_t(act_arg(a));
@@ -371,6 +380,8 @@ void Engine::queue_tap(Action a, uint32_t now) {
   service_taps(now);
   rebuild();
 }
+
+void Engine::clear_queued_taps() { tapq_n_ = 0; }
 
 bool Engine::service_taps(uint32_t now) {
   bool changed = false;

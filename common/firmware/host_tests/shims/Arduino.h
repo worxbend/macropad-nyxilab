@@ -15,7 +15,8 @@ inline int digitalRead(int pin) { return mock_pins[pin]; }
 inline int analogRead(int pin) { return mock_adc[pin]; }
 inline void analogReadResolution(int) {}
 inline int digitalPinToInterrupt(int pin) { return pin; }
-inline void attachInterrupt(int, void (*)(), int) {}
+inline void (*mock_isr[32])() = {};
+inline void attachInterrupt(int pin, void (*handler)(), int) { mock_isr[pin] = handler; }
 inline void noInterrupts() {}
 inline void interrupts() {}
 struct MockSerial {

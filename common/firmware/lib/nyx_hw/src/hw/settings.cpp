@@ -54,7 +54,8 @@ void settings_touch(uint32_t now) {
 }
 
 void settings_task(uint32_t now) {
-  if (g_dirty && now - g_dirty_since > 3000) {
+  // signed: a stamp taken inside this loop pass can be newer than the pass's `now`
+  if (g_dirty && int32_t(now - g_dirty_since) > 3000) {
     EEPROM.put(0, g_settings);
     EEPROM.commit();
     g_dirty = false;

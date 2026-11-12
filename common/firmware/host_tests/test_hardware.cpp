@@ -207,6 +207,86 @@ static void test_diagnostics_do_not_block_input() {
 #endif
 }
 
+static void test_settings_save_waits_after_a_late_stamp() {
+  const unsigned commits = EEPROM.commits;
+  hw::settings_touch(1001);  // a callback's millis() can be newer than the loop's `now`
+  hw::settings_task(1000);
+  assert(EEPROM.commits == commits);
+  hw::settings_task(4001);
+  assert(EEPROM.commits == commits);
+  hw::settings_task(4002);
+  assert(EEPROM.commits == commits + 1);
+}
+
+#ifndef TEST_JOYSTICK
+static void turn_knob(int leading_pin, int trailing_pin) {  // one detent from rest, as four edges
+  for (int pin : {leading_pin, trailing_pin, leading_pin, trailing_pin}) {
+    mock_pins[pin] ^= 1;
+    mock_isr[pin]();
+  }
+}
+
+static void test_knob_turns_reverses_and_keeps_its_preset() {
+  for (int& pin : mock_pins) pin = 1;
+  hw::settings_load();  // drop what earlier groups left in the settings
+  Host host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);  // CLK first = clockwise
+  centre.task(100);
+  assert(engine.encoder_position() == 1 && engine.hid().consumer == mp::cc::VOL_UP);
+  turn_knob(cfg::ENC_B_PIN, cfg::ENC_A_PIN);
+  centre.task(120);
+  assert(engine.encoder_position() == 0);
+
+  assert(!centre.on_sys(mp::SYS_BRIGHT_UP, 130));
+  assert(centre.on_sys(mp::SYS_ENC_REVERSE, 130));
+  assert(hw::settings().centre[0] == 1 && centre.reversed());
+  turn_knob(cfg::ENC_A_PIN, cfg::ENC_B_PIN);
+  centre.task(140);
+  assert(engine.encoder_position() == -1 && engine.hid().consumer == mp::cc::VOL_DOWN);
+
+  const uint8_t base = engine.base_layer();
+  const uint8_t* modes = hw::settings().centre_modes;
+  centre.on_mode(mp::ENC_CYCLE, 150);
+  assert(modes[base] == engine.enc_preset(base) && modes[base] != mp::ENC_LAYER_DEFAULT);
+  centre.on_mode(3, 160);  // not the next one in the cycle
+  assert(modes[base] == 3);
+  mp::Engine rebooted_engine(host);
+  Centre rebooted;
+  rebooted.begin(rebooted_engine, hw::settings().centre);
+  assert(strcmp(rebooted_engine.encoder_binding().label, "ARROWS") == 0 && rebooted.reversed());
+  hw::settings_load();  // nothing was committed: back to the stored settings
+}
+
+static void test_knob_switch_is_debounced() {
+  for (int& pin : mock_pins) pin = 1;
+  Host host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  const auto muted = [&] { return engine.hid().consumer == mp::cc::MUTE; };
+  mock_pins[cfg::ENC_SW_PIN] = LOW;
+  for (uint32_t now = 100; now <= 104; now += 2) centre.task(now);  // 3 samples: not yet
+  assert(!muted() && !engine.encoder_pressed());
+  centre.task(105);  // 1 ms after the last sample: not a sample
+  assert(!muted());
+  mock_pins[cfg::ENC_SW_PIN] = 1;
+  centre.task(106);  // a bounce restarts the count
+  mock_pins[cfg::ENC_SW_PIN] = LOW;
+  for (uint32_t now = 108; now <= 112; now += 2) centre.task(now);
+  assert(!muted());
+  centre.task(114);  // the 4th equal sample
+  assert(muted() && engine.encoder_pressed());
+  mock_pins[cfg::ENC_SW_PIN] = 1;
+  for (uint32_t now = 116; now <= 120; now += 2) centre.task(now);
+  assert(muted());  // the release is debounced too
+  centre.task(122);
+  assert(!muted() && !engine.encoder_pressed());
+}
+#endif
+
 static void test_host_link_round_trip() {
   hw::host_hid_begin();
   Adafruit_USBD_HID* vendor = mock_hids.back();
@@ -251,6 +331,14 @@ int main() {
   test_suspended_click_requests_wake();
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
+  test_settings_save_waits_after_a_late_stamp();
+#ifdef TEST_JOYSTICK
   test_host_link_round_trip();
-  puts("9 hardware/control regression groups passed");
+  puts("10 hardware/control regression groups passed");
+#else
+  test_knob_turns_reverses_and_keeps_its_preset();
+  test_knob_switch_is_debounced();
+  test_host_link_round_trip();
+  puts("12 hardware/control regression groups passed");
+#endif
 }
