@@ -294,11 +294,73 @@ static void test_wheel_step_is_sent_once_and_dropped_while_suspended() {
   assert(mock_reports.size() == 1);  // not replayed
   TinyUSBDevice.asleep = true;
   hw::usb_add_mouse(0, 0, 1, 0);
+  hw::usb_add_mouse(5, 5, 0, 1);  // and the stick, nudged
   hw::usb_task();
   TinyUSBDevice.asleep = false;
   mock_reports.clear();
   drain();
   assert(mock_reports.empty());  // a detent turned while the host sleeps does not scroll on wake-up
+}
+
+static void test_usb_reports_the_lock_leds() {
+  TinyUSBDevice.connected = false;  // as at power-up: nothing to re-enumerate, no delay()
+  hw::usb_begin();
+  TinyUSBDevice.connected = true;
+  Adafruit_USBD_HID* keyboard = mock_hids.back();
+  assert(!keyboard->vendor && keyboard->set_report);
+  const uint8_t num = 0x01, caps = 0x02, prefixed_scroll[] = {1, 0x04};
+  keyboard->set_report(1, HID_REPORT_TYPE_OUTPUT, &caps, 1);
+  assert(hw::usb_leds() == caps);
+  keyboard->set_report(0, HID_REPORT_TYPE_OUTPUT, &num, 1);  // a host that sends no report id
+  assert(hw::usb_leds() == num);
+  keyboard->set_report(0, HID_REPORT_TYPE_OUTPUT, prefixed_scroll, 2);  // the id as the first byte
+  assert(hw::usb_leds() == 0x04);
+  keyboard->set_report(1, HID_REPORT_TYPE_OUTPUT + 1, &caps, 1);  // a feature report is not the LEDs
+  keyboard->set_report(1, HID_REPORT_TYPE_OUTPUT, &caps, 0);
+  assert(hw::usb_leds() == 0x04);
+}
+
+static void test_button_report_in_flight_is_not_delivered() {
+  drain();
+  mock_ready = true;
+  hw::usb_set_extra_buttons(mp::MB_LEFT);
+  hw::usb_task();
+  assert(!mock_ready && !hw::usb_keyboard_delivered());  // sent, the host has not taken it yet
+  mock_ready = true;
+  assert(hw::usb_keyboard_delivered());
+  hw::usb_set_extra_buttons(0);
+  drain();
+}
+
+static int send_pending_motion() {  // until the host has it all; returns the dx it got
+  const size_t first = mock_reports.size();
+  for (size_t sent = first - 1; sent != mock_reports.size();) {
+    sent = mock_reports.size();
+    mock_ready = true;
+    hw::usb_task();
+  }
+  int dx = 0;
+  for (size_t i = first; i < mock_reports.size(); i++) {
+    assert(mock_reports[i].dx > 0 && mock_reports[i].dx <= 127);
+    dx += mock_reports[i].dx;
+  }
+  return dx;
+}
+
+static void test_motion_waits_for_a_busy_endpoint_but_not_without_limit() {
+  drain();
+  mock_reports.clear();
+  hw::usb_add_mouse(100, 0, 0, 0);  // two stick samples before the endpoint is free
+  hw::usb_add_mouse(100, 0, 0, 0);
+  assert(send_pending_motion() == 200);  // more than one report holds: the rest follows
+
+  mock_ready = false;  // mounted and awake, but the host stopped polling (frozen, a paused VM)
+  for (int i = 0; i < 4000; i++) {
+    hw::usb_add_mouse(9, 0, 0, 0);
+    hw::usb_task();
+  }
+  assert(mock_reports.size() == 2);
+  assert(send_pending_motion() == 254);  // two reports' worth: no pointer jump, no wrap to the left
 }
 
 static void test_settings_isolate_editions() {
@@ -670,6 +732,34 @@ static void test_stick_mode_cycle_and_click() {
   assert(last_mouse_buttons() == 0);
   assert(g_hit_calls == hits + 1);  // the release does not
 
+  mock_pins[cfg::JOY_SW_PIN] = LOW;
+  run_tasks(1);
+  for (int i = 0; i < 5; i++) centre.task(now);  // the loop comes round many times per period:
+  centre.task(now + cfg::JOY_PERIOD_MS - 1);     // those passes are not samples
+  drain();
+  assert(g_hit_calls == hits + 1 && last_mouse_buttons() == 0);
+  for (int level : {1, LOW, 1, LOW, 1}) {  // noise: never three low samples in a row
+    mock_pins[cfg::JOY_SW_PIN] = level;
+    run_tasks(1);
+  }
+  assert(g_hit_calls == hits + 1 && last_mouse_buttons() == 0);
+
+  mock_pins[cfg::JOY_SW_PIN] = LOW;  // a drag, and the mode changes under it
+  run_tasks(3);
+  assert(last_mouse_buttons() == mp::MB_LEFT);
+  centre.on_mode(uint8_t(JoyMode::Arrows), now);
+  run_tasks(3);
+  assert(last_mouse_buttons() == mp::MB_LEFT && !engine.hid().has_key(mp::hid::ENTER));  // still the drag
+  mock_pins[cfg::JOY_SW_PIN] = 1;
+  run_tasks(3);
+  assert(last_mouse_buttons() == 0);
+  mock_pins[cfg::JOY_SW_PIN] = LOW;  // the next click has the new meaning
+  run_tasks(3);
+  assert(last_mouse_buttons() == 0 && engine.hid().has_key(mp::hid::ENTER));
+  mock_pins[cfg::JOY_SW_PIN] = 1;
+  run_tasks(3);
+  assert(!engine.hid().has_key(mp::hid::ENTER));
+
   centre.on_mode(uint8_t(JoyMode::Scroll), now);
   mock_pins[cfg::JOY_SW_PIN] = LOW;
   run_tasks(3);
@@ -871,6 +961,9 @@ int main() {
   test_input_is_dropped_while_the_host_refuses_wake();
   test_usb_finishes_the_resync_after_a_refused_wake();
   test_wheel_step_is_sent_once_and_dropped_while_suspended();
+  test_usb_reports_the_lock_leds();
+  test_button_report_in_flight_is_not_delivered();
+  test_motion_waits_for_a_busy_endpoint_but_not_without_limit();
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
@@ -882,13 +975,13 @@ int main() {
   test_stick_saves_the_learned_range_not_the_centre();
   test_stick_motion_wakes_and_does_not_starve_the_save();
   test_host_link_round_trip();
-  puts("23 hardware/control regression groups passed");
+  puts("26 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("24 hardware/control regression groups passed");
+  puts("27 hardware/control regression groups passed");
 #endif
 }

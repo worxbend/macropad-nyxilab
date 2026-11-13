@@ -113,7 +113,10 @@ void JoystickCentre::task(uint32_t now) {
       sw_ = sw_raw;
       sw_count_ = 0;
       app::activity(now);
-      if (sw_) app::hit(now);
+      if (sw_) {
+        sw_mode_ = m;
+        app::hit(now);
+      }
     }
   } else {
     sw_count_ = 0;
@@ -123,9 +126,9 @@ void JoystickCentre::task(uint32_t now) {
   for (uint8_t i = 0; i < out.n_keys; i++) keys[nk++] = out.keys[i];
   uint8_t buttons = 0;
   if (sw_) {
-    if (m == JoyMode::Mouse) buttons = mp::MB_LEFT;
-    if (m == JoyMode::Scroll) buttons = mp::MB_MIDDLE;
-    if (m == JoyMode::Arrows) keys[nk++] = mp::hid::ENTER;
+    if (sw_mode_ == JoyMode::Mouse) buttons = mp::MB_LEFT;
+    if (sw_mode_ == JoyMode::Scroll) buttons = mp::MB_MIDDLE;
+    if (sw_mode_ == JoyMode::Arrows) keys[nk++] = mp::hid::ENTER;
   }
   hw::usb_set_extra_buttons(buttons);
   engine_->set_extra_keys(keys, nk);

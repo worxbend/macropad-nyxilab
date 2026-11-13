@@ -44,7 +44,7 @@ uint32_t* g_main_rows = nullptr;  // row hashes of the frame each panel shows
 uint32_t* g_bar_rows = nullptr;
 bool g_push_all = true;  // the first frame: the hashes describe nothing yet
 
-uint8_t g_applied_bl = 255;
+uint8_t g_applied_bl = 0;  // what display_begin() wrote to both pins
 uint32_t g_last_frame = 0;
 bool g_force = true;
 

@@ -33,7 +33,7 @@ const Layer LAYERS[] = {
         {{K(hid::X), "x"}, {___, ""}, {MO(1), "hold1"}},
         {{TH(1), "esc"}, {___, ""}, {___, ""}},
         {{HOST(7), "h7"}, {___, ""}, {___, ""}},
-        {{TH(0), "L"}, {___, ""}, {___, ""}},
+        {{TH(0), "L"}, {___, ""}, {KC(MOD_LSHIFT, 0), "shift"}},
     }},
     {"FN", 0, KNOB(K(hid::RIGHT), K(hid::LEFT), K(hid::ENTER), "ARROWS"), {
         {{K(hid::F1), "f1"}, {TO(1), "to1"}, {___, ""}},
@@ -158,6 +158,35 @@ void test_plain_key_and_modifier() {
   TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
   e.process(release(0, 0, 3));
   TEST_ASSERT_FALSE(e.hid().has_key(hid::A));
+}
+
+void test_shortcut_modifiers_stay_off_a_later_key() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 0, 0));  // Ctrl+C, still down when the next key lands (a fast roll)
+  e.process(press(0, 0, 1));  // A
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);  // plain A, not Ctrl+A
+  e.process(release(0, 0, 2));
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);  // the shortcut is the newest key again
+  e.process(release(1, 0, 3));
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);
+}
+
+void test_bare_modifier_joins_a_held_shortcut() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 0, 0));  // Ctrl+C, held
+  e.process(press(1, 2, 1));  // TG(1): SECOND has a bare Shift
+  e.process(release(1, 2, 2));
+  e.process(press(3, 2, 3));  // Shift
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL | MOD_LSHIFT, e.hid().mods);  // it adds to the shortcut, it does not replace it
+  e.process(press(0, 0, 4));  // X: a later key still gets the bare modifier, not the shortcut's
+  TEST_ASSERT_EQUAL_HEX8(MOD_LSHIFT, e.hid().mods);
+  e.process(release(0, 0, 5));
+  e.process(release(3, 2, 6));
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
 }
 
 void test_consumer_and_mouse_button() {
@@ -399,8 +428,8 @@ void test_report_holds_six_keys_and_one_of_each_usage() {
   Engine e(h);
   e.process(press(0, 0, 0));  // A
   e.process(press(3, 1, 1));  // B
-  e.process(press(1, 0, 2));  // Ctrl+C
-  e.process(press(3, 2, 3));  // C again: one slot
+  e.process(press(3, 2, 2));  // C
+  e.process(press(1, 0, 3));  // Ctrl+C: C again, one slot
   const uint8_t extra[8] = {hid::F1, hid::F2, hid::UP, hid::LEFT, hid::RIGHT, hid::ENTER, hid::X, hid::H};
   e.set_extra_keys(extra, 8);  // more than the report, and more than the engine keeps
   TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
@@ -1206,6 +1235,8 @@ int main() {
   RUN_TEST(test_debounce_release_keeps_other_keys_of_the_row);
   RUN_TEST(test_debounce_across_millis_wrap);
   RUN_TEST(test_plain_key_and_modifier);
+  RUN_TEST(test_shortcut_modifiers_stay_off_a_later_key);
+  RUN_TEST(test_bare_modifier_joins_a_held_shortcut);
   RUN_TEST(test_consumer_and_mouse_button);
   RUN_TEST(test_tap_goes_to_next_layer_skipping_fn);
   RUN_TEST(test_hold_timeout_activates_fn);

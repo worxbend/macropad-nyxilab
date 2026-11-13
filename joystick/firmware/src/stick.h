@@ -31,6 +31,7 @@ class JoystickCentre : public app::Centre {
   uint32_t last_ms_ = 0;
   uint8_t sw_count_ = 0;
   bool sw_ = false;
+  mp::JoyMode sw_mode_ = mp::JoyMode::Off;  // the mode when the click went down: a held click keeps its meaning
   bool diagnostics_ = false;
   uint32_t diagnostics_start_ = 0, diagnostics_last_ = 0;
 };

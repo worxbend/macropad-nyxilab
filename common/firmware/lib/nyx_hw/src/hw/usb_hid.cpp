@@ -44,6 +44,13 @@ void on_set_report(uint8_t report_id, hid_report_type_t type, uint8_t const* buf
 
 int8_t clamp8(int16_t v) { return int8_t(v > 127 ? 127 : (v < -127 ? -127 : v)); }
 
+// Motion waits while the endpoint is busy; cap the wait at two reports so a stalled host gets no jump.
+constexpr int kMaxBacklog = 2 * 127;
+int16_t add_capped(int16_t sum, int8_t step) {
+  const int v = sum + step;
+  return int16_t(v > kMaxBacklog ? kMaxBacklog : (v < -kMaxBacklog ? -kMaxBacklog : v));
+}
+
 void enqueue_current() {
   mp::HidState s = g_want;
   s.mouse_buttons |= g_extra_buttons;
@@ -85,10 +92,10 @@ void usb_set_extra_buttons(uint8_t buttons) {
 }
 
 void usb_add_mouse(int8_t dx, int8_t dy, int8_t wheel, int8_t pan) {
-  g_dx += dx;
-  g_dy += dy;
-  g_wheel += wheel;
-  g_pan += pan;
+  g_dx = add_capped(g_dx, dx);
+  g_dy = add_capped(g_dy, dy);
+  g_wheel = add_capped(g_wheel, wheel);
+  g_pan = add_capped(g_pan, pan);
 }
 
 void usb_task() {

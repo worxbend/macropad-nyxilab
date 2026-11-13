@@ -38,7 +38,7 @@ make cad-joystick CMD=check   # one edition, one step (check | export | render |
 make cad-check          # 169 (joystick) / 191 (rotary) interference pairs + clearances + printability; non-zero exit on failure
 make firmware           # both editions for the Pico 2 -> <ed>/firmware/dist/nyxilab-macropad-<ed>-pico2.uf2
 make firmware-all       # + the RP2040 builds; firmware-joystick, firmware-rotary(-pico), flash-joystick, flash-rotary
-make test               # native tests: common (65), joystick (11), rotary (10), mocked hardware (23 + 24 groups), host daemon (18, cargo)
+make test               # native tests: common (67), joystick (11), rotary (10), mocked hardware (26 + 27 groups), host daemon (18, cargo)
 make test-sanitize      # the native C++ tests again under ASan + UBSan
 make host-run           # nyxd from the source tree (cargo run); host-install = cargo install --path host
 make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figures) + viewer + site

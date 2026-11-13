@@ -275,14 +275,21 @@ void Engine::rebuild() {
   // Held keys wait for macro text: their modifiers must not land on it, nor its Shift on them.
   // Not before the first character: a knob tap that is still down then finishes first.
   const bool typing = macro_ && macro_started_;
+  // A shortcut's modifiers belong to its own key: only the newest held key keeps them. A bare modifier
+  // (no usage) always applies and is not that newest key: Shift pressed onto a held Ctrl+Z gives Ctrl+Shift+Z.
+  int newest_key = -1;
+  for (uint8_t i = 0; i < n_held_; i++)
+    if (act_type(held_[i]) == ActType::Key && (act_arg(held_[i]) & 0xFF)) newest_key = i;
   for (uint8_t i = 0; i < n_held_; i++) {
     const Action a = held_[i];
     switch (act_type(a)) {
-      case ActType::Key:
+      case ActType::Key: {
         if (typing) break;
-        h.mods |= uint8_t(act_arg(a) >> 8);
-        add_key(uint8_t(act_arg(a) & 0xFF));
+        const uint8_t usage = uint8_t(act_arg(a) & 0xFF);
+        if (!usage || i == newest_key) h.mods |= uint8_t(act_arg(a) >> 8);
+        add_key(usage);
         break;
+      }
       case ActType::Consumer:
         h.consumer = uint16_t(act_arg(a));  // at most one is held: press_action drops the older
         break;
