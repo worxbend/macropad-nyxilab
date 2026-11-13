@@ -27,6 +27,7 @@ mp::HidState g_queue[kQueueSize];
 uint8_t g_head = 0, g_count = 0;
 uint8_t g_resync = 0;  // keyboard / consumer / mouse must be sent after enumeration
 bool g_mounted = false;
+bool g_wake_refused = false;
 bool g_state_inflight = false;  // motion-only reports must not pause macros/tap timers
 int16_t g_dx = 0, g_dy = 0, g_wheel = 0, g_pan = 0;
 volatile uint8_t g_leds = 0;
@@ -105,9 +106,19 @@ void usb_task() {
   if (!mounted || TinyUSBDevice.suspended()) {
     // don't let stick motion pile up while nobody is listening (no jump on wake-up)
     g_dx = g_dy = g_wheel = g_pan = 0;
-    if (mounted && g_count) TinyUSBDevice.remoteWakeup();
+    if (!mounted) {
+      g_wake_refused = false;
+    } else if (g_count && !TinyUSBDevice.remoteWakeup() && TinyUSBDevice.suspended()) {
+      // The host did not arm remote wake-up: it cannot be woken from here, so this input is
+      // dropped, not typed when it wakes some other way. g_sent still matches what the host saw.
+      // Still suspended is checked again: the USB task runs in an interrupt, and a host that
+      // resumed between the two calls also makes the wake-up request fail.
+      g_count = 0;
+      g_wake_refused = true;
+    }
     return;
   }
+  g_wake_refused = false;
   enqueue_current();  // after overflow, eventually send the latest state (including releases)
   if (!g_count && !g_dx && !g_dy && !g_wheel && !g_pan) return;
   if (!g_hid.ready()) return;
@@ -161,6 +172,7 @@ bool usb_keyboard_delivered() {
 
 bool usb_mounted() { return TinyUSBDevice.mounted(); }
 bool usb_suspended() { return TinyUSBDevice.suspended(); }
+bool usb_wake_refused() { return g_wake_refused; }
 uint8_t usb_leds() { return g_leds; }
 
 }  // namespace hw

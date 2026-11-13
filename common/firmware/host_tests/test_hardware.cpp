@@ -160,6 +160,55 @@ static void test_suspended_click_requests_wake() {
   assert(mock_reports[0].value == mp::MB_LEFT && mock_reports[1].value == 0);
 }
 
+static void test_input_is_dropped_while_the_host_refuses_wake() {
+  drain();
+  mock_reports.clear();
+  mp::HidState tapped, held;
+  tapped.mods = mp::MOD_LCTRL;
+  tapped.keys[0] = mp::hid::Z;
+  held.keys[0] = mp::hid::B;
+  TinyUSBDevice.asleep = true;
+  TinyUSBDevice.wake_ok = false;  // e.g. Linux: wake-up is armed for boot keyboards only
+  assert(!hw::usb_wake_refused());
+  hw::usb_set_keyboard(tapped);
+  hw::usb_task();
+  assert(hw::usb_wake_refused());
+  hw::usb_set_keyboard({});
+  hw::usb_task();
+  TinyUSBDevice.asleep = false;  // woken some other way, hours later
+  drain();
+  assert(mock_reports.empty());  // Ctrl+Z is not typed into the lock screen
+  assert(!hw::usb_wake_refused());
+
+  TinyUSBDevice.asleep = true;
+  hw::usb_set_keyboard(tapped);
+  hw::usb_task();
+  hw::usb_set_keyboard({});
+  hw::usb_task();
+  hw::usb_set_keyboard(held);
+  hw::usb_task();
+  TinyUSBDevice.asleep = false;
+  drain();
+  assert(mock_reports.size() == 1);  // only what is held at resume
+  assert(mock_reports[0].id == 1 && mock_reports[0].value == 0 && mock_reports[0].keys[0] == mp::hid::B);
+  hw::usb_set_keyboard({});
+  drain();
+  assert(mock_reports.size() == 2 && mock_reports[1].keys[0] == 0);
+
+  hw::usb_set_keyboard(held);
+  drain();
+  TinyUSBDevice.asleep = true;  // suspended with B down, released while asleep
+  hw::usb_set_keyboard({});
+  hw::usb_task();
+  TinyUSBDevice.connected = false;
+  hw::usb_task();
+  assert(!hw::usb_wake_refused());  // unplugged: the no-host rule applies instead
+  TinyUSBDevice.connected = true;
+  TinyUSBDevice.asleep = false;
+  TinyUSBDevice.wake_ok = true;
+  drain();
+}
+
 static void test_wheel_step_is_sent_once_and_dropped_while_suspended() {
   drain();
   mock_reports.clear();
@@ -535,14 +584,17 @@ static void test_stick_mode_cycle_and_click() {
   };
   drain();
   mock_reports.clear();
+  const int hits = g_hit_calls;
   mock_pins[cfg::JOY_SW_PIN] = LOW;
   run_tasks(2);
   assert(last_mouse_buttons() == 0xFF);  // two samples: still bouncing
   run_tasks(1);
   assert(last_mouse_buttons() == mp::MB_LEFT);
+  assert(g_hit_calls == hits + 1);  // a click flashes the LEDs
   mock_pins[cfg::JOY_SW_PIN] = 1;
   run_tasks(3);
   assert(last_mouse_buttons() == 0);
+  assert(g_hit_calls == hits + 1);  // the release does not
 
   centre.on_mode(uint8_t(JoyMode::Scroll), now);
   mock_pins[cfg::JOY_SW_PIN] = LOW;
@@ -564,6 +616,87 @@ static void test_stick_mode_cycle_and_click() {
   mock_adc[cfg::JOY_Y_PIN] = 2048;
   hw::settings_load();  // drop the travel learned above, then put the layer's own mode back in flash
   hw::settings().centre_modes[base] = uint8_t(JoyMode::Inherit);
+  hw::settings_touch(now);
+  hw::settings_flush();
+}
+
+static void boot_stick_at_rest(Centre& centre, mp::Engine& engine) {  // default travel, centre 2048
+  for (int& pin : mock_pins) pin = 1;
+  mock_adc[cfg::JOY_X_PIN] = mock_adc[cfg::JOY_Y_PIN] = 2048;
+  hw::settings_load();
+  memset(hw::settings().centre, 0, hw::CENTRE_BYTES);  // as on a first boot
+  centre.begin(engine, hw::settings().centre);
+  hw::settings_flush();
+}
+
+static void test_stick_saves_the_learned_range_not_the_centre() {
+  Host host;
+  mp::Engine engine(host);
+  Centre first_boot;
+  const unsigned before = EEPROM.commits;
+  boot_stick_at_rest(first_boot, engine);
+  assert(EEPROM.commits == before + 1);  // the default travel is stored once
+  const unsigned commits = EEPROM.commits;
+
+  uint32_t now = mock_now = 10000;
+  mock_adc[cfg::JOY_X_PIN] = 2051;  // ADC noise: the rest position differs at every power-up
+  mock_adc[cfg::JOY_Y_PIN] = 2045;
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  hw::settings_task(now += 3001);
+  assert(EEPROM.commits == commits);  // it is sampled again at the next boot: not worth a flash erase
+  mock_adc[cfg::JOY_X_PIN] = 2060;
+  assert(centre.on_sys(mp::SYS_JOY_CALIBRATE, now));
+  hw::settings_task(now += 3001);
+  assert(EEPROM.commits == commits);
+
+  mock_adc[cfg::JOY_X_PIN] = 4000;  // past the default travel
+  centre.task(now);
+  hw::settings_task(now + 3000);
+  assert(EEPROM.commits == commits);
+  hw::settings_task(now + 3001);
+  assert(EEPROM.commits == commits + 1);
+  mp::JoyCal cal;
+  hw::settings_load();
+  memcpy(&cal, hw::settings().centre, sizeof cal);
+  assert(cal.max_x == 4000 && cal.cx == 2060);  // written whole when it is written
+  mock_adc[cfg::JOY_X_PIN] = 2048;
+  drain();  // the pointer motion of that one pass
+}
+
+static void test_stick_motion_wakes_and_does_not_starve_the_save() {
+  using mp::JoyMode;
+  Host host;
+  mp::Engine engine(host);
+  Centre centre;
+  boot_stick_at_rest(centre, engine);
+  const uint8_t base = engine.base_layer();
+  uint32_t now = 20000;
+  centre.on_mode(uint8_t(JoyMode::Mouse), now);  // a setting waiting for its save delay
+  const unsigned commits = EEPROM.commits;
+  const int activity = g_activity_calls;
+  for (int i = 0; i < 3100 / int(cfg::JOY_PERIOD_MS); i++) {
+    centre.task(now += cfg::JOY_PERIOD_MS);
+    hw::settings_task(now);
+  }
+  assert(EEPROM.commits == commits + 1);  // the stick's own save check does not keep pushing the delay
+  assert(g_activity_calls == activity);   // a stick at rest lets the displays sleep
+
+  mock_adc[cfg::JOY_X_PIN] = 3500;
+  for (int i = 0; i < 3; i++) centre.task(now += cfg::JOY_PERIOD_MS);
+  assert(g_activity_calls > activity);  // using the stick keeps them awake
+
+  drain();
+  mock_reports.clear();
+  mock_adc[cfg::JOY_X_PIN] = 3700;  // full right
+  centre.task(now += 1000);         // the loop stalled for a second (a flash write)
+  drain();
+  int dx = 0;
+  for (const auto& r : mock_reports) dx += r.dx;
+  assert(dx > 100 && dx <= 110);  // 0.1 s of travel at most: no pointer jump
+
+  mock_adc[cfg::JOY_X_PIN] = 2048;
+  hw::settings().centre_modes[base] = uint8_t(JoyMode::Inherit);  // the layer's own mode back in flash
   hw::settings_touch(now);
   hw::settings_flush();
 }
@@ -635,6 +768,7 @@ int main() {
   test_usb_overflow_eventually_releases();
   test_motion_does_not_pause_generated_keys();
   test_suspended_click_requests_wake();
+  test_input_is_dropped_while_the_host_refuses_wake();
   test_wheel_step_is_sent_once_and_dropped_while_suspended();
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
@@ -643,14 +777,16 @@ int main() {
   test_display_pushes_only_the_rows_that_changed();
 #ifdef TEST_JOYSTICK
   test_stick_mode_cycle_and_click();
+  test_stick_saves_the_learned_range_not_the_centre();
+  test_stick_motion_wakes_and_does_not_starve_the_save();
   test_host_link_round_trip();
-  puts("15 hardware/control regression groups passed");
+  puts("18 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("18 hardware/control regression groups passed");
+  puts("19 hardware/control regression groups passed");
 #endif
 }

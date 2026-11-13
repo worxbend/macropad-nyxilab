@@ -16,7 +16,7 @@ using namespace mp;
 // ------------------------------------------------------------ test keymap
 namespace mp {
 const TapHoldDef TAP_HOLDS[] = {{LNEXT, MO(2), 200}, {K(hid::ESC), MO(2), 200}};
-const char* const MACROS[] = {"Hi!"};
+const char* const MACROS[] = {"Hi!", "a\x01" "b"};  // \x01 has no key
 const EncoderDef PRESETS[] = {
     {CC(cc::VOL_UP), CC(cc::VOL_DOWN), CC(cc::MUTE), "VOLUME"},  // same as BASE's own
     {WHEEL(-1), WHEEL(1), MB(MB_MIDDLE), "SCROLL"},
@@ -45,7 +45,7 @@ const Layer LAYERS[] = {
 const uint8_t NUM_LAYERS = 3;
 const uint8_t FN_LAYER = 2;
 const uint8_t NUM_TAP_HOLDS = 2;
-const uint8_t NUM_MACROS = 1;
+const uint8_t NUM_MACROS = 2;
 }  // namespace mp
 
 // The host does what the rotary edition's KnobCentre does with a cycle request.
@@ -93,6 +93,55 @@ void test_debounce_filters_bounce() {
   for (int i = 0; i < 3; i++) d.update(raw, t++, sink);
   TEST_ASSERT_EQUAL(2, ev.size());
   TEST_ASSERT_FALSE(ev[1].pressed);
+}
+
+void test_debounce_restarts_timer_after_a_spike() {
+  Debouncer d(5);
+  int n = 0;
+  auto sink = [&](const KeyEvent&) { n++; };
+  uint8_t raw[ROWS] = {};
+  raw[2] = 1; d.update(raw, 0, sink);
+  raw[2] = 0; d.update(raw, 1, sink);
+  raw[2] = 1; d.update(raw, 6, sink);  // second spike: must not count from t = 0
+  raw[2] = 0; d.update(raw, 7, sink);
+  TEST_ASSERT_EQUAL(0, n);
+  raw[2] = 1; d.update(raw, 10, sink);  // steady press from t = 10
+  d.update(raw, 14, sink);
+  TEST_ASSERT_EQUAL(0, n);  // 4 ms: not yet
+  d.update(raw, 15, sink);
+  TEST_ASSERT_EQUAL(1, n);  // exactly at 5 ms
+}
+
+void test_debounce_release_keeps_other_keys_of_the_row() {
+  Debouncer d(5);
+  std::vector<KeyEvent> ev;
+  auto sink = [&](const KeyEvent& e) { ev.push_back(e); };
+  uint8_t raw[ROWS] = {};
+  raw[2] = 0b11; d.update(raw, 0, sink); d.update(raw, 5, sink);
+  TEST_ASSERT_EQUAL(2, ev.size());
+  raw[2] = 0b01; d.update(raw, 10, sink); d.update(raw, 15, sink);
+  TEST_ASSERT_EQUAL(3, ev.size());
+  TEST_ASSERT_FALSE(ev[2].pressed);
+  TEST_ASSERT_EQUAL(1, ev[2].col);
+  TEST_ASSERT_TRUE(d.is_down(2, 0));
+  TEST_ASSERT_FALSE(d.is_down(2, 1));
+  d.update(raw, 25, sink);
+  TEST_ASSERT_EQUAL(3, ev.size());  // no ghost re-press of (2,0)
+}
+
+void test_debounce_across_millis_wrap() {
+  Debouncer d(5);
+  int n = 0;
+  auto sink = [&](const KeyEvent&) { n++; };
+  const uint32_t t0 = 0xFFFFFFFDu;  // t0 + 5 wraps
+  uint8_t raw[ROWS] = {};
+  raw[0] = 1;
+  d.update(raw, t0, sink);
+  d.update(raw, t0 + 1, sink);  // still before the wrap
+  d.update(raw, t0 + 4, sink);
+  TEST_ASSERT_EQUAL(0, n);
+  d.update(raw, t0 + 5, sink);
+  TEST_ASSERT_EQUAL(1, n);
 }
 
 // ------------------------------------------------------------------- engine
@@ -342,6 +391,179 @@ void test_ascii_mapping() {
   TEST_ASSERT_EQUAL_HEX8(0, m);
   ascii_to_hid('\x01', m, u);
   TEST_ASSERT_EQUAL_HEX8(0, u);
+}
+
+// ------------------------------------------------- report limits and guards
+void test_report_holds_six_keys_and_one_of_each_usage() {
+  Host h;
+  Engine e(h);
+  e.process(press(0, 0, 0));  // A
+  e.process(press(3, 1, 1));  // B
+  e.process(press(1, 0, 2));  // Ctrl+C
+  e.process(press(3, 2, 3));  // C again: one slot
+  const uint8_t extra[8] = {hid::F1, hid::F2, hid::UP, hid::LEFT, hid::RIGHT, hid::ENTER, hid::X, hid::H};
+  e.set_extra_keys(extra, 8);  // more than the report, and more than the engine keeps
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::UP));     // 3 held + 3 extras
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::LEFT));  // the 7th is dropped
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
+  TEST_ASSERT_EQUAL_HEX16(0, e.hid().consumer);
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mouse_buttons);
+  e.process(release(0, 0, 4));
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::A));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::LEFT));  // a freed slot goes to the next one
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::RIGHT));
+}
+
+void test_repeated_and_out_of_range_events_are_ignored() {
+  Host h;
+  Engine e(h);
+  e.process(press(ROWS, 0, 0));
+  e.process(press(0, COLS, 0));
+  TEST_ASSERT_TRUE(e.hid() == HidState{});
+  e.process(press(0, 0, 1));
+  e.process(press(0, 0, 2));  // the same press again must not be held twice
+  e.process(release(0, 0, 3));
+  TEST_ASSERT_TRUE(e.hid() == HidState{});
+  e.process(release(0, 0, 4));
+  e.process(press(0, 0, 5));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
+  e.process(release(0, 0, 6));
+  TEST_ASSERT_TRUE(e.hid() == HidState{});
+  e.process(press(1, 2, 7));  // TG(1)
+  e.process(press(1, 2, 8));  // not toggled back
+  TEST_ASSERT_EQUAL(1, e.top_layer());
+}
+
+void test_two_holders_of_one_momentary_layer() {
+  Host h;
+  Engine e(h);
+  e.set_base_layer(1);
+  e.process(press(3, 0, 0));  // TH(0): hold = MO(2)
+  e.tick(200);
+  TEST_ASSERT_EQUAL(2, e.top_layer());
+  e.process(press(1, 0, 210));  // TH(1) from SECOND: hold = MO(2) too
+  e.tick(410);
+  e.process(release(3, 0, 420));
+  TEST_ASSERT_EQUAL(2, e.top_layer());  // the other holder keeps FN on
+  e.process(press(0, 0, 430));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::F1));
+  e.process(release(0, 0, 440));
+  e.process(release(1, 0, 450));
+  TEST_ASSERT_EQUAL(1, e.top_layer());
+}
+
+void test_hold_term_across_millis_wrap() {
+  Host h;
+  Engine e(h);
+  const uint32_t t0 = 0xFFFFFFF0u;  // t0 + 200 wraps
+  e.process(press(3, 0, t0));
+  e.tick(t0 + 10);  // still before the wrap
+  TEST_ASSERT_EQUAL(0, e.top_layer());
+  e.tick(t0 + 199);
+  TEST_ASSERT_EQUAL(0, e.top_layer());
+  e.tick(t0 + 200);
+  TEST_ASSERT_EQUAL(2, e.top_layer());
+}
+
+void test_tapped_key_stays_down_10_ms_across_millis_wrap() {
+  Host h;
+  Engine e(h);
+  e.set_base_layer(1);
+  const uint32_t t0 = 0xFFFFFFFAu;  // t0 + 10 wraps
+  e.process(press(1, 0, t0 - 2));   // TH(1): tap = Esc
+  e.process(release(1, 0, t0));
+  e.tick(t0 + 5);  // still before the wrap
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::ESC));
+  e.tick(t0 + 9);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::ESC));
+  e.tick(t0 + 10);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::ESC));
+}
+
+static int count_key_downs(Engine& e, uint32_t from, uint32_t ms, std::vector<uint8_t>* usages = nullptr) {
+  int downs = 0;
+  uint8_t prev = e.hid().keys[0];
+  for (uint32_t i = 0; i < ms; i++) {
+    e.tick(from + i);
+    const uint8_t now = e.hid().keys[0];
+    if (now && !prev) {
+      downs++;
+      if (usages) usages->push_back(now);
+    }
+    prev = now;
+  }
+  return downs;
+}
+
+void test_macro_keeps_its_pace_across_millis_wrap() {
+  Host h;
+  Engine e(h);
+  const uint32_t t0 = 0xFFFFFFF0u;  // the second character starts after the wrap
+  e.process(press(1, 1, t0));
+  TEST_ASSERT_EQUAL(3, count_key_downs(e, t0, 40));  // "Hi!": 8 ms down, 8 ms up
+  TEST_ASSERT_TRUE(e.macro_running());               // t0 + 39: the last release is due at t0 + 40
+  e.tick(t0 + 40);
+  TEST_ASSERT_FALSE(e.macro_running());
+}
+
+void test_macro_key_pressed_again_does_not_restart_the_text() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 1, 0));
+  e.process(release(1, 1, 5));
+  int downs = count_key_downs(e, 0, 20);
+  e.process(press(1, 1, 20));  // mid-text
+  e.process(release(1, 1, 25));
+  downs += count_key_downs(e, 20, 200);
+  TEST_ASSERT_EQUAL(3, downs);  // "Hi!" once
+  TEST_ASSERT_FALSE(e.macro_running());
+}
+
+void test_macro_skips_a_character_without_a_key() {
+  Host h;
+  Engine e(h);
+  e.queue_tap(MACRO(1), 0);  // "a\x01b"
+  std::vector<uint8_t> typed;
+  count_key_downs(e, 0, 100, &typed);
+  TEST_ASSERT_EQUAL(2, typed.size());
+  TEST_ASSERT_EQUAL_HEX8(hid::A, typed[0]);
+  TEST_ASSERT_EQUAL_HEX8(hid::B, typed[1]);
+  TEST_ASSERT_FALSE(e.macro_running());
+}
+
+void test_layer_next_stays_put_when_every_layer_is_skipped() {
+  Host h;
+  Engine e(h);
+  e.set_skip_layers(0b011);
+  e.process(press(3, 0, 0));
+  e.process(release(3, 0, 50));  // tap = LNEXT: must return
+  TEST_ASSERT_EQUAL(0, e.base_layer());
+}
+
+void test_wheel_steps_beyond_one_report_carry_over() {
+  Host h;
+  Engine e(h);
+  e.queue_tap(WHEEL(100), 0);
+  e.queue_tap(WHEEL(100), 0);
+  int8_t wheel = 0, pan = 0;
+  e.take_wheel(wheel, pan);
+  TEST_ASSERT_EQUAL(127, wheel);
+  e.take_wheel(wheel, pan);
+  TEST_ASSERT_EQUAL(73, wheel);
+  e.take_wheel(wheel, pan);
+  TEST_ASSERT_EQUAL(0, wheel);
+  TEST_ASSERT_EQUAL(0, pan);
+}
+
+void test_two_mouse_buttons_are_held_together() {
+  Host h;
+  Engine e(h);
+  e.set_encoder_presets(PRESETS, 3);
+  e.set_enc_preset(0, 1);  // SCROLL: press = middle button
+  e.encoder_button(true, 0);
+  e.process(press(0, 2, 1));  // left button
+  TEST_ASSERT_EQUAL_HEX8(MB_LEFT | MB_MIDDLE, e.hid().mouse_buttons);
 }
 
 // ------------------------------------------------------------------- knob
@@ -922,6 +1144,9 @@ void test_host_key_state_queue_and_bye() {
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_debounce_filters_bounce);
+  RUN_TEST(test_debounce_restarts_timer_after_a_spike);
+  RUN_TEST(test_debounce_release_keeps_other_keys_of_the_row);
+  RUN_TEST(test_debounce_across_millis_wrap);
   RUN_TEST(test_plain_key_and_modifier);
   RUN_TEST(test_consumer_and_mouse_button);
   RUN_TEST(test_tap_goes_to_next_layer_skipping_fn);
@@ -940,6 +1165,17 @@ int main() {
   RUN_TEST(test_sys_and_centre_callbacks);
   RUN_TEST(test_macro_types_text);
   RUN_TEST(test_ascii_mapping);
+  RUN_TEST(test_report_holds_six_keys_and_one_of_each_usage);
+  RUN_TEST(test_repeated_and_out_of_range_events_are_ignored);
+  RUN_TEST(test_two_holders_of_one_momentary_layer);
+  RUN_TEST(test_hold_term_across_millis_wrap);
+  RUN_TEST(test_tapped_key_stays_down_10_ms_across_millis_wrap);
+  RUN_TEST(test_macro_keeps_its_pace_across_millis_wrap);
+  RUN_TEST(test_macro_key_pressed_again_does_not_restart_the_text);
+  RUN_TEST(test_macro_skips_a_character_without_a_key);
+  RUN_TEST(test_layer_next_stays_put_when_every_layer_is_skipped);
+  RUN_TEST(test_wheel_steps_beyond_one_report_carry_over);
+  RUN_TEST(test_two_mouse_buttons_are_held_together);
   RUN_TEST(test_knob_taps_consumer_keys_one_after_another);
   RUN_TEST(test_knob_press_is_held_and_latched);
   RUN_TEST(test_knob_fn_layer_binding_and_hold_on_turn);

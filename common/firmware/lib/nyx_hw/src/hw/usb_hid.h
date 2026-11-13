@@ -20,6 +20,7 @@ void usb_set_extra_buttons(uint8_t buttons);  // e.g. joystick click
 
 bool usb_mounted();
 bool usb_suspended();
+bool usb_wake_refused();  // suspended host that did not arm remote wake-up: input is dropped, not kept for later
 uint8_t usb_leds();  // host LED state: bit0 NUM, bit1 CAPS, bit2 SCROLL
 
 }  // namespace hw

@@ -143,7 +143,7 @@ samples are skipped when the serial transmit buffer is full.
 
 ```
 common/firmware/lib/
-  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 34 tests)
+  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 63 tests)
     keycodes.h          action encoding (32-bit: type | argument) + HID usages
     keymap.h            layer / key / centre-control types; the layers live in the editions
     debounce.h          per-key deferred debounce
@@ -154,8 +154,8 @@ common/firmware/lib/
   nyx_ui/src/ui/        UI state hand-over between the cores, rendering, ST7789 panels, WS2812 sticks
   nyx_app/src/app/      the application: core 0 loop, console, UI feed; core 1 displays + LEDs
                         app::Centre is the interface an edition's centre control implements
-joystick/firmware/      config.h, keymap.cpp, stick.cpp (JoystickCentre), joystick.cpp, main.cpp, 6 tests
-rotary/firmware/        config.h, keymap.cpp, knob.cpp (KnobCentre), quad_decoder.h, main.cpp, 4 tests
+joystick/firmware/      config.h, keymap.cpp, stick.cpp (JoystickCentre), joystick.cpp, main.cpp, 11 tests
+rotary/firmware/        config.h, keymap.cpp, knob.cpp (KnobCentre), quad_decoder.h, main.cpp, 10 tests
 tools/ui_sim/           builds render.cpp + led_fx.cpp + the edition's keymap natively and writes PNGs
 common/firmware/host_tests/  hardware/control regressions against Arduino, USB and EEPROM mocks
 ```

@@ -20,6 +20,7 @@ inline bool mock_vendor_ready = true;  // the host bridge's own interface and en
 inline std::vector<std::array<uint8_t, 64>> mock_vendor_reports;
 struct MockUSBDevice {
   bool connected = true, asleep = false;
+  bool wake_ok = true;  // false: the host did not arm remote wake-up
   unsigned wakes = 0;
   bool isInitialized() { return true; }
   void begin(int) {}
@@ -29,7 +30,7 @@ struct MockUSBDevice {
   bool suspended() { return asleep; }
   void detach() { connected = false; }
   void attach() { connected = true; }
-  void remoteWakeup() { ++wakes; }
+  bool remoteWakeup() { ++wakes; return wake_ok; }
 };
 inline MockUSBDevice TinyUSBDevice;
 struct Adafruit_USBD_HID;

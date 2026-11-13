@@ -67,7 +67,11 @@ void JoystickCentre::calibrate(uint32_t now) {
 
 void JoystickCentre::save_calibration(uint32_t now) {
   const mp::JoyCal cal = joy_.cal();
-  if (memcmp(saved_, &cal, sizeof cal) == 0) return;
+  mp::JoyCal stored;
+  memcpy(&stored, saved_, sizeof stored);
+  // the centre is sampled again at every boot: only the learned range is worth a flash write
+  if (stored.min_x == cal.min_x && stored.max_x == cal.max_x && stored.min_y == cal.min_y && stored.max_y == cal.max_y)
+    return;
   memcpy(saved_, &cal, sizeof cal);
   app::settings_changed(now);
 }
