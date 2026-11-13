@@ -14,7 +14,7 @@
 
 <img src="docs/images/joystick/hero.png" alt="nyxilab macropad render, joystick edition" width="88%">
 
-**[📖 docs site](https://worxbend.github.io/macropad-nyxilab/) · [🧊 3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html) · [⬇️ downloads](https://worxbend.github.io/macropad-nyxilab/downloads.html)**
+**[✨ product page](https://worxbend.github.io/macropad-nyxilab/) · [📖 docs](https://worxbend.github.io/macropad-nyxilab/docs.html) · [🧊 3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html) · [⬇️ downloads](https://worxbend.github.io/macropad-nyxilab/downloads.html)**
 
 </div>
 

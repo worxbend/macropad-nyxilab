@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nyxilab Macropad</title>
+<meta name="description" content="A hand-wired, 3D-printed macropad: 12 keys, two colour displays, 16 RGB LEDs and a thumbstick or a rotary knob, on a dual-core Raspberry Pi Pico 2. Every file is in the open.">
+<meta name="theme-color" content="#000000">
+<meta property="og:title" content="Nyxilab Macropad">
+<meta property="og:description" content="Twelve keys. Two screens. A stick or a knob. Zero glue.">
+<meta property="og:image" content="images/site/joystick_hero.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&display=swap">
+<link rel="stylesheet" href="site.css">
+<script src="site.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="bar">
+  <nav class="bar-in" aria-label="Main">
+    <a class="brand" href="#top" aria-label="Nyxilab Macropad, top of page">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 2.5a9.5 9.5 0 1 0 6 16.9A8 8 0 1 1 15.5 2.5Z"/></svg>
+      nyxilab
+    </a>
+    <ul class="bar-links">
+      <li><a href="#inside">Inside</a></li>
+      <li><a href="#screens">Screens</a></li>
+      <li><a href="#uses">Use cases</a></li>
+      <li><a href="#signature">Signature</a></li>
+      <li><a href="#specs">Specs</a></li>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="viewer.html">3D viewer</a></li>
+    </ul>
+    <a class="pill" href="downloads.html">Download</a>
+  </nav>
+</header>
+
+<main id="main">
+
+<!-- ============================================================ hero -->
+<section class="hero" id="top">
+  <p class="hero-kicker">Nyxilab Macropad</p>
+  <h1 class="hero-title">Night shift<br>for your desk.</h1>
+  <p class="hero-lede">Twelve keys. Two screens. A stick or a knob. Zero glue.</p>
+  <div class="hero-cta">
+    <a class="btn" href="build-guide.html">Build one</a>
+    <a class="btn ghost" href="viewer.html">Spin it in 3D</a>
+  </div>
+  <figure class="hero-shot">
+    <div class="moon" aria-hidden="true"></div>
+    <img src="images/site/joystick_hero.webp" width="1600" height="1000"
+         alt="The Nyxilab macropad, joystick edition: a white wedge-shaped case with a violet stripe, twelve dark keys, two displays and a thumbstick in the middle.">
+  </figure>
+</section>
+
+<!-- ============================================================ buzz -->
+<section class="buzz" aria-label="At a glance">
+  <ul class="buzz-grid">
+    <li><b>12</b><span>MX keys, hand-wired, on any switch you like</span></li>
+    <li><b>2</b><span>IPS colour displays that redraw only what changed</span></li>
+    <li><b>16</b><span>addressable RGB LEDs that speak your layer's colour</span></li>
+    <li><b>2&nbsp;×&nbsp;150&nbsp;MHz</b><span>RP2350 cores: one scans, one draws</span></li>
+    <li><b>1&nbsp;ms</b><span>key scan, debounced, tap-hold aware</span></li>
+    <li><b>0</b><span>glue, supports or custom PCBs</span></li>
+  </ul>
+</section>
+
+<!-- ============================================================ explode (scroll-scrubbed) -->
+<section class="scrub" id="inside" data-scrub="explode" data-frames="36" aria-labelledby="inside-h">
+  <div class="scrub-stage">
+    <div class="scrub-copy">
+      <h2 id="inside-h">Three layers.<br>Zero glue.</h2>
+      <ol class="callouts">
+        <li data-at="0.2"><b>Top plate.</b> Twelve switches, both displays and the centre control, on a 10° tilt.</li>
+        <li data-at="0.45"><b>Frame.</b> A second colour all the way round. Print it translucent and it glows.</li>
+        <li data-at="0.7"><b>Base.</b> The Pico 2, two LED sticks and four rubber feet.</li>
+        <li data-at="0.92"><b>Eight M3 screws.</b> One length for all of them, into heat-set brass.</li>
+      </ol>
+    </div>
+    <canvas class="scrub-canvas" width="1600" height="1000" role="img"
+            aria-label="The macropad separating into its top plate, violet frame and base, with the Pico, LED sticks and joystick inside."></canvas>
+  </div>
+</section>
+
+<!-- ============================================================ screens -->
+<section class="screens" id="screens" aria-labelledby="screens-h">
+  <div class="wrap">
+    <h2 id="screens-h">Two screens. No guessing.</h2>
+    <p class="lede">The 1.9" display labels every key on the active layer. The 2.25" bar keeps the layer list,
+      lock lights and a live keys-per-second graph. Only the rows that change are sent to the panel,
+      so the pixels keep up with your hands.</p>
+
+    <div class="tabs" role="tablist" aria-label="Layers">
+      <button role="tab" id="t-media" aria-controls="p-screen" aria-selected="true" data-layer="media" style="--c:#8b5cf6">Media</button>
+      <button role="tab" id="t-edit" aria-controls="p-screen" aria-selected="false" tabindex="-1" data-layer="edit" style="--c:#14b8a6">Edit</button>
+      <button role="tab" id="t-fkeys" aria-controls="p-screen" aria-selected="false" tabindex="-1" data-layer="fkeys" style="--c:#f59e0b">F13–24</button>
+      <button role="tab" id="t-host" aria-controls="p-screen" aria-selected="false" tabindex="-1" data-layer="host" style="--c:#38bdf8">Host</button>
+      <button role="tab" id="t-fn" aria-controls="p-screen" aria-selected="false" tabindex="-1" data-layer="fn" style="--c:#ef4444">FN</button>
+    </div>
+    <div class="screen-panel" id="p-screen" role="tabpanel" aria-labelledby="t-media" tabindex="0">
+      <img class="screen-img" src="images/site/rotary_ui_02_media_volume.webp" width="876" height="624"
+           alt="Media layer: mute, previous, play, next and volume keys, with the knob set to volume.">
+      <p class="screen-cap">Media. Play, skip, mute and brightness, with the knob on volume.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ light -->
+<section class="light" aria-labelledby="light-h">
+  <div class="wrap split">
+    <div>
+      <h2 id="light-h">Light that means something.</h2>
+      <p class="lede">Two sticks of eight WS2812B LEDs sit on the base and shine up through the frame.
+        They take the colour of the layer you are on, so you know where you are before you look down.</p>
+      <div class="chips" role="group" aria-label="LED effect">
+        <button type="button" aria-pressed="true" data-effect="layer">Layer colour</button>
+        <button type="button" aria-pressed="false" data-effect="breathe">Breathe</button>
+        <button type="button" aria-pressed="false" data-effect="rainbow">Rainbow</button>
+      </div>
+    </div>
+    <figure class="light-shot" data-effect="layer" style="--glow:#8b5cf6">
+      <div class="glow" aria-hidden="true"></div>
+      <img src="images/site/joystick_base_leds.webp" width="1600" height="1000" loading="lazy"
+           alt="The base with the Pico 2 in the middle and an LED stick on each side.">
+    </figure>
+  </div>
+</section>
+
+<!-- ============================================================ centre -->
+<section class="centre" aria-labelledby="centre-h">
+  <div class="wrap">
+    <h2 id="centre-h">Pick your centre.</h2>
+    <p class="lede">Same case, same keys, same screens. Only the control in the middle changes.</p>
+    <div class="chips" role="group" aria-label="Edition">
+      <button type="button" aria-pressed="true" data-edition="joystick">Joystick</button>
+      <button type="button" aria-pressed="false" data-edition="rotary">Rotary</button>
+    </div>
+    <figure class="centre-shot">
+      <img src="images/site/joystick_top.webp" width="1600" height="1000" loading="lazy"
+           alt="The joystick edition from above.">
+    </figure>
+    <div class="centre-copy" data-show="joystick">
+      <p><b>KY-023 thumbstick.</b> Mouse, scroll wheel or arrow keys, set per layer. Click it for a mouse
+        button or Enter. Calibrates itself at every start.</p>
+    </div>
+    <div class="centre-copy" data-show="rotary" hidden>
+      <p><b>KY-040 encoder and a 30 mm printed knob.</b> Volume, undo and redo, scroll, zoom or brightness,
+        set per layer. Press it to mute, or to switch what it turns.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ use cases -->
+<section class="uses" id="uses" aria-labelledby="uses-h">
+  <div class="wrap">
+    <h2 id="uses-h">Made for the work you already do.</h2>
+    <p class="lede">Every key takes a keystroke, a shortcut, a media key, a mouse action or a whole macro.
+      Layers stack them up. Here is where that pays off.</p>
+    <dl class="use-list">
+      <div><dt>Video editing</dt><dd>Scrub the timeline with the knob, cut, ripple-delete and mark in and out on the keys.</dd></div>
+      <div><dt>Music production</dt><dd>Transport on one row, the knob on master volume or zoom, a layer per plugin.</dd></div>
+      <div><dt>Streaming</dt><dd>F13 to F24 are keys no app uses, so OBS scenes, mic mute and replays never collide.</dd></div>
+      <div><dt>Coding</dt><dd>Build, run, step over and step into. Macros type the snippets you are tired of typing.</dd></div>
+      <div><dt>Design</dt><dd>Undo and redo on the knob, zoom on a key, the stick as a pan tool.</dd></div>
+      <div><dt>CAD and 3D</dt><dd>The stick moves the mouse, a held key turns it into orbit. Views and tools on the rest.</dd></div>
+      <div><dt>Meetings</dt><dd>Mute, camera and leave, one press each. Tap-hold gives you push-to-talk on the same key.</dd></div>
+      <div><dt>Home lab</dt><dd>The HOST layer shows CPU, RAM, temperatures and network from your PC, and its keys run your scripts.</dd></div>
+      <div><dt>Gaming</dt><dd>Arrow keys on the stick, macros for the combos, a layer per game.</dd></div>
+      <div><dt>One-handed work</dt><dd>Modifier combos on single keys, big labels on screen, everything within a thumb's reach.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================================================ why -->
+<section class="why" aria-labelledby="why-h">
+  <div class="wrap">
+    <h2 id="why-h">Why it is built like this.</h2>
+    <div class="why-grid">
+      <article><h3>Open, top to bottom</h3><p>Parametric CAD, print files, blueprints, firmware, the host daemon and every guide live in one repository.</p></article>
+      <article><h3>Parametric to the core</h3><p>Change one number in <code>params.py</code> and the plate, frame, base, exports and drawings follow.</p></article>
+      <article><h3>Checked before it prints</h3><p>169 interference checks on the joystick edition, 191 on the rotary, plus clearances and overhangs, on every build.</p></article>
+      <article><h3>Driverless</h3><p>It is a USB keyboard, media controller and mouse at once. Plug it into anything.</p></article>
+      <article><h3>Dual-core by design</h3><p>Core 0 scans, debounces and talks USB. Core 1 owns the screens and the LEDs. Neither waits for the other.</p></article>
+      <article><h3>Serviceable forever</h3><p>Eight screws and it is open. No glue, no clips to snap, no custom board to reorder.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================ signature (scroll-scrubbed) -->
+<section class="scrub sig" id="signature" data-scrub="flip" data-frames="36" aria-labelledby="sig-h">
+  <div class="scrub-stage">
+    <div class="scrub-copy">
+      <h2 id="sig-h">Signature Edition.</h2>
+      <ol class="callouts">
+        <li data-at="0.15">Turn it over.</li>
+        <li data-at="0.55">The maker's mark, cut into the first layer of the base.</li>
+        <li data-at="0.85">1.4 mm strokes, 0.4 mm deep. Sized so a 0.4 mm nozzle draws every line.</li>
+      </ol>
+    </div>
+    <canvas class="scrub-canvas" width="1600" height="1000" role="img"
+            aria-label="The macropad turning over to show its underside, engraved with a signature and the words Signature Edition."></canvas>
+  </div>
+</section>
+
+<!-- ============================================================ specs -->
+<section class="specs" id="specs" aria-labelledby="specs-h">
+  <div class="wrap">
+    <h2 id="specs-h">Tech specs</h2>
+    <dl class="spec-list">
+      <div><dt>Keys</dt><dd>12 MX switches in a hand-wired 4 × 3 matrix with diodes</dd></div>
+      <div><dt>Centre control</dt><dd>KY-023 thumbstick with click, or KY-040 rotary encoder with push and a printed 30 mm knob</dd></div>
+      <div><dt>Main display</dt><dd>1.9" IPS, 170 × 320, ST7789</dd></div>
+      <div><dt>Bar display</dt><dd>2.25" IPS, 76 × 284, ST7789P3</dd></div>
+      <div><dt>Lighting</dt><dd>2 × 8 WS2812B: layer colour, breathe or rainbow</dd></div>
+      <div><dt>Controller</dt><dd>Raspberry Pi Pico 2 (RP2350, USB-C); the original Pico (RP2040) works too</dd></div>
+      <div><dt>USB</dt><dd>Keyboard, media keys and mouse in one device, plus an optional vendor interface for the host bridge</dd></div>
+      <div><dt>Firmware</dt><dd>Layers, tap-hold, macros, per-layer stick modes or knob bindings, settings saved in flash</dd></div>
+      <div><dt>Host bridge</dt><dd>Optional Linux daemon in Rust: live system stats on screen, keys that run commands</dd></div>
+      <div><dt>Case</dt><dd>Three printed layers, 159 × 98 mm, 18 to 35 mm tall, 10° tilt</dd></div>
+      <div><dt>Fasteners</dt><dd>8 × M3×8 countersunk into heat-set inserts</dd></div>
+      <div><dt>Underside</dt><dd>Engraved signature, 4 rubber feet</dd></div>
+    </dl>
+  </div>
+</section>
+
+<!-- ============================================================ build -->
+<section class="build" aria-labelledby="build-h">
+  <div class="wrap">
+    <h2 id="build-h">Build yours in a weekend.</h2>
+    <ol class="steps">
+      <li><h3>Print</h3><p>Four parts, no supports. Fit tests first.</p><a href="printing.html">Printing guide</a></li>
+      <li><h3>Solder</h3><p>Twelve diodes, a matrix and 31 wires to the Pico.</p><a href="soldering.html">Soldering guide</a></li>
+      <li><h3>Flash</h3><p>Hold BOOTSEL, copy one UF2, done.</p><a href="firmware.html">Firmware</a></li>
+      <li><h3>Assemble</h3><p>Fold the wires in, drive eight screws.</p><a href="assembly.html">Assembly</a></li>
+    </ol>
+    <div class="build-cta">
+      <a class="btn" href="build-guide.html">Open the build guide</a>
+      <a class="btn ghost dark" href="downloads.html">Download the files</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p>Nyxilab Macropad. Designed in build123d, flashed with PlatformIO.</p>
+    <ul>
+      <li><a href="docs.html">Docs</a></li>
+      <li><a href="viewer.html">3D viewer</a></li>
+      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="https://github.com/worxbend/macropad-nyxilab">GitHub</a></li>
+    </ul>
+  </div>
+</footer>
+</body>
+</html>

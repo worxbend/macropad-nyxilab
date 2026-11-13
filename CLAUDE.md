@@ -26,8 +26,12 @@ Four projects plus the shared code, and the host bridge:
   Design + protocol: `docs/host-bridge.md`.
 - `docs/` - guides (design, printing, build guide, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
   `docs/images/` (wiring diagrams, wiring maps, soldering figures), `docs/viewer.html` (both editions).
+- `web/` - the product page (`index.html`, `site.css`, `site.js`; plain HTML, no build step), copied to the site root.
+  Its renders and the two scroll-scrubbed frame sequences are `docs/images/site/` from `tools/site_renders.py`.
 - `tools/` - `ui_sim/`, `wiring_diagram.py`, `wiring_map.py`, `soldering_figures.py`, `build_viewer.py`,
-  `build_site.py` (the website; `.github/workflows/pages.yml` deploys `site/` to GitHub Pages on push to main).
+  `build_site.py` (the website: product page + the guides, README as `docs.html`; fails on a broken local link;
+  `.github/workflows/pages.yml` builds it on pull requests and deploys `site/` to GitHub Pages on push to main),
+  `serve_site.py` (live-reload dev server), `site_renders.py`.
 
 ## Commands
 
@@ -41,8 +45,10 @@ make firmware-all       # + the RP2040 builds; firmware-joystick, firmware-rotar
 make test               # native tests: common (71), joystick (11), rotary (10), mocked hardware (28 + 29 groups), host daemon (18, cargo)
 make test-sanitize      # the native C++ tests again under ASan + UBSan
 make host-run           # nyxd from the source tree (cargo run); host-install = cargo install --path host
-make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figures) + viewer + site
+make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figures) + viewer + site-renders + site
 make site               # site/ for GitHub Pages; python3 -m http.server -d site to look at it
+make site-dev           # work on the site: build, serve on :8000, rebuild + reload the browser on every save
+make site-renders       # docs/images/site (product-page renders + frame sequences); rerun after a CAD change
 ```
 
 CI (`.github/workflows/ci.yml`) installs Python tools only from the hash-locked, wheel-only files in

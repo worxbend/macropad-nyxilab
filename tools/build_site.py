@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Build the website that GitHub Pages serves (the guides, the 3D viewer, downloads).
+"""Build the website that GitHub Pages serves (product page, guides, 3D viewer, downloads).
 
     python3 tools/build_site.py          -> site/
-    python3 -m http.server -d site       to look at it locally
+    make site-dev                        build, serve on :8000 and rebuild + reload on every save
 
-Every Markdown guide becomes a page with the same shell as the viewer.  Links
+The product page (index.html) is hand-written in web/ and copied as it is; its renders come
+from tools/site_renders.py.  Every Markdown guide becomes a page with the same shell as the viewer.  Links
 between the guides, to the images and to files in the repo are rewritten, so the
 same Markdown works on GitHub and on the site.  Needs the `markdown` package.
 The workflow in .github/workflows/pages.yml runs this on every push to main.
@@ -28,7 +29,7 @@ TREE = f"{GITHUB}/tree/main/"
 
 # (source markdown, page name, nav title) - the order is the navigation order
 PAGES = [
-    ("README.md", "index", "Home"),
+    ("README.md", "docs", "Docs"),
     ("docs/design.md", "design", "Design"),
     ("docs/printing.md", "printing", "Printing"),
     ("docs/build-guide.md", "build-guide", "Build guide"),
@@ -41,7 +42,9 @@ PAGES = [
     ("docs/host-bridge.md", "host-bridge", "Host bridge"),
     ("common/cad/README.md", "cad", "CAD"),
 ]
-EXTRA_NAV = [("viewer.html", "3D viewer"), ("downloads.html", "Downloads")]
+EXTRA_NAV = [("index.html", "Overview"), ("docs.html", "Docs"), ("viewer.html", "3D viewer"),
+             ("downloads.html", "Downloads")]
+WEB = REPO / "web"  # the product page
 
 STYLE = """
 :root {
@@ -243,12 +246,27 @@ def downloads_page() -> str:
                         style=STYLE, nav=nav, body=body, github=GITHUB, mermaid="")
 
 
+def broken_links() -> list[str]:
+    """Local href/src targets in the built pages that do not exist in site/."""
+    missing = []
+    for page in sorted(SITE.glob("*.html")):
+        for ref in re.findall(r'\b(?:href|src)=["\']([^"\'#?]+)', page.read_text()):
+            if re.match(r"^(https?:|mailto:|data:|//)", ref) or ref.startswith("${"):
+                continue
+            if not (SITE / ref).exists():
+                missing.append(f"{page.name}: {ref}")
+    return missing
+
+
 def main():
     if SITE.exists():
         shutil.rmtree(SITE)
     SITE.mkdir()
     shutil.copytree(REPO / "docs" / "images", SITE / "images")
     shutil.copy(REPO / "docs" / "viewer.html", SITE / "viewer.html")
+    for f in WEB.iterdir():
+        if f.is_file():
+            shutil.copy(f, SITE / f.name)
     (SITE / ".nojekyll").write_text("")
     for src, name, title in PAGES:
         if not (REPO / src).exists():
@@ -259,6 +277,9 @@ def main():
     n = sum(1 for _ in SITE.rglob("*") if _.is_file())
     size = sum(f.stat().st_size for f in SITE.rglob("*") if f.is_file()) / 1e6
     print(f"wrote {SITE} ({n} files, {size:.1f} MB)")
+    if missing := broken_links():
+        print("broken links:\n  " + "\n  ".join(missing))
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

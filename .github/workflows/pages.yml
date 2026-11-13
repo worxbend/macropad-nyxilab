@@ -1,12 +1,14 @@
 # Builds the website (guides, 3D viewer, downloads) with tools/build_site.py and
 # deploys it to GitHub Pages on every push to main.  The generated assets it needs
 # (renders, viewer.html, exports, UF2 files) are committed, so the workflow only
-# converts Markdown and copies files.
+# converts Markdown and copies files.  The product page is web/, copied as it is.
+# build_site.py fails on a broken local link, so pull requests get that check too.
 name: Deploy the docs site to GitHub Pages
 
 on:
   push:
     branches: [main]
+  pull_request:  # build only: a broken link fails the check before it reaches the site
   workflow_dispatch:
 
 permissions:
@@ -33,6 +35,7 @@ jobs:
           path: site
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

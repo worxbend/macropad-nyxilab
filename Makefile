@@ -10,6 +10,8 @@
 #   make test              all unit tests on this PC (shared core, joystick maths, encoder decoder, host daemon)
 #   make docs              wiring diagrams, soldering figures, UI renders, 3D viewer, the website in site/
 #   make site              the website only (what GitHub Pages serves), then: python3 -m http.server -d site
+#   make site-dev          work on the website: build, serve on :8000, rebuild and reload on every save
+#   make site-renders      the product page's renders and scroll sequences (docs/images/site, needs EGL)
 #   make all               everything above
 
 PY          := $(CURDIR)/.venv/bin/python
@@ -19,7 +21,7 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site docs all clean
+        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site site-dev site-renders docs all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -130,7 +132,13 @@ viewer:
 site:
 	$(PY) tools/build_site.py
 
-docs: ui-sim diagrams viewer site
+site-dev:
+	$(PY) tools/serve_site.py
+
+site-renders:
+	$(PY) tools/site_renders.py
+
+docs: ui-sim diagrams viewer site-renders site
 
 all: cad firmware-all test docs
 
