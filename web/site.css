@@ -191,6 +191,16 @@ code { font: 500 0.92em/1 var(--display); font-stretch: 85%; padding: 0.1em 0.35
 .foot a { text-decoration: none; }
 .foot a:hover { color: var(--moon); }
 
+/* ------------------------------------------------------------------ guides */
+.guides { padding: var(--s8) 0; }
+.guide-list { list-style: none; margin: var(--s5) 0 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr);
+              gap: 0 var(--s4); }
+.guide-list a { display: block; height: 100%; padding: var(--s3) 0; border-top: 1px solid var(--night-line);
+                text-decoration: none; }
+.guide-list b { font-size: 1.2rem; font-weight: 700; font-stretch: 110%; }
+.guide-list span { display: block; margin-top: 0.35rem; color: var(--moon-soft); }
+.guide-list a:hover b { color: var(--violet); }
+
 /* ------------------------------------------------------------------ smaller screens */
 @media (max-width: 900px) {
   .bar-links { display: none; }
@@ -202,6 +212,7 @@ code { font: 500 0.92em/1 var(--display); font-stretch: 85%; padding: 0.1em 0.35
   .callouts li { font-size: 1rem; }
   .split { grid-template-columns: 1fr; }
   .use-list { grid-template-columns: 1fr; }
+  .guide-list { grid-template-columns: 1fr; }
   .why-grid { grid-template-columns: 1fr; }
   .spec-list div { grid-template-columns: 1fr; gap: 0.25rem; }
   .steps { grid-template-columns: repeat(2, 1fr); }

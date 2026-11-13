@@ -4,8 +4,10 @@
     python3 tools/build_site.py          -> site/
     make site-dev                        build, serve on :8000 and rebuild + reload on every save
 
-The product page (index.html) is hand-written in web/ and copied as it is; its renders come
-from tools/site_renders.py.  Every Markdown guide becomes a page with the same shell as the viewer.  Links
+Layout: the product page (index.html, hand-written in web/, renders from tools/site_renders.py)
+is the root; the guides, the 3D viewer and the downloads live under guide/.  The old root URLs
+(design.html, viewer.html, ...) are kept as redirects into guide/.  Every Markdown guide becomes
+a page with the same shell as the viewer.  Links
 between the guides, to the images and to files in the repo are rewritten, so the
 same Markdown works on GitHub and on the site.  Needs the `markdown` package.
 The workflow in .github/workflows/pages.yml runs this on every push to main.
@@ -23,13 +25,14 @@ import markdown
 
 REPO = Path(__file__).resolve().parents[1]
 SITE = REPO / "site"
+GUIDE = SITE / "guide"  # the guides, the viewer and the downloads
 GITHUB = "https://github.com/worxbend/macropad-nyxilab"
 BLOB = f"{GITHUB}/blob/main/"
 TREE = f"{GITHUB}/tree/main/"
 
 # (source markdown, page name, nav title) - the order is the navigation order
 PAGES = [
-    ("README.md", "docs", "Docs"),
+    ("README.md", "index", "Start here"),
     ("docs/design.md", "design", "Design"),
     ("docs/printing.md", "printing", "Printing"),
     ("docs/build-guide.md", "build-guide", "Build guide"),
@@ -42,8 +45,10 @@ PAGES = [
     ("docs/host-bridge.md", "host-bridge", "Host bridge"),
     ("common/cad/README.md", "cad", "CAD"),
 ]
-EXTRA_NAV = [("index.html", "Overview"), ("docs.html", "Docs"), ("viewer.html", "3D viewer"),
+EXTRA_NAV = [("../index.html", "Product"), ("index.html", "Guide"), ("viewer.html", "3D viewer"),
              ("downloads.html", "Downloads")]
+# root URLs the site had before the guides moved under guide/: each becomes a redirect
+OLD_ROOT_PAGES = {"docs": "index", "viewer": "viewer", "downloads": "downloads"}
 WEB = REPO / "web"  # the product page
 
 STYLE = """
@@ -106,7 +111,7 @@ SHELL = """<!doctype html>
 <style>{style}</style>
 </head>
 <body>
-<nav class="top"><div class="in"><a class="brand" href="index.html">🌙 nyxilab macropad</a>{nav}</div></nav>
+<nav class="top"><div class="in"><a class="brand" href="../index.html">🌙 nyxilab macropad</a>{nav}</div></nav>
 <main><article>
 {body}
 </article>
@@ -145,7 +150,7 @@ def rewrite_link(href: str, src_dir: Path) -> str:
     if rel == "docs/viewer.html":
         return "viewer.html" + anchor
     if rel.startswith("docs/images/"):
-        return rel[len("docs/"):]
+        return "../" + rel[len("docs/"):]
     if repo_path.is_dir():
         return TREE + rel
     return BLOB + rel
@@ -207,7 +212,7 @@ def render(src: str, name: str, title: str) -> str:
 
 def downloads_page() -> str:
     rows = []
-    dl = SITE / "downloads"
+    dl = GUIDE / "downloads"
     dl.mkdir(parents=True, exist_ok=True)
     for ed in ("joystick", "rotary"):
         for env, board in (("pico2", "Pico 2 (RP2350)"), ("pico", "Pico (RP2040)")):
@@ -246,24 +251,39 @@ def downloads_page() -> str:
                         style=STYLE, nav=nav, body=body, github=GITHUB, mermaid="")
 
 
+REDIRECT = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Moved</title>
+<link rel="canonical" href="{to}"><meta http-equiv="refresh" content="0; url={to}">
+<script>location.replace("{to}" + location.hash)</script></head>
+<body><p>This page moved to <a href="{to}">{to}</a>.</p></body></html>
+"""
+
+
+def write_redirects() -> None:
+    """Keep the old root URLs working: they forward to the same page under guide/, anchor included."""
+    old = {name: name for _, name, _ in PAGES[1:]} | OLD_ROOT_PAGES
+    for name, target in old.items():
+        (SITE / f"{name}.html").write_text(REDIRECT.format(to=f"guide/{target}.html"))
+
+
 def broken_links() -> list[str]:
     """Local href/src targets in the built pages that do not exist in site/."""
     missing = []
-    for page in sorted(SITE.glob("*.html")):
+    for page in sorted(SITE.rglob("*.html")):
         for ref in re.findall(r'\b(?:href|src)=["\']([^"\'#?]+)', page.read_text()):
             if re.match(r"^(https?:|mailto:|data:|//)", ref) or ref.startswith("${"):
                 continue
-            if not (SITE / ref).exists():
-                missing.append(f"{page.name}: {ref}")
+            if not (page.parent / ref).resolve().exists():
+                missing.append(f"{page.relative_to(SITE)}: {ref}")
     return missing
 
 
 def main():
     if SITE.exists():
         shutil.rmtree(SITE)
-    SITE.mkdir()
+    GUIDE.mkdir(parents=True)
     shutil.copytree(REPO / "docs" / "images", SITE / "images")
-    shutil.copy(REPO / "docs" / "viewer.html", SITE / "viewer.html")
+    shutil.copy(REPO / "docs" / "viewer.html", GUIDE / "viewer.html")
     for f in WEB.iterdir():
         if f.is_file():
             shutil.copy(f, SITE / f.name)
@@ -272,8 +292,9 @@ def main():
         if not (REPO / src).exists():
             print("  missing", src)
             continue
-        (SITE / f"{name}.html").write_text(render(src, name, title))
-    (SITE / "downloads.html").write_text(downloads_page())
+        (GUIDE / f"{name}.html").write_text(render(src, name, title))
+    (GUIDE / "downloads.html").write_text(downloads_page())
+    write_redirects()
     n = sum(1 for _ in SITE.rglob("*") if _.is_file())
     size = sum(f.stat().st_size for f in SITE.rglob("*") if f.is_file()) / 1e6
     print(f"wrote {SITE} ({n} files, {size:.1f} MB)")

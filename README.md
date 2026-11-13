@@ -14,7 +14,7 @@
 
 <img src="docs/images/joystick/hero.png" alt="nyxilab macropad render, joystick edition" width="88%">
 
-**[✨ product page](https://worxbend.github.io/macropad-nyxilab/) · [📖 docs](https://worxbend.github.io/macropad-nyxilab/docs.html) · [🧊 3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html) · [⬇️ downloads](https://worxbend.github.io/macropad-nyxilab/downloads.html)**
+**[✨ product page](https://worxbend.github.io/macropad-nyxilab/) · [📖 docs](https://worxbend.github.io/macropad-nyxilab/guide/) · [🧊 3D viewer](https://worxbend.github.io/macropad-nyxilab/guide/viewer.html) · [⬇️ downloads](https://worxbend.github.io/macropad-nyxilab/guide/downloads.html)**
 
 </div>
 
@@ -97,7 +97,7 @@ every design decision had a reason, bestie. here's the tea:
 | **flip it over: the Signature Edition engraving** | |
 | <img src="docs/images/joystick/base_underside.png" alt="underside of the base with the engraved signature and the caption Signature Edition"> | |
 
-wanna spin it around yourself? **[open the 3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html)**
+wanna spin it around yourself? **[open the 3D viewer](https://worxbend.github.io/macropad-nyxilab/guide/viewer.html)**
 (or `docs/viewer.html` offline): switch editions, orbit, explode the layers, slice it with a live
 section plane, toggle parts. it's lowkey addictive.
 
@@ -159,7 +159,7 @@ tools/               UI simulator, wiring diagrams + maps, soldering figures, vi
 ## speedrun any% 🏃‍♀️
 
 1. **pick your edition** (joystick or rotary) and grab its files: `<edition>/cad/exports/` or the
-   [downloads page](https://worxbend.github.io/macropad-nyxilab/downloads.html).
+   [downloads page](https://worxbend.github.io/macropad-nyxilab/guide/downloads.html).
 2. **print the fit tests first** (`3mf/fit-tests/`, ~1 h total). they check the switch
    cut-out, both display pockets, the USB-C port, the joystick posts or the encoder mount,
    and the LED-stick posts against *your* parts. rotary gang: print the knob early too.
@@ -264,9 +264,9 @@ zoom / arrows. remap everything in `<edition>/firmware/src/keymap.cpp`.
 
 ## docs (the boring-but-important era) 📚
 
-everything below is also on the **[docs site](https://worxbend.github.io/macropad-nyxilab/)**, rendered nicely.
+everything below is also on the **[guide site](https://worxbend.github.io/macropad-nyxilab/guide/)**, rendered nicely.
 
-- **[3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html)**: both editions. orbit, explode, section, toggle parts
+- **[3D viewer](https://worxbend.github.io/macropad-nyxilab/guide/viewer.html)**: both editions. orbit, explode, section, toggle parts
 - [design notes](docs/design.md): layout, the 3-layer stack, how each part is held, what the checks verify
 - [printing](docs/printing.md): orientation, settings, colors, the knob, the dimensions to verify first
 - [build guide](docs/build-guide.md): solder, wire, flash, assemble, in order, with a test after every stage

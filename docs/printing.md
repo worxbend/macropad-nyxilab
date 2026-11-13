@@ -8,7 +8,7 @@ oriented; just drop them on the plate:
   are the same parts in both editions; the top plate and the base differ, and the
   rotary edition adds the knob.
 
-Or grab the zips from the [downloads page](https://worxbend.github.io/macropad-nyxilab/downloads.html).
+Or grab the zips from the [downloads page](https://worxbend.github.io/macropad-nyxilab/guide/downloads.html).
 
 | Part | Colour | Bed footprint | Height | Orientation | Settings |
 |---|---|---|---|---|---|

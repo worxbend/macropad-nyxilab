@@ -30,10 +30,10 @@
       <li><a href="#uses">Use cases</a></li>
       <li><a href="#signature">Signature</a></li>
       <li><a href="#specs">Specs</a></li>
-      <li><a href="docs.html">Docs</a></li>
-      <li><a href="viewer.html">3D viewer</a></li>
+      <li><a href="#guides">Guides</a></li>
+      <li><a href="guide/viewer.html">3D viewer</a></li>
     </ul>
-    <a class="pill" href="downloads.html">Download</a>
+    <a class="pill" href="guide/downloads.html">Download</a>
   </nav>
 </header>
 
@@ -45,8 +45,8 @@
   <h1 class="hero-title">Night shift<br>for your desk.</h1>
   <p class="hero-lede">Twelve keys. Two screens. A stick or a knob. Zero glue.</p>
   <div class="hero-cta">
-    <a class="btn" href="build-guide.html">Build one</a>
-    <a class="btn ghost" href="viewer.html">Spin it in 3D</a>
+    <a class="btn" href="guide/build-guide.html">Build one</a>
+    <a class="btn ghost" href="guide/viewer.html">Spin it in 3D</a>
   </div>
   <figure class="hero-shot">
     <div class="moon" aria-hidden="true"></div>
@@ -230,15 +230,38 @@
   <div class="wrap">
     <h2 id="build-h">Build yours in a weekend.</h2>
     <ol class="steps">
-      <li><h3>Print</h3><p>Four parts, no supports. Fit tests first.</p><a href="printing.html">Printing guide</a></li>
-      <li><h3>Solder</h3><p>Twelve diodes, a matrix and 31 wires to the Pico.</p><a href="soldering.html">Soldering guide</a></li>
-      <li><h3>Flash</h3><p>Hold BOOTSEL, copy one UF2, done.</p><a href="firmware.html">Firmware</a></li>
-      <li><h3>Assemble</h3><p>Fold the wires in, drive eight screws.</p><a href="assembly.html">Assembly</a></li>
+      <li><h3>Print</h3><p>Four parts, no supports. Fit tests first.</p><a href="guide/printing.html">Printing guide</a></li>
+      <li><h3>Solder</h3><p>Twelve diodes, a matrix and 31 wires to the Pico.</p><a href="guide/soldering.html">Soldering guide</a></li>
+      <li><h3>Flash</h3><p>Hold BOOTSEL, copy one UF2, done.</p><a href="guide/firmware.html">Firmware</a></li>
+      <li><h3>Assemble</h3><p>Fold the wires in, drive eight screws.</p><a href="guide/assembly.html">Assembly</a></li>
     </ol>
     <div class="build-cta">
-      <a class="btn" href="build-guide.html">Open the build guide</a>
-      <a class="btn ghost dark" href="downloads.html">Download the files</a>
+      <a class="btn" href="guide/build-guide.html">Open the build guide</a>
+      <a class="btn ghost dark" href="guide/downloads.html">Download the files</a>
     </div>
+  </div>
+</section>
+
+<!-- ============================================================ guides -->
+<section class="guides" id="guides" aria-labelledby="guides-h">
+  <div class="wrap">
+    <h2 id="guides-h">Every step, written down.</h2>
+    <p class="lede">The full guide covers the whole build, from the first print to the last screw.
+      Start with the build guide; it links to the rest in order.</p>
+    <ul class="guide-list">
+      <li><a href="guide/build-guide.html"><b>Build guide</b><span>The route from printed parts to a working pad, with a test after every stage.</span></a></li>
+      <li><a href="guide/printing.html"><b>Printing</b><span>Parts, orientation, settings and the fit tests to print first.</span></a></li>
+      <li><a href="guide/soldering.html"><b>Soldering</b><span>Diodes, the key matrix, the displays, the LED sticks and the Pico, step by step.</span></a></li>
+      <li><a href="guide/wiring.html"><b>Wiring</b><span>The pin map and wiring diagrams for both editions.</span></a></li>
+      <li><a href="guide/assembly.html"><b>Assembly</b><span>Inserts, plate, base and the order everything goes into the case.</span></a></li>
+      <li><a href="guide/firmware.html"><b>Firmware</b><span>Flashing, layers, keymaps, macros and the serial console.</span></a></li>
+      <li><a href="guide/host-bridge.html"><b>Host bridge</b><span>The Linux daemon behind the HOST dashboard and its commands.</span></a></li>
+      <li><a href="guide/design.html"><b>Design</b><span>Why the case is shaped the way it is.</span></a></li>
+      <li><a href="guide/cad.html"><b>CAD</b><span>The parametric model and how to change it.</span></a></li>
+      <li><a href="guide/joystick.html"><b>Joystick edition</b><span>The KY-023 stick: modes, calibration, mounting.</span></a></li>
+      <li><a href="guide/rotary.html"><b>Rotary edition</b><span>The KY-040 knob: presets, direction, mounting.</span></a></li>
+      <li><a href="guide/index.html"><b>Everything else</b><span>The project overview, specs and the full story.</span></a></li>
+    </ul>
   </div>
 </section>
 
@@ -248,9 +271,9 @@
   <div class="wrap foot-in">
     <p>Nyxilab Macropad. Designed in build123d, flashed with PlatformIO.</p>
     <ul>
-      <li><a href="docs.html">Docs</a></li>
-      <li><a href="viewer.html">3D viewer</a></li>
-      <li><a href="downloads.html">Downloads</a></li>
+      <li><a href="guide/index.html">Guide</a></li>
+      <li><a href="guide/viewer.html">3D viewer</a></li>
+      <li><a href="guide/downloads.html">Downloads</a></li>
       <li><a href="https://github.com/worxbend/macropad-nyxilab">GitHub</a></li>
     </ul>
   </div>

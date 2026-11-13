@@ -29,7 +29,8 @@ Four projects plus the shared code, and the host bridge:
 - `web/` - the product page (`index.html`, `site.css`, `site.js`; plain HTML, no build step), copied to the site root.
   Its renders and the two scroll-scrubbed frame sequences are `docs/images/site/` from `tools/site_renders.py`.
 - `tools/` - `ui_sim/`, `wiring_diagram.py`, `wiring_map.py`, `soldering_figures.py`, `build_viewer.py`,
-  `build_site.py` (the website: product page + the guides, README as `docs.html`; fails on a broken local link;
+  `build_site.py` (the website: product page at the root, guides + viewer + downloads under `guide/`, old root
+  URLs kept as redirects; fails on a broken local link;
   `.github/workflows/pages.yml` builds it on pull requests and deploys `site/` to GitHub Pages on push to main),
   `serve_site.py` (live-reload dev server), `site_renders.py`.
 
