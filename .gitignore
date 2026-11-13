@@ -1,7 +1,7 @@
 # Python / CAD tooling
 .venv/
 .build/
-site/
+/site/
 __pycache__/
 *.egg-info/
 *.pyc
