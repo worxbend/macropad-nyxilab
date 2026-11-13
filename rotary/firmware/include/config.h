@@ -49,7 +49,9 @@ constexpr uint8_t BAR_ROTATION = 2;  // portrait, header towards the user; use 0
 constexpr bool BAR_INVERT = true;
 constexpr bool BAR_BGR = false;
 
-constexpr uint32_t SPI_HZ = 40000000;  // safe for hand-wired leads; 62.5 MHz = faster refresh, 20 MHz if glitchy
+// The SPI clock is the system clock divided by an even number, rounded down to this value:
+// Pico 2 (150 MHz): 40 and 62.5 MHz both give 37.5 MHz.  Pico (125 MHz): 40 MHz gives 31.25, 62.5 gives 62.5.
+constexpr uint32_t SPI_HZ = 40000000;  // safe for hand-wired leads; 20 MHz if glitchy
 
 // ---- backlight & idle ------------------------------------------------------------
 constexpr uint8_t BRIGHTNESS_DEFAULT = 200;  // 0..255

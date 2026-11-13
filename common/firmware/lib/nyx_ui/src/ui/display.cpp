@@ -1,5 +1,6 @@
-// Rendering for both displays (and the LED sticks).  Runs on core 1: every frame
-// is drawn into an off-screen canvas and pushed in one SPI burst, so there is no flicker.
+// Rendering for both displays (and the LED sticks).  Runs on core 1: every frame is drawn
+// into an off-screen canvas, and the rows that changed are pushed in one SPI burst, so there
+// is no flicker.
 #include "display.h"
 
 #include <Adafruit_GFX.h>
@@ -9,6 +10,7 @@
 #include <pico/mutex.h>
 
 #include "config.h"
+#include "dirty_rows.h"
 #include "leds.h"
 #include "render.h"
 
@@ -38,10 +40,21 @@ Panel g_main(&SPI, cfg::MAIN_CS, cfg::MAIN_DC, cfg::MAIN_RST);
 Panel g_bar(&SPI1, cfg::BAR_CS, cfg::BAR_DC, cfg::BAR_RST);
 GFXcanvas16* g_cmain = nullptr;
 GFXcanvas16* g_cbar = nullptr;
+uint32_t* g_main_rows = nullptr;  // row hashes of the frame each panel shows
+uint32_t* g_bar_rows = nullptr;
+bool g_push_all = true;  // the first frame: the hashes describe nothing yet
 
 uint8_t g_applied_bl = 255;
 uint32_t g_last_frame = 0;
 bool g_force = true;
+
+// The SPI push blocks core 1 (no LED frames meanwhile), so only the changed band is sent.
+void push_changed(Panel& panel, GFXcanvas16& canvas, uint32_t* shown_rows) {
+  RowSpan rows = changed_rows(canvas.getBuffer(), canvas.width(), canvas.height(), shown_rows);
+  if (g_push_all) rows = {0, canvas.height()};
+  if (!rows.count) return;
+  panel.drawRGBBitmap(0, rows.first, canvas.getBuffer() + rows.first * canvas.width(), canvas.width(), rows.count);
+}
 
 }  // namespace
 
@@ -89,6 +102,8 @@ void display_begin() {
 
   g_cmain = new GFXcanvas16(g_main.width(), g_main.height());
   g_cbar = new GFXcanvas16(g_bar.width(), g_bar.height());
+  g_main_rows = new uint32_t[g_main.height()]();
+  g_bar_rows = new uint32_t[g_bar.height()]();
   leds_begin();
 }
 
@@ -103,15 +118,16 @@ void display_task(uint32_t now) {
     g_applied_bl = bl;
   }
   if (!bl || !g_cmain || !g_cbar) return;
-  // redraw on change (max ~40 fps) and once a second for the activity graph
+  // draw at most 40 times a second; core 0 publishes every 10 ms, so every frame is due
   const bool due = (g_force && now - g_last_frame >= 25) || now - g_last_frame >= 1000;
   if (!due) return;
   g_force = false;
   g_last_frame = now;
   render_main_screen(*g_cmain, s);
-  g_main.drawRGBBitmap(0, 0, g_cmain->getBuffer(), g_cmain->width(), g_cmain->height());
+  push_changed(g_main, *g_cmain, g_main_rows);
   render_bar_screen(*g_cbar, s);
-  g_bar.drawRGBBitmap(0, 0, g_cbar->getBuffer(), g_cbar->width(), g_cbar->height());
+  push_changed(g_bar, *g_cbar, g_bar_rows);
+  g_push_all = false;
 }
 
 }  // namespace ui

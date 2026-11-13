@@ -10,6 +10,7 @@
 #include "hw/host_hid.h"
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
+#include "ui/dirty_rows.h"
 #ifdef TEST_JOYSTICK
 #include "stick.h"
 using Centre = JoystickCentre;
@@ -453,6 +454,29 @@ static void test_keymap_fn_keys_reach_the_knob() {
 }
 #endif
 
+static void test_display_pushes_only_the_rows_that_changed() {
+  constexpr int w = 4, h = 6;
+  uint16_t frame[w * h] = {};
+  uint32_t shown[h] = {};
+  ui::changed_rows(frame, w, h, shown);  // remember the frame as shown
+  ui::RowSpan rows = ui::changed_rows(frame, w, h, shown);
+  assert(rows.count == 0);  // an identical frame costs no SPI time
+  frame[2 * w + 3] = 0x1234;  // last pixel of row 2
+  rows = ui::changed_rows(frame, w, h, shown);
+  assert(rows.first == 2 && rows.count == 1);
+  frame[1 * w] = 1;  // rows 1 and 4 change, 2 and 3 do not: one band covers them
+  frame[4 * w + 1] = 2;
+  rows = ui::changed_rows(frame, w, h, shown);
+  assert(rows.first == 1 && rows.count == 4);
+  frame[5 * w] = frame[5 * w + 1] = 7;  // 7,7,0,0 -> 0,7,7,0: same pixels, other columns
+  ui::changed_rows(frame, w, h, shown);
+  frame[5 * w] = 0;
+  frame[5 * w + 2] = 7;
+  rows = ui::changed_rows(frame, w, h, shown);
+  assert(rows.first == 5 && rows.count == 1);
+  assert(ui::changed_rows(frame, w, h, shown).count == 0);  // the hashes follow every call
+}
+
 static void test_host_link_round_trip() {
   hw::host_hid_begin();
   Adafruit_USBD_HID* vendor = mock_hids.back();
@@ -500,15 +524,16 @@ int main() {
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
   test_settings_flush_saves_before_a_reboot();
+  test_display_pushes_only_the_rows_that_changed();
 #ifdef TEST_JOYSTICK
   test_host_link_round_trip();
-  puts("12 hardware/control regression groups passed");
+  puts("13 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("16 hardware/control regression groups passed");
+  puts("17 hardware/control regression groups passed");
 #endif
 }
