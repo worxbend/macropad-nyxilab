@@ -170,7 +170,11 @@ void render_host_main(GFXcanvas16& c, const UiState& s) {
   c.fillRect(0, 0, 320, 26, PANEL);
   c.fillRect(0, 0, 5, 26, accent);
   text_at(c, top.name, 12, 20, &FreeSansBold12pt7b, accent);
-  if (d.linked) small(c, d.hostname, 100, 10, SUBTLE);
+  if (d.linked) {
+    char host[HEADER_HOST_CHARS + 1];  // the full name would run into the clock
+    fmt_header_host(host, d.hostname);
+    small(c, host, 100, 10, SUBTLE);
+  }
   if (d.has_metrics && m.clock_h != mp::HOST_UNKNOWN) {
     snprintf(buf, sizeof buf, "%02u:%02u", m.clock_h, m.clock_m);
     text_at(c, buf, 238, 19, &FreeSansBold9pt7b, TEXT);

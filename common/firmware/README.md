@@ -143,7 +143,7 @@ samples are skipped when the serial transmit buffer is full.
 
 ```
 common/firmware/lib/
-  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 65 tests)
+  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 71 tests)
     keycodes.h          action encoding (32-bit: type | argument) + HID usages
     keymap.h            layer / key / centre-control types; the layers live in the editions
     debounce.h          per-key deferred debounce

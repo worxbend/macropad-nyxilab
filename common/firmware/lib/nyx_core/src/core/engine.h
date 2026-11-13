@@ -106,6 +106,7 @@ class Engine {
   void press_action(Action a, uint32_t now);
   void release_action(Action a);
   void resolve_pending_as_hold(uint32_t now);
+  bool usage_is_held(uint8_t usage) const;
   bool service_taps(uint32_t now);
   void rebuild();
 
@@ -124,6 +125,10 @@ class Engine {
   static constexpr uint8_t MAX_HELD = 16;
   Action held_[MAX_HELD] = {};
   uint8_t n_held_ = 0;
+  // A key pressed onto a held key with the same usage: the usage leaves the report for TAP_MS,
+  // so the host sees a second press (UNDO rolled into REDO).
+  uint8_t retrigger_ = 0;
+  uint32_t retrigger_t_ = 0;
 
   // tap-hold resolution
   struct Pending {

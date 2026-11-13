@@ -6,9 +6,11 @@
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h>
 #include <EEPROM.h>
+#include "app/console_line.h"
 #include "config.h"
 #include "core/host_proto.h"
 #include "hw/host_hid.h"
+#include "hw/matrix.h"
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
 #include "ui/dirty_rows.h"
@@ -910,6 +912,31 @@ static void test_host_dashboard_text_formats() {
   assert(ui::wrap12("abcdefghijklm nop", part) == 12 && std::string(part) == "abcdefghijkl");  // column 14 is too late
   assert(ui::wrap12("short", part) == 5 && std::string(part) == "short");
   assert(ui::wrap12("", part) == 0 && part[0] == 0);
+
+  char host[ui::HEADER_HOST_CHARS + 1];
+  ui::fmt_header_host(host, "ip-172-31-22-143.ec2.internal");  // 29 characters would run into the clock
+  assert(std::string(host) == "ip-172-31-22-143.ec2.i");
+  ui::fmt_header_host(host, "workstation");
+  assert(std::string(host) == "workstation");
+}
+
+static void test_console_takes_one_line_per_line_end() {
+  app::ConsoleLine console;
+  std::vector<std::string> lines;
+  const auto type = [&](const char* text) {
+    for (; *text; ++text)
+      if (console.feed(*text)) lines.push_back(console.text());
+  };
+  type("info\r\n");  // CRLF, what `pio device monitor` sends: one command, not a command and an empty line
+  assert(lines == std::vector<std::string>{"info"});
+  type("joy\rcal\n\n");  // CR alone and LF alone still end a line; a lone Enter is an empty line (help)
+  assert((lines == std::vector<std::string>{"info", "joy", "cal", ""}));
+  lines.clear();
+  type("\r\r\n\n");
+  assert((lines == std::vector<std::string>{"", "", ""}));
+  lines.clear();
+  type((std::string(40, 'x') + "\n").c_str());  // longer than the buffer: cut, not overrun
+  assert(lines == std::vector<std::string>{std::string(31, 'x')});
 }
 
 static void test_host_link_round_trip() {
@@ -947,6 +974,50 @@ static void test_host_link_round_trip() {
   assert(n == 3);  // a full ring drops packets instead of overwriting one being read
 }
 
+// The wiring as the matrix sees it: a held key pulls its column low while its row is driven low.
+static bool g_matrix_down[mp::ROWS][mp::COLS];
+static int g_matrix_reads_until_release = -1;  // >= 0: every key is let go after this many column reads
+static int matrix_wiring(int pin) {
+  if (g_matrix_reads_until_release == 0) memset(g_matrix_down, 0, sizeof g_matrix_down);
+  if (g_matrix_reads_until_release >= 0) --g_matrix_reads_until_release;
+  for (uint8_t c = 0; c < mp::COLS; ++c) {
+    if (cfg::COL_PINS[c] != pin) continue;
+    for (uint8_t r = 0; r < mp::ROWS; ++r)
+      if (g_matrix_down[r][c] && mock_pins[cfg::ROW_PINS[r]] == LOW) return LOW;
+    return HIGH;
+  }
+  return mock_pins[pin];
+}
+
+static void test_matrix_scans_col2row_and_reads_the_boot_combo() {
+  memset(g_matrix_down, 0, sizeof g_matrix_down);
+  g_matrix_reads_until_release = -1;
+  mock_read = matrix_wiring;
+  hw::matrix_init();
+  for (uint8_t p : cfg::ROW_PINS) assert(mock_pin_mode[p] == OUTPUT && mock_pins[p] == HIGH);
+  for (uint8_t p : cfg::COL_PINS) assert(mock_pin_mode[p] == INPUT_PULLUP);
+
+  uint8_t raw[mp::ROWS];
+  g_matrix_down[1][2] = true;
+  hw::matrix_scan(raw);
+  assert(raw[0] == 0 && raw[1] == 0b100 && raw[2] == 0 && raw[3] == 0);
+  g_matrix_down[3][2] = true;  // same column, another row: only the driven row reads it
+  hw::matrix_scan(raw);
+  assert(raw[0] == 0 && raw[1] == 0b100 && raw[2] == 0 && raw[3] == 0b100);
+  for (uint8_t p : cfg::ROW_PINS) assert(mock_pins[p] == HIGH);  // no row is left driven
+
+  memset(g_matrix_down, 0, sizeof g_matrix_down);
+  assert(!hw::matrix_boot_combo_held());  // a plain plug-in must not reboot into the bootloader
+  g_matrix_down[mp::BOOT_COMBO[0][0]][mp::BOOT_COMBO[0][1]] = true;
+  assert(!hw::matrix_boot_combo_held());  // one key of the two
+  g_matrix_down[mp::BOOT_COMBO[1][0]][mp::BOOT_COMBO[1][1]] = true;
+  assert(hw::matrix_boot_combo_held());
+  g_matrix_reads_until_release = mp::ROWS * mp::COLS;  // held for the first scan only
+  assert(!hw::matrix_boot_combo_held());
+  g_matrix_reads_until_release = -1;
+  mock_read = nullptr;
+}
+
 int main() {
   test_usb_drops_keys_pressed_before_the_first_mount();
   test_usb_preserves_press_and_release();
@@ -970,18 +1041,20 @@ int main() {
   test_settings_flush_saves_before_a_reboot();
   test_display_pushes_only_the_rows_that_changed();
   test_host_dashboard_text_formats();
+  test_matrix_scans_col2row_and_reads_the_boot_combo();
+  test_console_takes_one_line_per_line_end();
 #ifdef TEST_JOYSTICK
   test_stick_mode_cycle_and_click();
   test_stick_saves_the_learned_range_not_the_centre();
   test_stick_motion_wakes_and_does_not_starve_the_save();
   test_host_link_round_trip();
-  puts("26 hardware/control regression groups passed");
+  puts("28 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("27 hardware/control regression groups passed");
+  puts("29 hardware/control regression groups passed");
 #endif
 }

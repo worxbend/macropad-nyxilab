@@ -37,8 +37,8 @@ const Layer LAYERS[] = {
     }},
     {"FN", 0, KNOB(K(hid::RIGHT), K(hid::LEFT), K(hid::ENTER), "ARROWS"), {
         {{K(hid::F1), "f1"}, {TO(1), "to1"}, {___, ""}},
-        {{___, ""}, {___, ""}, {___, ""}},
-        {{___, ""}, {___, ""}, {___, ""}},
+        {{___, ""}, {K(hid::F3), "f3"}, {K(hid::F4), "f4"}},
+        {{K(hid::F5), "f5"}, {K(hid::F6), "f6"}, {___, ""}},
         {{___, ""}, {K(hid::F2), "f2"}, {___, ""}},
     }},
 };
@@ -430,6 +430,7 @@ void test_report_holds_six_keys_and_one_of_each_usage() {
   e.process(press(3, 1, 1));  // B
   e.process(press(3, 2, 2));  // C
   e.process(press(1, 0, 3));  // Ctrl+C: C again, one slot
+  e.tick(3 + Engine::TAP_MS);  // past the gap that shows the host the second C
   const uint8_t extra[8] = {hid::F1, hid::F2, hid::UP, hid::LEFT, hid::RIGHT, hid::ENTER, hid::X, hid::H};
   e.set_extra_keys(extra, 8);  // more than the report, and more than the engine keeps
   TEST_ASSERT_TRUE(e.hid().has_key(hid::A));
@@ -442,6 +443,56 @@ void test_report_holds_six_keys_and_one_of_each_usage() {
   TEST_ASSERT_FALSE(e.hid().has_key(hid::A));
   TEST_ASSERT_TRUE(e.hid().has_key(hid::LEFT));  // a freed slot goes to the next one
   TEST_ASSERT_FALSE(e.hid().has_key(hid::RIGHT));
+}
+
+void test_second_key_with_a_held_usage_is_pressed_again() {
+  Host h;
+  Engine e(h);
+  e.process(press(3, 2, 0));  // C, held
+  e.process(press(1, 0, 1));  // Ctrl+C rolled onto it: the host must see C go up and down again
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);
+  e.tick(1 + Engine::TAP_MS - 1);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  e.tick(1 + Engine::TAP_MS);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
+  const HidState both = e.hid();
+  e.process(release(3, 2, 20));  // the older key goes: nothing changes for the host
+  TEST_ASSERT_TRUE(e.hid() == both);
+  e.process(release(1, 0, 21));
+  TEST_ASSERT_TRUE(e.hid() == HidState{});
+}
+
+void test_second_key_gap_waits_for_usb_delivery() {
+  Host h;
+  Engine e(h);
+  e.process(press(3, 2, 0));  // C, held
+  e.process(press(1, 0, 1));  // Ctrl+C
+  e.tick(50, false);          // the report without C has not left yet
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  e.tick(50 + Engine::TAP_MS - 1);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  e.tick(50 + Engine::TAP_MS);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::C));
+}
+
+void test_seventh_shortcut_brings_no_modifiers_without_its_key() {
+  Host h;
+  Engine e(h);
+  e.process(press(0, 0, 0));  // A
+  e.process(press(3, 1, 1));  // B
+  e.process(press(3, 0, 2));  // FN, held by the next key
+  e.process(press(1, 1, 3));  // F3
+  e.process(press(1, 2, 4));  // F4
+  e.process(press(2, 0, 5));  // F5
+  e.process(press(2, 1, 6));  // F6: the report is full
+  e.process(press(1, 0, 7));  // Ctrl+C, the 7th
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);  // not Ctrl on the six older keys
+  e.process(release(0, 0, 8));
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
 }
 
 void test_repeated_and_out_of_range_events_are_ignored() {
@@ -1054,10 +1105,11 @@ void test_host_hello_links_and_acks() {
   TEST_ASSERT_FALSE(hp.linked());
   hp.send_key(1, true);  // not linked: dropped
   TEST_ASSERT_FALSE(hp.next_tx(out));
-  auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'd', 'e', 's', 'k', 0xC3, 0xA9});  // UTF-8 is not printable here
+  // UTF-8 and control characters are not printable here
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'd', 'e', 's', 'k', 0xC3, 0xA9, 0x0A, 0x09, 0x7F, 0x1F});
   TEST_ASSERT_TRUE(hp.on_packet(hello.data(), uint16_t(hello.size()), 1000));
   TEST_ASSERT_TRUE(hp.linked());
-  TEST_ASSERT_EQUAL_STRING("desk??", hp.data().hostname);
+  TEST_ASSERT_EQUAL_STRING("desk??????", hp.data().hostname);
   TEST_ASSERT_TRUE(hp.take_state_request());
   TEST_ASSERT_FALSE(hp.take_state_request());
   TEST_ASSERT_TRUE(hp.next_tx(out));
@@ -1065,6 +1117,7 @@ void test_host_hello_links_and_acks() {
   TEST_ASSERT_EQUAL(PROTO_VERSION, out[1]);
   TEST_ASSERT_EQUAL(2, out[2]);
   TEST_ASSERT_EQUAL(5, out[3]);
+  TEST_ASSERT_EQUAL(PROTO_VERSION, out[4]);
   TEST_ASSERT_EQUAL_STRING("Nyxilab rotary", reinterpret_cast<const char*>(out + 5));
   TEST_ASSERT_FALSE(hp.next_tx(out));
 }
@@ -1192,12 +1245,13 @@ void test_host_key_state_queue_and_bye() {
   hp.on_packet(hello.data(), HOST_PACKET, 0);
   uint8_t out[HOST_PACKET];
   TEST_ASSERT_TRUE(hp.next_tx(out));  // HELLO_ACK
-  hp.send_state(true, 3, 3);
+  hp.send_state(true, 1, 4);
   hp.send_key(9, true);
   TEST_ASSERT_TRUE(hp.next_tx(out));
   TEST_ASSERT_EQUAL_HEX8(PKT_STATE, out[0]);
   TEST_ASSERT_EQUAL(1, out[2]);
-  TEST_ASSERT_EQUAL(3, out[3]);
+  TEST_ASSERT_EQUAL(1, out[3]);  // base
+  TEST_ASSERT_EQUAL(4, out[4]);  // top
   TEST_ASSERT_TRUE(hp.next_tx(out));
   TEST_ASSERT_EQUAL_HEX8(PKT_KEY, out[0]);
   TEST_ASSERT_EQUAL(9, out[2]);
@@ -1228,6 +1282,23 @@ void test_host_hello_starts_with_an_empty_queue() {
   TEST_ASSERT_FALSE(hp.next_tx(out));  // the new daemon does not run the old session's keys
 }
 
+void test_host_timeout_drops_queued_events() {
+  HostProto hp;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION});
+  hp.on_packet(hello.data(), HOST_PACKET, 0);
+  uint8_t out[HOST_PACKET];
+  TEST_ASSERT_TRUE(hp.next_tx(out));  // HELLO_ACK
+  hp.send_key(1, true);               // HOST tap the sleeping host never took
+  hp.send_key(1, false);
+  hp.tick(HOST_TIMEOUT_MS);
+  TEST_ASSERT_FALSE(hp.linked());
+  auto m = pkt({PKT_METRICS, PROTO_VERSION, 10});
+  TEST_ASSERT_TRUE(hp.on_packet(m.data(), HOST_PACKET, HOST_TIMEOUT_MS + 100));  // host woke, no HELLO
+  TEST_ASSERT_TRUE(hp.next_tx(out));
+  TEST_ASSERT_EQUAL_HEX8(PKT_HELLO_ACK, out[0]);
+  TEST_ASSERT_FALSE(hp.next_tx(out));  // the stale keys are not run on wake
+}
+
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_debounce_filters_bounce);
@@ -1255,6 +1326,9 @@ int main() {
   RUN_TEST(test_macro_types_text);
   RUN_TEST(test_ascii_mapping);
   RUN_TEST(test_report_holds_six_keys_and_one_of_each_usage);
+  RUN_TEST(test_second_key_with_a_held_usage_is_pressed_again);
+  RUN_TEST(test_second_key_gap_waits_for_usb_delivery);
+  RUN_TEST(test_seventh_shortcut_brings_no_modifiers_without_its_key);
   RUN_TEST(test_repeated_and_out_of_range_events_are_ignored);
   RUN_TEST(test_two_holders_of_one_momentary_layer);
   RUN_TEST(test_hold_term_across_millis_wrap);
@@ -1297,5 +1371,6 @@ int main() {
   RUN_TEST(test_host_relink_without_hello_asks_for_it);
   RUN_TEST(test_host_key_state_queue_and_bye);
   RUN_TEST(test_host_hello_starts_with_an_empty_queue);
+  RUN_TEST(test_host_timeout_drops_queued_events);
   return UNITY_END();
 }

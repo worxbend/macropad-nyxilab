@@ -94,6 +94,10 @@ void Engine::process(const KeyEvent& ev) {
       tap_phase_ = TapPhase::Gap;
       tap_t0_ = ev.time;
     }
+    if (act_type(a) == ActType::Key && usage_is_held(uint8_t(act_arg(a) & 0xFF))) {
+      retrigger_ = uint8_t(act_arg(a) & 0xFF);
+      retrigger_t_ = ev.time;
+    }
     press_action(a, ev.time);
   } else {
     if (!down_[r][c]) return;
@@ -119,6 +123,13 @@ void Engine::process(const KeyEvent& ev) {
   rebuild();
 }
 
+bool Engine::usage_is_held(uint8_t usage) const {
+  if (!usage) return false;
+  for (uint8_t i = 0; i < n_held_; i++)
+    if (act_type(held_[i]) == ActType::Key && (act_arg(held_[i]) & 0xFF) == usage) return true;
+  return false;
+}
+
 void Engine::resolve_pending_as_hold(uint32_t now) {
   if (!pending_.active) return;
   pending_.active = false;
@@ -134,8 +145,12 @@ void Engine::tick(uint32_t now, bool output_ready) {
   }
   if (!output_ready) {
     // Start hold/gap timing after USB catches up, rather than expiring an unsent press.
-    tap_t_ = tap_t0_ = now;
+    tap_t_ = tap_t0_ = retrigger_t_ = now;
     if (macro_started_) macro_next_ = now + 8;
+  }
+  if (retrigger_ && output_ready && uint32_t(now - retrigger_t_) >= TAP_MS) {
+    retrigger_ = 0;
+    changed = true;
   }
   // keep a tapped key down for at least 10 ms so the host sees it
   if (output_ready && tap_release_armed_ && uint32_t(now - tap_t_) >= 10) {
@@ -266,11 +281,13 @@ void Engine::release_action(Action a) {
 void Engine::rebuild() {
   HidState h{};
   uint8_t n = 0;
-  auto add_key = [&](uint8_t u) {
-    if (!u) return;
+  auto add_key = [&](uint8_t u) {  // true when the usage is in the report
+    if (!u) return false;
     for (uint8_t i = 0; i < n; i++)
-      if (h.keys[i] == u) return;
-    if (n < 6) h.keys[n++] = u;
+      if (h.keys[i] == u) return true;
+    if (n >= 6) return false;
+    h.keys[n++] = u;
+    return true;
   };
   // Held keys wait for macro text: their modifiers must not land on it, nor its Shift on them.
   // Not before the first character: a knob tap that is still down then finishes first.
@@ -286,8 +303,9 @@ void Engine::rebuild() {
       case ActType::Key: {
         if (typing) break;
         const uint8_t usage = uint8_t(act_arg(a) & 0xFF);
-        if (!usage || i == newest_key) h.mods |= uint8_t(act_arg(a) >> 8);
-        add_key(usage);
+        // A key that is not in the report brings no modifiers either: the 7th key, or a usage in its gap.
+        const bool in_report = usage != retrigger_ && add_key(usage);
+        if (!usage || (i == newest_key && in_report)) h.mods |= uint8_t(act_arg(a) >> 8);
         break;
       }
       case ActType::Consumer:

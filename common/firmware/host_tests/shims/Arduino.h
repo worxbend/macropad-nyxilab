@@ -4,7 +4,7 @@
 #include <cstring>
 #include <string>
 
-constexpr int INPUT_PULLUP = 2, LOW = 0, CHANGE = 3;
+constexpr int OUTPUT = 1, INPUT_PULLUP = 2, LOW = 0, HIGH = 1, CHANGE = 3;
 inline uint32_t mock_now = 0;
 inline unsigned mock_delays = 0;
 inline int mock_adc[32] = {}, mock_pins[32] = {};
@@ -12,7 +12,10 @@ inline uint32_t millis() { return mock_now; }
 inline void delay(int) { ++mock_delays; }
 inline int mock_pin_mode[32] = {}, mock_isr_mode[32] = {};
 inline void pinMode(int pin, int mode) { mock_pin_mode[pin] = mode; }
-inline int digitalRead(int pin) { return mock_pins[pin]; }
+inline int (*mock_read)(int pin) = nullptr;  // a test's model of the wiring; unset = the level in mock_pins
+inline int digitalRead(int pin) { return mock_read ? mock_read(pin) : mock_pins[pin]; }
+inline void digitalWrite(int pin, int level) { mock_pins[pin] = level; }
+inline void delayMicroseconds(int) {}
 inline int analogRead(int pin) { return mock_adc[pin]; }
 inline void analogReadResolution(int) {}
 inline int digitalPinToInterrupt(int pin) { return pin; }

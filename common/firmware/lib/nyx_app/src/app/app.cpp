@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 #include "config.h"
+#include "console_line.h"
 #include "core/debounce.h"
 #include "core/host_proto.h"
 #include "core/keymap.h"
@@ -118,16 +119,10 @@ void print_help() {
 }
 
 void console() {
-  static char line[32];
-  static uint8_t n = 0;
+  static ConsoleLine input;
   while (Serial.available()) {
-    const char ch = char(Serial.read());
-    if (ch != '\n' && ch != '\r') {
-      if (n < sizeof(line) - 1) line[n++] = ch;
-      continue;
-    }
-    line[n] = 0;
-    n = 0;
+    if (!input.feed(char(Serial.read()))) continue;
+    const char* line = input.text();
     if (!strcmp(line, "help") || !line[0]) {
       print_help();
     } else if (!strcmp(line, "info")) {

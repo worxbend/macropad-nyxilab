@@ -38,6 +38,12 @@ inline void fmt_uptime(char* o, size_t n, uint32_t s) {
   else snprintf(o, n, "%lum", m);
 }
 
+// The host name in the dashboard header: 22 characters of 6 px from x = 100 end 6 px short of the clock.
+constexpr int HEADER_HOST_CHARS = 22;
+inline void fmt_header_host(char o[HEADER_HOST_CHARS + 1], const char* hostname) {
+  snprintf(o, HEADER_HOST_CHARS + 1, "%.*s", HEADER_HOST_CHARS, hostname);
+}
+
 // Copies the next line of a 12-column text slot into `part` and returns how many characters of `t`
 // it took: at most 12, breaking at the last space that fits, if there is one.
 inline int wrap12(const char* t, char part[13]) {
