@@ -120,7 +120,7 @@ void usb_task() {
   }
   g_wake_refused = false;
   enqueue_current();  // after overflow, eventually send the latest state (including releases)
-  if (!g_count && !g_dx && !g_dy && !g_wheel && !g_pan) return;
+  if (!g_count && !g_resync && !g_dx && !g_dy && !g_wheel && !g_pan) return;
   if (!g_hid.ready()) return;
   g_state_inflight = false;
   const mp::HidState& target = g_count ? g_queue[g_head] : g_sent;

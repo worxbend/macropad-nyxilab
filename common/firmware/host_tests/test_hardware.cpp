@@ -1,6 +1,7 @@
 // Compile production hardware/control code against narrow Arduino/USB/EEPROM mocks.
 #include <cassert>
 #include <cstdio>
+#include <string>
 #include <vector>
 #include <Arduino.h>
 #include <Adafruit_TinyUSB.h>
@@ -11,6 +12,7 @@
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
 #include "ui/dirty_rows.h"
+#include "ui/host_fmt.h"
 #ifdef TEST_JOYSTICK
 #include "stick.h"
 using Centre = JoystickCentre;
@@ -123,6 +125,35 @@ static void test_usb_resends_after_remount() {
   drain();
 }
 
+static void test_usb_keeps_a_repeated_tap_while_busy() {
+  drain();
+  mock_reports.clear();
+  mock_ready = false;
+  mp::HidState a;
+  a.keys[0] = mp::hid::A;
+  hw::usb_set_keyboard(a);
+  hw::usb_set_keyboard({});
+  hw::usb_set_keyboard(a);
+  hw::usb_set_keyboard({});
+  drain();
+  assert(mock_reports.size() == 4);
+  for (int i = 0; i < 4; ++i) assert(mock_reports[i].id == 1 && mock_reports[i].keys[0] == (i % 2 ? 0 : mp::hid::A));
+}
+
+static void test_usb_mount_publishes_a_held_stick_click() {
+  drain();
+  TinyUSBDevice.connected = false;
+  hw::usb_task();
+  hw::usb_set_extra_buttons(mp::MB_LEFT);
+  mock_reports.clear();
+  TinyUSBDevice.connected = true;
+  drain();
+  assert(mock_reports.size() == 3);  // keyboard, consumer, then the mouse report with the button
+  assert(mock_reports[2].id == 2 && mock_reports[2].value == mp::MB_LEFT);
+  hw::usb_set_extra_buttons(0);
+  drain();
+}
+
 static void test_usb_overflow_eventually_releases() {
   mock_ready = false;
   for (int i = 0; i < 100; ++i) {
@@ -141,6 +172,29 @@ static void test_motion_does_not_pause_generated_keys() {
   hw::usb_task();
   assert(!mock_ready);  // motion transfer is still in flight
   assert(hw::usb_keyboard_delivered());
+  drain();
+}
+
+static void test_motion_keeps_the_held_button() {
+  drain();
+  hw::usb_set_extra_buttons(mp::MB_LEFT);  // stick click held
+  drain();
+  mock_reports.clear();
+  hw::usb_add_mouse(5, 0, 0, 0);
+  drain();
+  assert(mock_reports.size() == 1);
+  assert(mock_reports[0].id == 2 && mock_reports[0].value == mp::MB_LEFT && mock_reports[0].dx == 5);
+  hw::usb_set_extra_buttons(0);
+  mp::HidState held;  // an MB() key held
+  held.mouse_buttons = mp::MB_RIGHT;
+  hw::usb_set_keyboard(held);
+  drain();
+  mock_reports.clear();
+  hw::usb_add_mouse(0, 3, 0, 0);
+  drain();
+  assert(mock_reports.size() == 1);
+  assert(mock_reports[0].id == 2 && mock_reports[0].value == mp::MB_RIGHT && mock_reports[0].dy == 3);
+  hw::usb_set_keyboard({});
   drain();
 }
 
@@ -207,6 +261,26 @@ static void test_input_is_dropped_while_the_host_refuses_wake() {
   TinyUSBDevice.asleep = false;
   TinyUSBDevice.wake_ok = true;
   drain();
+}
+
+static void test_usb_finishes_the_resync_after_a_refused_wake() {
+  drain();
+  TinyUSBDevice.connected = false;
+  hw::usb_task();
+  mock_reports.clear();
+  TinyUSBDevice.connected = true;
+  mock_ready = true;
+  hw::usb_task();  // the keyboard report of the resync, then the host suspends
+  assert(mock_reports.size() == 1 && mock_reports[0].id == 1);
+  TinyUSBDevice.asleep = true;
+  TinyUSBDevice.wake_ok = false;
+  hw::usb_task();
+  TinyUSBDevice.asleep = false;
+  TinyUSBDevice.wake_ok = true;
+  mock_ready = true;
+  assert(!hw::usb_keyboard_delivered());  // the host has not seen the consumer and mouse state yet
+  drain();  // consumer and mouse still go out, so generated taps are not held back for good
+  assert(mock_reports.size() == 3 && mock_reports[1].id == 3 && mock_reports[2].id == 2);
 }
 
 static void test_wheel_step_is_sent_once_and_dropped_while_suspended() {
@@ -725,6 +799,29 @@ static void test_display_pushes_only_the_rows_that_changed() {
   assert(ui::changed_rows(frame, w, h, shown).count == 0);  // the hashes follow every call
 }
 
+static void test_host_dashboard_text_formats() {
+  char buf[16], temp[8];  // 8 = the GPU line's buffer in render.cpp
+  const auto rate = [&](uint32_t bps) { return ui::fmt_rate(buf, sizeof buf, bps), std::string(buf); };
+  const auto temperature = [&](int16_t c10) { return ui::fmt_temp(temp, sizeof temp, c10), std::string(temp); };
+  const auto percent = [&](uint8_t pct) { return ui::fmt_pct(buf, sizeof buf, pct), std::string(buf); };
+  const auto uptime = [&](uint32_t s) { return ui::fmt_uptime(buf, sizeof buf, s), std::string(buf); };
+  assert(rate(999) == "999B" && rate(1000) == "1.0K" && rate(999999) == "999.9K");
+  assert(rate(1000000) == "1.0M" && rate(UINT32_MAX) == "4.2G");
+  assert(temperature(-4) == "0C" && temperature(32767) == "3277C" && temperature(-32767) == "-3277C");
+  assert(temperature(mp::HOST_NO_TEMP) == "--C");
+  assert(percent(100) == "100%" && percent(101) == "--");
+  assert(uptime(59) == "0m" && uptime(86399) == "23h 59m" && uptime(86400) == "1d 0h");
+
+  char part[13];
+  const std::string unbroken(60, 'x');  // a full text slot with no space
+  assert(ui::wrap12(unbroken.c_str(), part) == 12 && part[12] == 0 && std::string(part) == unbroken.substr(0, 12));
+  assert(ui::wrap12("hello world foo", part) == 11 && std::string(part) == "hello world");
+  assert(ui::wrap12("abcdefghijkl mno", part) == 12 && std::string(part) == "abcdefghijkl");  // space at column 13
+  assert(ui::wrap12("abcdefghijklm nop", part) == 12 && std::string(part) == "abcdefghijkl");  // column 14 is too late
+  assert(ui::wrap12("short", part) == 5 && std::string(part) == "short");
+  assert(ui::wrap12("", part) == 0 && part[0] == 0);
+}
+
 static void test_host_link_round_trip() {
   hw::host_hid_begin();
   Adafruit_USBD_HID* vendor = mock_hids.back();
@@ -765,28 +862,33 @@ int main() {
   test_usb_preserves_press_and_release();
   test_usb_retries_failed_reports();
   test_usb_resends_after_remount();
+  test_usb_keeps_a_repeated_tap_while_busy();
+  test_usb_mount_publishes_a_held_stick_click();
   test_usb_overflow_eventually_releases();
   test_motion_does_not_pause_generated_keys();
+  test_motion_keeps_the_held_button();
   test_suspended_click_requests_wake();
   test_input_is_dropped_while_the_host_refuses_wake();
+  test_usb_finishes_the_resync_after_a_refused_wake();
   test_wheel_step_is_sent_once_and_dropped_while_suspended();
   test_settings_isolate_editions();
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
   test_settings_flush_saves_before_a_reboot();
   test_display_pushes_only_the_rows_that_changed();
+  test_host_dashboard_text_formats();
 #ifdef TEST_JOYSTICK
   test_stick_mode_cycle_and_click();
   test_stick_saves_the_learned_range_not_the_centre();
   test_stick_motion_wakes_and_does_not_starve_the_save();
   test_host_link_round_trip();
-  puts("18 hardware/control regression groups passed");
+  puts("23 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("19 hardware/control regression groups passed");
+  puts("24 hardware/control regression groups passed");
 #endif
 }

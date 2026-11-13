@@ -10,6 +10,7 @@
 #include <string.h>
 
 #include "core/keymap.h"
+#include "host_fmt.h"
 
 namespace ui {
 namespace {
@@ -140,35 +141,6 @@ void small(GFXcanvas16& c, const char* s, int x, int y, uint16_t col) {
 
 void small_right(GFXcanvas16& c, const char* s, int right, int y, uint16_t col) {
   small(c, s, right - 6 * int(strlen(s)), y, col);
-}
-
-// "12.3" from tenths, without float printf
-void tenths(char* o, size_t n, uint32_t v10, const char* suffix) {
-  snprintf(o, n, "%lu.%lu%s", (unsigned long)(v10 / 10), (unsigned long)(v10 % 10), suffix);
-}
-
-void fmt_rate(char* o, size_t n, uint32_t bps) {
-  if (bps < 1000) snprintf(o, n, "%luB", (unsigned long)bps);
-  else if (bps < 1000000) tenths(o, n, bps / 100, "K");
-  else if (bps < 1000000000) tenths(o, n, bps / 100000, "M");
-  else tenths(o, n, bps / 100000000, "G");
-}
-
-void fmt_pct(char* o, size_t n, uint8_t pct) {
-  if (pct <= 100) snprintf(o, n, "%u%%", pct);
-  else snprintf(o, n, "--");
-}
-
-void fmt_temp(char* o, size_t n, int16_t c10) {
-  if (c10 == mp::HOST_NO_TEMP) snprintf(o, n, "--C");
-  else snprintf(o, n, "%dC", (c10 + (c10 >= 0 ? 5 : -5)) / 10);
-}
-
-void fmt_uptime(char* o, size_t n, uint32_t s) {
-  const unsigned long d = s / 86400, h = s / 3600 % 24, m = s / 60 % 60;
-  if (d) snprintf(o, n, "%lud %luh", d, h);
-  else if (h) snprintf(o, n, "%luh %lum", h, m);
-  else snprintf(o, n, "%lum", m);
 }
 
 void hbar(GFXcanvas16& c, int x, int y, int w, int h, uint8_t pct) {
@@ -330,18 +302,8 @@ void render_host_bar(GFXcanvas16& c, const UiState& s) {
     const char* t = d.text[i];
     if (!*t) continue;
     for (int line = 0; line < 2 && *t && y < 270; line++) {
-      int n = int(strlen(t));
-      if (n > 12) {  // break at the last space that fits, if there is one
-        n = 12;
-        for (int i = 12; i > 0; i--)
-          if (t[i] == ' ') {
-            n = i;
-            break;
-          }
-      }
       char part[13];
-      memcpy(part, t, n);
-      part[n] = 0;
+      const int n = wrap12(t, part);
       small(c, part, 2, y, line ? SUBTLE : TEXT);
       t += n;
       while (*t == ' ') t++;

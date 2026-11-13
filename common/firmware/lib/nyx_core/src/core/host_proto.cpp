@@ -45,6 +45,7 @@ bool HostProto::on_packet(const uint8_t* buf, uint16_t len, uint32_t now) {
     case PKT_HELLO:
       reset_data();  // a (re)started daemon sends everything again
       copy_text(data_.hostname, HOST_HOSTNAME_LEN, p + 2, HOST_HOSTNAME_LEN);
+      tx_n_ = 0;  // a new session starts with an empty queue, like BYE and the timeout
       link();
       break;
     case PKT_METRICS: {

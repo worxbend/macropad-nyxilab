@@ -102,7 +102,9 @@ void host_task(uint32_t now) {
   }
   // tell the daemon what is on screen, so it knows when the dashboard is visible
   const uint8_t state[3] = {uint8_t(host_view()), g_engine.base_layer(), g_engine.top_layer()};
-  if (g_link.take_state_request() || memcmp(state, g_reported, sizeof state) != 0) {
+  const bool relinked = g_link.take_state_request();
+  if (relinked) g_tx_pending = false;  // a packet held for the previous session
+  if (relinked || memcmp(state, g_reported, sizeof state) != 0) {
     memcpy(g_reported, state, sizeof state);
     g_link.send_state(state[0], state[1], state[2]);
   }

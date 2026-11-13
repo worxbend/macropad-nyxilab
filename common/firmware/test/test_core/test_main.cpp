@@ -892,12 +892,15 @@ void test_led_layer_colour_and_flash() {
   Rgb px[16];
   led_frame(in, 0, px, 16);
   const uint8_t rest = px[0].r;
-  TEST_ASSERT_TRUE(rest > 100);
+  TEST_ASSERT_EQUAL(141, rest);  // 190 through the gamma-2 curve, not 190
   TEST_ASSERT_EQUAL(0, px[0].g);
   TEST_ASSERT_EQUAL(0, px[15].b);
   in.since_hit_ms = 0;
   led_frame(in, 0, px, 16);
   TEST_ASSERT_TRUE(px[0].r > rest);  // flash on a key press
+  in.since_hit_ms = LED_PULSE_MS / 2;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_TRUE(px[0].r > rest && px[0].r < 255);  // that fades
   in.since_hit_ms = LED_PULSE_MS;
   led_frame(in, 0, px, 16);
   TEST_ASSERT_EQUAL(rest, px[0].r);  // and back
@@ -911,6 +914,20 @@ void test_led_levels_budget_and_off() {
   led_frame(in, 0, px, 16);
   TEST_ASSERT_TRUE(led_current_ma(px, 16) <= 250);
   TEST_ASSERT_TRUE(led_current_ma(px, 16) > 200);
+  in.color565 = 0x07E0;  // green over the budget stays green
+  in.budget_ma = 100;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_TRUE(px[0].r == 0 && px[0].g > 100 && px[0].b == 0);
+  TEST_ASSERT_TRUE(led_current_ma(px, 16) <= 100);
+  in.color565 = 0xF800;
+  in.budget_ma = 0;
+  in.max_level = 128;  // the brightness cap
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(71, px[0].r);
+  in.max_level = 255;
+  in.level = 128;  // and the backlight level dim alike
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(71, px[0].r);
   in.level = 0;  // host asleep / backlight off
   led_frame(in, 0, px, 16);
   TEST_ASSERT_EQUAL(0, led_current_ma(px, 16));
@@ -934,7 +951,33 @@ void test_led_rainbow_and_breathe() {
   led_frame(in, 0, a, 1);
   led_frame(in, LED_BREATHE_MS / 2, b, 1);
   TEST_ASSERT_TRUE(b[0].b > 4 * a[0].b);
+  TEST_ASSERT_EQUAL(6, a[0].b);  // the trough: 40 through the gamma-2 curve
+  Rgb falling[1], next_period[1];
+  led_frame(in, LED_BREATHE_MS * 3 / 4, falling, 1);
+  TEST_ASSERT_TRUE(falling[0].b > a[0].b && falling[0].b < b[0].b);
+  led_frame(in, LED_BREATHE_MS, next_period, 1);
+  TEST_ASSERT_EQUAL(a[0].b, next_period[0].b);
+  TEST_ASSERT_EQUAL_STRING("LAYER", led_mode_name(LedMode::Layer));
+  TEST_ASSERT_EQUAL_STRING("BREATHE", led_mode_name(LedMode::Breathe));
   TEST_ASSERT_EQUAL_STRING("RAINBOW", led_mode_name(LedMode::Rainbow));
+  TEST_ASSERT_EQUAL_STRING("OFF", led_mode_name(LedMode::Off));
+}
+
+static void expect_rgb(uint8_t r, uint8_t g, uint8_t b, Rgb actual) {
+  TEST_ASSERT_EQUAL(r, actual.r);
+  TEST_ASSERT_EQUAL(g, actual.g);
+  TEST_ASSERT_EQUAL(b, actual.b);
+}
+
+void test_led_colour_conversions() {
+  expect_rgb(255, 0, 0, hsv(0, 255, 255));
+  expect_rgb(0, 255, 0, hsv(512, 255, 255));
+  expect_rgb(0, 0, 255, hsv(1024, 255, 255));
+  expect_rgb(127, 255, 0, hsv(384, 255, 255));  // mid-sector: yellow-green, then azure
+  expect_rgb(0, 127, 255, hsv(896, 255, 255));
+  expect_rgb(255, 0, 0, hsv(1536, 255, 255));  // the wheel wraps (Rainbow passes hues past one turn)
+  expect_rgb(0, 130, 0, rgb565_to_rgb(0x0400));  // green has 6 bits
+  expect_rgb(255, 255, 255, rgb565_to_rgb(0xFFFF));
 }
 
 // ------------------------------------------------------------- host bridge
@@ -1141,6 +1184,21 @@ void test_host_key_state_queue_and_bye() {
   TEST_ASSERT_FALSE(hp.next_tx(out));  // pending events dropped with the link
 }
 
+void test_host_hello_starts_with_an_empty_queue() {
+  HostProto hp;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION});
+  hp.on_packet(hello.data(), HOST_PACKET, 0);
+  uint8_t out[HOST_PACKET];
+  TEST_ASSERT_TRUE(hp.next_tx(out));  // HELLO_ACK
+  TEST_ASSERT_TRUE(hp.take_state_request());
+  for (int i = 0; i < HostProto::TX_QUEUE; i++) hp.send_key(1, i & 1);  // HOST taps while the daemon is dead
+  TEST_ASSERT_TRUE(hp.on_packet(hello.data(), HOST_PACKET, 2000));     // restarted inside the timeout
+  TEST_ASSERT_TRUE(hp.take_state_request());
+  TEST_ASSERT_TRUE(hp.next_tx(out));
+  TEST_ASSERT_EQUAL_HEX8(PKT_HELLO_ACK, out[0]);
+  TEST_ASSERT_FALSE(hp.next_tx(out));  // the new daemon does not run the old session's keys
+}
+
 int main() {
   UNITY_BEGIN();
   RUN_TEST(test_debounce_filters_bounce);
@@ -1198,6 +1256,7 @@ int main() {
   RUN_TEST(test_led_layer_colour_and_flash);
   RUN_TEST(test_led_levels_budget_and_off);
   RUN_TEST(test_led_rainbow_and_breathe);
+  RUN_TEST(test_led_colour_conversions);
   RUN_TEST(test_host_action_reports_press_and_release);
   RUN_TEST(test_layer_next_skips_masked_layers);
   RUN_TEST(test_host_hello_links_and_acks);
@@ -1206,5 +1265,6 @@ int main() {
   RUN_TEST(test_host_timeout_across_millis_wrap);
   RUN_TEST(test_host_relink_without_hello_asks_for_it);
   RUN_TEST(test_host_key_state_queue_and_bye);
+  RUN_TEST(test_host_hello_starts_with_an_empty_queue);
   return UNITY_END();
 }
