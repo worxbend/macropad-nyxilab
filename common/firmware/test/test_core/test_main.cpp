@@ -2,6 +2,7 @@
 // Uses its own small keymap so editing an edition's keymap.cpp never breaks them.
 #include <unity.h>
 
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -533,6 +534,49 @@ void test_knob_taps_wait_for_a_running_macro() {
   TEST_ASSERT_EQUAL(1, ctrl_c_reports);  // delayed, not dropped
 }
 
+void test_keys_pressed_during_a_macro_wait_for_it() {
+  Host h;
+  Engine e(h);
+  e.process(press(1, 1, 0));  // MACRO(0): "Hi!"
+  e.process(release(1, 1, 5));
+  std::string typed;
+  int ctrl_c_reports = 0;
+  HidState last{};
+  for (uint32_t t = 6; t < 300; t++) {
+    if (t == 10) e.process(press(1, 0, t));  // Ctrl+C while the text is going out
+    if (t == 200) e.process(release(1, 0, t));
+    e.tick(t);
+    const HidState& s = e.hid();
+    if (s == last) continue;
+    if (e.macro_running() && s.keys[0]) {
+      TEST_ASSERT_EQUAL_HEX8(0, s.mods & MOD_LCTRL);  // Ctrl never lands on a macro character
+      TEST_ASSERT_EQUAL_HEX8(0, s.keys[1]);
+      typed += s.keys[0] == hid::H ? 'H' : s.keys[0] == hid::I ? 'i' : s.keys[0] == hid::N1 ? '!' : '?';
+    } else if (s.mods & MOD_LCTRL) {
+      TEST_ASSERT_EQUAL_HEX8(hid::C, s.keys[0]);
+      ctrl_c_reports++;
+    }
+    last = s;
+  }
+  TEST_ASSERT_EQUAL_STRING("Hi!", typed.c_str());
+  TEST_ASSERT_EQUAL(1, ctrl_c_reports);  // still held when the text ends: pressed then, not dropped
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().keys[0]);
+}
+
+void test_stick_keys_wait_for_a_macro() {
+  Host h;
+  Engine e(h);
+  const uint8_t up = hid::UP;
+  e.set_extra_keys(&up, 1);  // the joystick edition's arrows
+  e.process(press(1, 1, 0));  // MACRO(0): "Hi!"
+  for (uint32_t t = 0; t < 300 && e.macro_running(); t++) {
+    e.tick(t);
+    if (e.macro_running()) TEST_ASSERT_FALSE(e.hid().has_key(hid::UP));  // Shift+Up would select text
+  }
+  TEST_ASSERT_FALSE(e.macro_running());
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::UP));
+}
+
 void test_macro_waits_for_a_knob_tap_that_is_down() {
   Host h;
   Engine e(h);
@@ -784,6 +828,57 @@ void test_host_metrics_text_and_timeout() {
   TEST_ASSERT_EQUAL_STRING("", d.text[2]);
 }
 
+void test_host_packet_limits() {
+  HostProto hp;
+  const HostData& d = hp.data();
+  std::vector<uint8_t> hello(HOST_PACKET, 'a');  // no NUL anywhere: the copy must stop at the buffer
+  hello[0] = PKT_HELLO;
+  hello[1] = PROTO_VERSION;
+  TEST_ASSERT_TRUE(hp.on_packet(hello.data(), HOST_PACKET, 0));
+  TEST_ASSERT_EQUAL(HOST_HOSTNAME_LEN, strlen(d.hostname));
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, d.m.cpu_pct);
+  TEST_ASSERT_EQUAL(0, d.m.n_cores);
+  std::vector<uint8_t> text(HOST_PACKET, 'b');
+  text[0] = PKT_TEXT;
+  text[1] = PROTO_VERSION;
+  text[2] = 0;
+  TEST_ASSERT_TRUE(hp.on_packet(text.data(), HOST_PACKET, 0));
+  TEST_ASSERT_EQUAL(HOST_TEXT_LEN, strlen(d.text[0]));
+  TEST_ASSERT_EQUAL_STRING("", d.text[1]);
+
+  auto m = pkt({PKT_METRICS, PROTO_VERSION, 40, 200});  // 200 core bars: the renderer indexes core_pct by n_cores
+  for (int i = 4; i < 20; i++) m[i] = 50;
+  put32(m, 20, 1000);
+  put32(m, 24, 2000);
+  m[49] = 24;
+  m[50] = 60;
+  TEST_ASSERT_TRUE(hp.on_packet(m.data(), HOST_PACKET, 0));
+  TEST_ASSERT_EQUAL(HOST_MAX_CORES, d.m.n_cores);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, d.m.clock_h);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, d.m.clock_m);
+  m[2] = 0xFF;  // CPU not measured, more memory used than there is
+  put32(m, 20, 5000);
+  TEST_ASSERT_TRUE(hp.on_packet(m.data(), HOST_PACKET, 0));
+  TEST_ASSERT_EQUAL(100, d.m.mem_pct());
+  TEST_ASSERT_EQUAL(0, d.cpu_hist[HOST_HISTORY - 1]);
+  TEST_ASSERT_EQUAL(100, d.mem_hist[HOST_HISTORY - 1]);
+  TEST_ASSERT_EQUAL(40, d.cpu_hist[HOST_HISTORY - 2]);  // the older sample moved along
+  TEST_ASSERT_EQUAL(50, d.mem_hist[HOST_HISTORY - 2]);
+}
+
+void test_host_timeout_across_millis_wrap() {
+  HostProto hp;
+  const uint32_t t0 = 0xFFFFF000u;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION});
+  hp.on_packet(hello.data(), HOST_PACKET, t0);
+  hp.tick(t0 + 1);
+  TEST_ASSERT_TRUE(hp.linked());  // not dropped early because t0 + timeout wraps
+  hp.tick(t0 + HOST_TIMEOUT_MS - 1);
+  TEST_ASSERT_TRUE(hp.linked());
+  hp.tick(t0 + HOST_TIMEOUT_MS);
+  TEST_ASSERT_FALSE(hp.linked());
+}
+
 void test_host_relink_without_hello_asks_for_it() {
   HostProto hp;
   auto m = pkt({PKT_METRICS, PROTO_VERSION, 10});
@@ -856,6 +951,8 @@ int main() {
   RUN_TEST(test_knob_turn_while_pressed_does_not_repeat_the_press);
   RUN_TEST(test_knob_turns_while_host_asleep_are_not_replayed);
   RUN_TEST(test_knob_taps_wait_for_a_running_macro);
+  RUN_TEST(test_keys_pressed_during_a_macro_wait_for_it);
+  RUN_TEST(test_stick_keys_wait_for_a_macro);
   RUN_TEST(test_macro_waits_for_a_knob_tap_that_is_down);
   RUN_TEST(test_macro_drops_knob_taps_queued_before_it);
   RUN_TEST(test_key_press_ends_a_knob_tap_with_modifiers);
@@ -869,6 +966,8 @@ int main() {
   RUN_TEST(test_layer_next_skips_masked_layers);
   RUN_TEST(test_host_hello_links_and_acks);
   RUN_TEST(test_host_metrics_text_and_timeout);
+  RUN_TEST(test_host_packet_limits);
+  RUN_TEST(test_host_timeout_across_millis_wrap);
   RUN_TEST(test_host_relink_without_hello_asks_for_it);
   RUN_TEST(test_host_key_state_queue_and_bye);
   return UNITY_END();

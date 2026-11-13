@@ -26,7 +26,7 @@ constexpr uint8_t kQueueSize = 64;
 mp::HidState g_queue[kQueueSize];
 uint8_t g_head = 0, g_count = 0;
 uint8_t g_resync = 0;  // keyboard / consumer / mouse must be sent after enumeration
-bool g_mounted = false, g_ever_mounted = false;
+bool g_mounted = false;
 bool g_state_inflight = false;  // motion-only reports must not pause macros/tap timers
 int16_t g_dx = 0, g_dy = 0, g_wheel = 0, g_pan = 0;
 volatile uint8_t g_leds = 0;
@@ -93,16 +93,13 @@ void usb_add_mouse(int8_t dx, int8_t dy, int8_t wheel, int8_t pan) {
 void usb_task() {
   const bool mounted = TinyUSBDevice.mounted();
   if (mounted && !g_mounted) {
-    // A new host session has no knowledge of the previous reports. On remount,
-    // discard old-session transitions and publish the currently held inputs.
-    if (g_ever_mounted) g_head = g_count = 0;
-    g_ever_mounted = true;
+    // A new host session has no knowledge of the previous reports. On every mount,
+    // discard earlier transitions and publish the currently held inputs.
     g_resync = 7;
-    if (!g_count) {
-      g_queue[g_head] = g_want;
-      g_queue[g_head].mouse_buttons |= g_extra_buttons;
-      g_count = 1;
-    }
+    g_head = 0;
+    g_queue[0] = g_want;
+    g_queue[0].mouse_buttons |= g_extra_buttons;
+    g_count = 1;
   }
   g_mounted = mounted;
   if (!mounted || TinyUSBDevice.suspended()) {

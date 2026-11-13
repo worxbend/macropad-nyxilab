@@ -54,12 +54,14 @@ Once the case is closed you do not need BOOTSEL any more:
   counter-clockwise, press). FN + KNOB switches the current layer to a preset (volume,
   scroll, zoom, arrows) and back. The knob is read by pin-change interrupts with a
   detent-synchronised decoder, so bounce never adds steps; key taps from fast turns are
-  queued with a 16-detent backlog. Taps and macros wait for USB delivery, and taps
-  for a running macro; detents beyond the backlog, or still queued when a macro starts,
-  are dropped. Physical key/button
+  queued with a 16-detent backlog. Taps and macros wait for USB delivery (with no
+  host they play out and are dropped), and taps for a running macro; keys and stick
+  arrows held while a macro types are sent when it ends; detents beyond the backlog,
+  or still queued when a macro starts, are dropped. Physical key/button
   transitions have a separate
   64-state USB queue; if that fills, intermediate states can be dropped, but the
-  latest held/released state is sent once space becomes available.
+  latest held/released state is sent once space becomes available. A newly
+  mounted host gets only what is held at that moment.
 - **RGB LED sticks** (2 × 8 WS2812B, both editions): layer colour with a flash on every key
   press or knob click, breathing, or a rainbow running around the case; FN + LED cycles
   the modes. They follow the display brightness and idle dimming and go dark while the host

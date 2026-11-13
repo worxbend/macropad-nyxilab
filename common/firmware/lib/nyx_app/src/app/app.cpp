@@ -239,7 +239,8 @@ void loop() {
       }
     });
   }
-  g_engine.tick(now, hw::usb_keyboard_delivered());
+  // With no host nothing is delivered: let taps and macros play out and be dropped, not typed at the next mount.
+  g_engine.tick(now, !hw::usb_mounted() || hw::usb_keyboard_delivered());
   if (g_centre) g_centre->task(now);
   // like wheel steps: knob detents do not pile up while nobody is listening
   if (!hw::usb_mounted() || hw::usb_suspended()) g_engine.clear_queued_taps();

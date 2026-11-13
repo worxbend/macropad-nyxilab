@@ -272,10 +272,14 @@ void Engine::rebuild() {
       if (h.keys[i] == u) return;
     if (n < 6) h.keys[n++] = u;
   };
+  // Held keys wait for macro text: their modifiers must not land on it, nor its Shift on them.
+  // Not before the first character: a knob tap that is still down then finishes first.
+  const bool typing = macro_ && macro_started_;
   for (uint8_t i = 0; i < n_held_; i++) {
     const Action a = held_[i];
     switch (act_type(a)) {
       case ActType::Key:
+        if (typing) break;
         h.mods |= uint8_t(act_arg(a) >> 8);
         add_key(uint8_t(act_arg(a) & 0xFF));
         break;
@@ -293,7 +297,8 @@ void Engine::rebuild() {
     h.mods |= macro_mods_;
     add_key(macro_usage_);
   }
-  for (uint8_t i = 0; i < n_extra_; i++) add_key(extra_[i]);
+  if (!typing)
+    for (uint8_t i = 0; i < n_extra_; i++) add_key(extra_[i]);
   hid_ = h;
 }
 

@@ -39,6 +39,31 @@ static void drain() {
   assert(false && "HID queue failed to drain");
 }
 
+// Must run first: usb_hid has not seen a mount yet (the mock starts connected, so every later group remounts).
+static void test_usb_drops_keys_pressed_before_the_first_mount() {
+  TinyUSBDevice.connected = false;
+  hw::usb_task();
+  mp::HidState tapped, held;
+  tapped.mods = mp::MOD_LCTRL;
+  tapped.keys[0] = mp::hid::Z;
+  held.keys[0] = mp::hid::B;
+  hw::usb_set_keyboard(tapped);  // a pad with power but no host: Ctrl+Z tapped twice, then B held
+  hw::usb_set_keyboard({});
+  hw::usb_set_keyboard(tapped);
+  hw::usb_set_keyboard({});
+  hw::usb_set_keyboard(held);
+  hw::usb_task();
+  assert(mock_reports.empty());
+  TinyUSBDevice.connected = true;
+  drain();
+  assert(mock_reports.size() == 3);  // only what is held now; the taps are not typed into the login screen
+  assert(mock_reports[0].id == 1 && mock_reports[0].value == 0 && mock_reports[0].keys[0] == mp::hid::B);
+  assert(mock_reports[1].id == 3 && mock_reports[1].value == 0);
+  assert(mock_reports[2].id == 2 && mock_reports[2].value == 0);
+  hw::usb_set_keyboard({});
+  drain();
+}
+
 static void test_usb_preserves_press_and_release() {
   drain();
   mock_reports.clear();
@@ -454,6 +479,96 @@ static void test_keymap_fn_keys_reach_the_knob() {
 }
 #endif
 
+#ifdef TEST_JOYSTICK
+// Forwards like app.cpp's Host, which these tests do not compile.
+struct StickHost : Host {
+  JoystickCentre* centre = nullptr;
+  void on_centre(uint8_t mode) override { centre->on_mode(mode, mock_now); }
+};
+
+static uint8_t last_mouse_buttons() {  // of the reports sent since mock_reports was cleared; 0xFF = none
+  for (auto r = mock_reports.rbegin(); r != mock_reports.rend(); ++r)
+    if (r->id == 2) return uint8_t(r->value);
+  return 0xFF;
+}
+
+static void test_stick_mode_cycle_and_click() {
+  using mp::JoyMode;
+  for (int& pin : mock_pins) pin = 1;
+  mock_adc[cfg::JOY_X_PIN] = mock_adc[cfg::JOY_Y_PIN] = 2048;
+  hw::settings_load();
+  StickHost host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  host.centre = &centre;
+  const uint8_t base = engine.base_layer();
+  const uint8_t* modes = hw::settings().centre_modes;
+  const auto shown_mode = [&] {
+    ui::UiState u;
+    centre.fill_ui(u);
+    return JoyMode(u.joy_mode);
+  };
+  assert(base == 0 && shown_mode() == JoyMode::Mouse);  // MEDIA: STICK(Mouse)
+
+  uint32_t now = 0;
+  for (JoyMode next : {JoyMode::Scroll, JoyMode::Arrows, JoyMode::Off, JoyMode::Mouse}) {  // FN + JOY
+    engine.process({3, 0, true, now});  // LAYER
+    engine.tick(now + 300);             // held past the tap-hold term: FN
+    assert(engine.top_layer() == mp::FN_LAYER);
+    engine.process({1, 0, true, now + 310});  // JOY
+    engine.process({1, 0, false, now + 320});
+    assert(modes[base] == uint8_t(next));
+    engine.process({3, 0, false, now + 330});
+    assert(shown_mode() == next);  // the saved mode wins over the layer's own STICK()
+    now += 400;
+  }
+  centre.on_mode(uint8_t(JoyMode::Scroll), now);
+  hw::settings_flush();
+  hw::settings_load();  // a reboot reads flash, not RAM
+  assert(shown_mode() == JoyMode::Scroll);
+
+  centre.on_mode(uint8_t(JoyMode::Mouse), now);
+  const auto run_tasks = [&](int n) {
+    for (int i = 0; i < n; i++) centre.task(now += cfg::JOY_PERIOD_MS);
+    drain();
+  };
+  drain();
+  mock_reports.clear();
+  mock_pins[cfg::JOY_SW_PIN] = LOW;
+  run_tasks(2);
+  assert(last_mouse_buttons() == 0xFF);  // two samples: still bouncing
+  run_tasks(1);
+  assert(last_mouse_buttons() == mp::MB_LEFT);
+  mock_pins[cfg::JOY_SW_PIN] = 1;
+  run_tasks(3);
+  assert(last_mouse_buttons() == 0);
+
+  centre.on_mode(uint8_t(JoyMode::Scroll), now);
+  mock_pins[cfg::JOY_SW_PIN] = LOW;
+  run_tasks(3);
+  assert(last_mouse_buttons() == mp::MB_MIDDLE);
+  mock_pins[cfg::JOY_SW_PIN] = 1;
+  run_tasks(3);
+
+  mock_reports.clear();
+  mock_adc[cfg::JOY_Y_PIN] = 4000;  // pushed along Y only: the wheel, not the pan
+  for (int i = 0; i < 100; i++) run_tasks(1);
+  bool wheel = false;
+  for (const auto& r : mock_reports) {
+    assert(r.id == 2 && r.pan == 0 && r.dx == 0 && r.dy == 0);
+    wheel = wheel || r.wheel != 0;
+  }
+  assert(wheel);
+
+  mock_adc[cfg::JOY_Y_PIN] = 2048;
+  hw::settings_load();  // drop the travel learned above, then put the layer's own mode back in flash
+  hw::settings().centre_modes[base] = uint8_t(JoyMode::Inherit);
+  hw::settings_touch(now);
+  hw::settings_flush();
+}
+#endif
+
 static void test_display_pushes_only_the_rows_that_changed() {
   constexpr int w = 4, h = 6;
   uint16_t frame[w * h] = {};
@@ -513,6 +628,7 @@ static void test_host_link_round_trip() {
 }
 
 int main() {
+  test_usb_drops_keys_pressed_before_the_first_mount();
   test_usb_preserves_press_and_release();
   test_usb_retries_failed_reports();
   test_usb_resends_after_remount();
@@ -526,14 +642,15 @@ int main() {
   test_settings_flush_saves_before_a_reboot();
   test_display_pushes_only_the_rows_that_changed();
 #ifdef TEST_JOYSTICK
+  test_stick_mode_cycle_and_click();
   test_host_link_round_trip();
-  puts("13 hardware/control regression groups passed");
+  puts("15 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_host_link_round_trip();
-  puts("17 hardware/control regression groups passed");
+  puts("18 hardware/control regression groups passed");
 #endif
 }
