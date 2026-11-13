@@ -237,6 +237,10 @@ class Case:
     feet_inset: float = 16.0
     logo_h: float = 9.0  # engraved moon-and-star mark on the back border; 0 = no logo
     logo_depth: float = 0.6
+    sign_h: float = 40.0  # signature engraved under the base, height of the scribble; 0 = none
+    sign_y: float = 35.0  # world y of the scribble's lower edge; the caption's baseline is 0.28 sign_h below
+    sign_stroke: float = 1.4  # groove width: three passes of a 0.4 mm nozzle stay open on the first layer
+    sign_depth: float = 0.4  # two layers; the screw pilot holes above start at 0.8, so 0.4 mm stays under them
 
 
 @dataclass(frozen=True)

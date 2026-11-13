@@ -94,6 +94,8 @@ every design decision had a reason, bestie. here's the tea:
 | <img src="docs/images/joystick/base_leds.png" alt="base with the Pico and the two LED sticks"> | <img src="docs/images/joystick/back_usb.png" alt="back view with USB-C"> |
 | **what's inside** | **the underside of the plate** |
 | <img src="docs/images/joystick/inside.png" alt="inside view"> | <img src="docs/images/joystick/plate_underside.png" alt="plate underside"> |
+| **flip it over: the Signature Edition engraving** | |
+| <img src="docs/images/joystick/base_underside.png" alt="underside of the base with the engraved signature and the caption Signature Edition"> | |
 
 wanna spin it around yourself? **[open the 3D viewer](https://worxbend.github.io/macropad-nyxilab/viewer.html)**
 (or `docs/viewer.html` offline): switch editions, orbit, explode the layers, slice it with a live

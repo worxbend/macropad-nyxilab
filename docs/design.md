@@ -48,6 +48,12 @@ knob) even though the active area is off-centre on that PCB. Plate borders are ~
 10.5 mm front, 13.8 mm back (the back border carries the engraved logo, set
 `logo_h = 0` in `params.py` to remove it).
 
+The underside of the base carries an engraved signature with the caption "Signature
+Edition": grooves 1.4 mm wide and 0.4 mm deep (two layers), about 88 × 51 mm, mirrored so it
+reads when the pad is turned over. Set `sign_h = 0` in `params.py` to remove it.
+
+![Underside of the base with the engraved signature](images/joystick/base_underside.png)
+
 ## The stack
 
 ```

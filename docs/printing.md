@@ -42,6 +42,8 @@ even glow use 100 % infill, or 0 % infill with 4 walls.
 - The USB-C opening has two short bridges (≤ 8 mm) – default bridge settings are fine.
 
 **Base tips**
+- The signature under the base is on the first layer: grooves 1.4 mm wide, 0.4 mm deep. Print the
+  first layer at normal height and without extra squish, or the grooves close up.
 - The four LED-stick posts and the Pico standoffs are small; slow down the outer walls
   a little if they come out stringy.
 

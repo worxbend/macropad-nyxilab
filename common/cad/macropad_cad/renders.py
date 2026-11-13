@@ -72,6 +72,11 @@ def render_all(out: Path, L: Layout, verbose: bool = True) -> dict[str, Path]:
     path = out / "plate_underside.png"
     s.render(str(path), eye_dir=(-0.35, -0.6, -1.0), zoom=1.05)
     done["plate_underside"] = path
+    # the closed pad from below: feet recesses, case screws and the engraved signature
+    path = out / "base_underside.png"
+    scene(L).render(str(path), eye_dir=(0.0, -0.35, -1.0), up=(0, 1, 0), zoom=1.6,
+                    key_dir=(0.35, -0.45, -1.0), shadows=False)
+    done["base_underside"] = path
     u = L.usb_center
     s = scene(L, only=("frame", "base", "top_plate", "pico"), comps=True)
     path = out / "usb_detail.png"

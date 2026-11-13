@@ -21,13 +21,16 @@ from build123d import (
     Face,
     Part,
     Polygon,
+    Polyline,
     Pos,
     RectangleRounded,
     Rot,
     Sketch,
+    Spline,
     Vector,
     chamfer,
     extrude,
+    trace,
 )
 
 from .components import CXY, box, cyl
@@ -229,7 +232,79 @@ def base(L: Layout, with_pico: bool = True, with_centre: bool = True) -> Part:
     fi = c.feet_inset
     for x, y in ((fi, fi), (L.W - fi, fi), (fi, L.D - fi), (L.W - fi, L.D - fi)):
         body -= Pos(x, y, -0.1) * Cylinder(c.feet_d / 2, c.feet_depth + 0.1, align=CXY)
+
+    if c.sign_h:
+        # turned over about y: it is read from below, with the pad rolled over sideways
+        cutter = Rot(0, 180, 0) * extrude(signature(c.sign_h, c.sign_stroke), amount=c.sign_depth + 1)
+        body -= Pos(L.W / 2, c.sign_y, c.sign_depth) * cutter
     return body
+
+
+# Pen strokes of the signature on a 76 x 41 grid, y up: the initial, then the scribble that runs into
+# the lower loop, then the long upper loop with its tail.  Every bend is wider than the stroke and each stroke
+# ends inside its neighbour: a tighter bend or two ends on one point give a non-manifold mesh.
+SIGN_GRID_W, SIGN_GRID_H = 76.0, 41.0
+SIGN_INITIAL = ((14, 27), (6, 23.5), (2, 15), (6, 7), (13, 6), (19, 12), (19, 21))  # closed oval
+SIGN_STROKES = (
+    ((18.8, 13.3), (21.5, 14.5), (23, 19), (26, 23), (29, 19), (30, 15), (32, 12.5), (34.5, 15), (37, 17.5),
+     (39.5, 15), (42, 12.5), (44.5, 15), (46.5, 16.5), (48.8, 13.5), (50, 6.5), (54.7, 0.9), (62.7, 1.3),
+     (69.4, 7.3), (70.7, 15.3), (67.4, 20.7), (60.4, 20.9)),
+    ((61.4, 21.2), (68.7, 22.7), (74, 29.3), (74.8, 35.3), (70.7, 39.5), (64, 38.7), (58, 32.7), (52.7, 28.7),
+     (47.4, 27), (39.4, 25)),
+)
+
+
+# Caption letters as pen strokes: x-height 4, capitals 6, descender -2.  (advance width, strokes);
+# a stroke whose last point repeats its first is a closed ring.
+_BOWL = ((3, 3.2), (2.2, 4), (0.8, 4), (0, 3.2), (0, 0.8), (0.8, 0), (2.2, 0), (3, 0.8))
+SIGN_GLYPHS = {
+    "S": (3.4, (((3.4, 5.2), (2.6, 6), (0.8, 6), (0, 5.2), (0, 3.8), (0.8, 3), (2.6, 3), (3.4, 2.2), (3.4, 0.8),
+                 (2.6, 0), (0.8, 0), (0, 0.8)),)),
+    "E": (3.0, (((3, 6), (0, 6), (0, 0), (3, 0)), ((0, 3), (2.4, 3)))),
+    "i": (0.0, (((0, 0), (0, 4)), ((0, 5.3), (0, 6)))),
+    "g": (3.0, (_BOWL, ((3, 4), (3, -1.2), (2.2, -2), (0.4, -2)))),
+    "n": (3.0, (((0, 0), (0, 4)), ((0, 3.2), (0.8, 4), (2.2, 4), (3, 3.2), (3, 0)))),
+    "a": (3.0, (((0.3, 3.4), (0.9, 4), (2.2, 4), (3, 3.2), (3, 0)),
+                ((2.6, 2.2), (0.8, 2.2), (0, 1.5), (0, 0.7), (0.8, 0), (2.6, 0)))),
+    "d": (3.0, (_BOWL, ((3, 6), (3, 0)))),
+    "t": (2.4, (((1, 6), (1, 0.8), (1.8, 0), (2.4, 0)), ((0, 4), (2.4, 4)))),
+    "u": (3.0, (((0, 4), (0, 0.8), (0.8, 0), (2.2, 0), (3, 0.8)), ((3, 4), (3, 0)))),
+    "r": (2.2, (((0, 0), (0, 4)), ((0, 3.2), (0.8, 4), (2.2, 4)))),
+    "e": (3.0, (((0, 2), (3, 2)), ((3, 2), (3, 3.2), (2.2, 4), (0.8, 4), (0, 3.2), (0, 0.8), (0.8, 0), (2.6, 0)))),
+    "o": (3.0, (_BOWL + (_BOWL[0],),)),
+    " ": (1.0, ()),
+}
+SIGN_LETTER_GAP = 1.8
+
+
+def signature(height: float, stroke: float) -> Sketch:
+    """Hand-drawn signature with the caption "Signature Edition" under it.
+
+    Origin: the middle of the scribble's lower edge.  The caption is drawn with the same pen, not
+    a font: font outlines at this size have slivers that the 3MF mesher rejects, and their stems
+    are thinner than a 0.4 mm nozzle prints.
+    """
+    k = height / SIGN_GRID_H
+    half_w = SIGN_GRID_W / 2
+    sketch = trace(Spline(*[((x - half_w) * k, y * k) for x, y in SIGN_INITIAL], periodic=True), stroke)
+    for points in SIGN_STROKES:
+        sketch += trace(Spline(*[((x - half_w) * k, y * k) for x, y in points]), stroke)
+    return sketch + Pos(0, -0.28 * height) * caption("Signature Edition", height / 31, stroke)
+
+
+def caption(text: str, unit: float, stroke: float) -> Sketch:
+    """One line of ``SIGN_GLYPHS`` letters, centred in x on the origin, baseline at y = 0."""
+    width = sum(SIGN_GLYPHS[ch][0] for ch in text) + SIGN_LETTER_GAP * (len(text) - 1)
+    sketch = Sketch()
+    x = -width / 2
+    for ch in text:
+        advance, strokes = SIGN_GLYPHS[ch]
+        for points in strokes:
+            closed = points[0] == points[-1]
+            line = Polyline(*[((x + px) * unit, py * unit) for px, py in points[:len(points) - closed]], close=closed)
+            sketch += trace(line, stroke)
+        x += advance + SIGN_LETTER_GAP
+    return sketch
 
 
 def _pico_cradle(L: Layout, body: Part) -> Part:

@@ -64,7 +64,7 @@
         98.0
       ],
       "height_mm": 9.8,
-      "volume_cm3": 47.1,
+      "volume_cm3": 46.8,
       "solid_mass_g_pla": 58.0,
       "notes": "Print as exported. 0.2 mm layers, 3 walls, 20% infill."
     },

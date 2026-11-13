@@ -50,6 +50,7 @@ modules. Typical edits:
 | modules loose in their pockets | `PrintTol.pocket` |
 | different insert size / self-tapping | `Fasteners.insert_d`, `insert_depth` |
 | no logo, or a bigger one | `Case.logo_h` (0 = none) |
+| no signature under the base, or another size | `Case.sign_h` (0 = none), `Case.sign_y`, `Case.sign_stroke` |
 | move the centre control / displays | `Case.centre_v`, `Case.bar_v`, `Case.center_half` |
 | move the LED sticks | `Case.led_dx` (from the Pico axis), `Case.led_y` |
 | LED stick with other holes | `LedStick.hole_pitch`, `hole_y`, `hole_d` |
