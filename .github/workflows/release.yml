@@ -1,0 +1,30 @@
+# Publishes a GitHub release on every v* tag: one zip per edition with the 3MF, STEP and STL
+# files, the drawings (incl. the 1:1 top-plate template) and the renders (tools/release_archive.py).
+# The CAD outputs are committed, so this only re-runs the CAD checks and packs files.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: .github/requirements/cad.txt
+      - run: 'pip install --only-binary :all: --require-hashes -r .github/requirements/cad.txt'
+      - run: python joystick/cad/build.py check
+      - run: python rotary/cad/build.py check
+      - run: python tools/release_archive.py "$GITHUB_REF_NAME"
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
