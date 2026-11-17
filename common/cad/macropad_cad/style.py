@@ -14,6 +14,7 @@ PART_COLORS = {
     "frame": "#5B3E8E",  # colour B (night violet)
     "base": "#E3E0D9",  # colour A / C
     "bar_spine": "#8E949A",
+    "ballast": "#6B6560",
 }
 
 COMPONENT_COLORS = {

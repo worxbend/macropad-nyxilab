@@ -40,7 +40,7 @@ Four projects plus the shared code, and the host bridge:
 make setup              # .venv (build123d, manifold3d, trimesh, moderngl, markdown) + PlatformIO
 make cad                # both editions: checks + exports + renders + drawings  (= python <ed>/cad/build.py all)
 make cad-joystick CMD=check   # one edition, one step (check | export | render | drawings | all); cad-rotary likewise
-make cad-check          # 169 (joystick) / 191 (rotary) interference pairs + clearances + printability; non-zero exit on failure
+make cad-check          # 192 (joystick) / 215 (rotary) interference pairs + clearances + printability; non-zero exit on failure
 make firmware           # both editions for the Pico 2 -> <ed>/firmware/dist/nyxilab-macropad-<ed>-pico2.uf2
 make firmware-all       # + the RP2040 builds; firmware-joystick, firmware-rotary(-pico), flash-joystick, flash-rotary
 make test               # native tests: common (71), joystick (11), rotary (10), mocked hardware (28 + 29 groups), host daemon (18, cargo)
@@ -64,8 +64,8 @@ is kept). Renders need EGL (GPU or Mesa).
 ### CAD
 `common/cad/macropad_cad`: `params.py` (shared dimensions; `MEASURE` = from photos, verify) -> `layout.py`
 (`Layout(edition)`: derived positions; plate frame `u,v,w` on the tilted top surface, world X right / Y back / Z up)
--> `components.py` (reference models + keep-outs) -> `parts.py` (`top_plate`, `frame`, `base`, `bar_spine` in world
-coordinates; `print_pose` orients them). `edition.py` defines the `Edition` hooks: `plate_cuts`, `base_features`,
+-> `components.py` (reference models + keep-outs) -> `parts.py` (`top_plate`, `frame`, `base`, `bar_spine`, `ballast` in world
+coordinates; `print_pose` orients them). `ballast.py` is the drop-in weight and the cable lanes. `edition.py` defines the `Edition` hooks: `plate_cuts`, `base_features`,
 `parts`, `components`, `keepouts`, `sweep`, `fit_tests`, `clearances`, drawing notes. `checks.py` must stay green
 for both editions after any change; `<ed>/cad/exports/checks.json` and `manifest.json` feed the viewer.
 Key design facts: screw bosses belong to the top plate and are world-vertical (all 8 case screws M3x8); the frame

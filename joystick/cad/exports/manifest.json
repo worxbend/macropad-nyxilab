@@ -77,6 +77,16 @@
       "volume_cm3": 2.6,
       "solid_mass_g_pla": 3.0,
       "notes": "Print as exported (flat side down). 100% infill or 5 walls - it is a small spring clamp."
+    },
+    "ballast": {
+      "bed_footprint_mm": [
+        148.6,
+        87.6
+      ],
+      "height_mm": 18.9,
+      "volume_cm3": 80.8,
+      "solid_mass_g_pla": 100.0,
+      "notes": "Print flat bottom down, 100% infill. Trenches face up; no supports. Drop into the base after the LEDs, centre module and Pico are mounted."
     }
   },
   "fit_tests": {

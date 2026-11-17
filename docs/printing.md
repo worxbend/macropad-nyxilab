@@ -6,7 +6,8 @@ oriented; just drop them on the plate:
 - joystick edition: `joystick/cad/exports/3mf/` (and `stl/`)
 - rotary edition: `rotary/cad/exports/3mf/` (and `stl/`). The frame and the bar spine
   are the same parts in both editions; the top plate and the base differ, and the
-  rotary edition adds the knob.
+  rotary edition adds the knob. `ballast` is in both editions; each mesh follows
+  that edition's centre module.
 
 Or grab the zips from the [downloads page](https://worxbend.github.io/macropad-nyxilab/guide/downloads.html).
 
@@ -16,11 +17,13 @@ Or grab the zips from the [downloads page](https://worxbend.github.io/macropad-n
 | `frame` | B (accent, e.g. violet) | 159 × 98 mm | 27 mm | flat bottom down | 0.2 mm, 3 walls, 15 % infill |
 | `base` | A | 159 × 98 mm | 10 mm | flat bottom down | 0.2 mm, 3 walls, 20 % infill |
 | `bar_spine` | any | 69 × 19 mm | 6 mm | flat side down | 0.2 mm, 100 % infill |
+| `ballast` | any | 149 × 88 mm | 19 mm | flat bottom down | 0.2 mm, 100 % infill |
 | `knob` (rotary) | B, like the frame | Ø30 mm | 19 mm | top face **down** | 0.12–0.16 mm layers, 4 walls, 30 % infill |
 
 Material: PLA or PETG both work. PETG is a little tougher for the self-tapping screws
 and the clips of the switches; PLA gives crisper edges. Approximate filament use:
-top plate ~60 g, frame ~30 g, base ~50 g, knob ~12 g.
+top plate ~60 g, frame ~30 g, base ~50 g, knob ~12 g, ballast ~100 g (joystick) or
+~107 g (rotary). The ballast figure is the solid mass: print it at 100 % infill.
 
 **Make the LEDs visible: print the frame translucent.** The two RGB sticks sit inside
 the case, pointing up. In an opaque frame you mostly see them through the gap around the
@@ -46,6 +49,15 @@ even glow use 100 % infill, or 0 % infill with 4 walls.
   first layer at normal height and without extra squish, or the grooves close up.
 - The four LED-stick posts and the Pico standoffs are small; slow down the outer walls
   a little if they come out stringy.
+
+## The ballast
+
+Print `ballast` flat bottom down, trenches up, at 100 % infill. The sloped top
+prints without supports. Drop it into the base after the LED sticks,
+the centre module and the Pico are mounted, and before the plate goes on. Press the
+wires into the trenches (assembly, section 6). It stays clear of both LED sticks.
+On the joystick edition the slicer shows two bodies: the main fill, and a strip that
+sits between the left LED stick and the Pico. Print both.
 
 ## The knob (rotary edition)
 

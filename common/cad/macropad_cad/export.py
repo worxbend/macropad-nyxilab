@@ -31,6 +31,8 @@ PRINT_NOTES = {
     "frame": "Print as exported (flat bottom down). 0.2 mm layers, 3 walls, 15% infill. This is the accent colour.",
     "base": "Print as exported. 0.2 mm layers, 3 walls, 20% infill.",
     "bar_spine": "Print as exported (flat side down). 100% infill or 5 walls - it is a small spring clamp.",
+    "ballast": "Print flat bottom down, 100% infill. Trenches face up; no supports. "
+               "Drop into the base after the LEDs, centre module and Pico are mounted.",
 }
 
 

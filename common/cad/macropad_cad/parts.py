@@ -4,6 +4,7 @@ top_plate  - tilted switch/display plate with hanging screw bosses (colour A)
 frame      - wedge-shaped wall ring, carries the USB-C port (colour B)
 base       - flat bottom with Pico cradle, LED-stick posts, feet (colour A/C)
 bar_spine  - small clamp that holds the 2.25" bar display in its pocket
+ballast    - drop-in weight with cable lanes (see ballast.py)
 
 The edition adds the centre-control mount (``L.ed.plate_cuts`` / ``base_features``)
 and its own parts (``L.ed.parts``, e.g. the rotary knob).
@@ -381,11 +382,14 @@ def print_pose(name: str, part: Part, L: Layout) -> Part:
 
 
 def all_parts(L: Layout) -> dict[str, Part]:
+    from .ballast import ballast
+
     out = {
         "top_plate": top_plate(L),
         "frame": frame(L),
         "base": base(L),
         "bar_spine": bar_spine(L),
+        "ballast": ballast(L),
     }
     out.update(L.ed.parts(L))
     return out

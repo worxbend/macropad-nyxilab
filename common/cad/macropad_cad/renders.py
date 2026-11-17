@@ -17,7 +17,7 @@ NO_EDGES = ("pins", "stem")
 def scene(L: Layout, explode: float = 0.0, plate=True, comps=True, caps=True, only=None) -> Scene:
     ed = L.ed
     s = Scene()
-    lift = {"top_plate": 2.0, "frame": 1.0, "base": 0.0, "bar_spine": 2.0, **ed.render_lift}
+    lift = {"top_plate": 2.0, "frame": 1.0, "base": 0.0, "bar_spine": 2.0, "ballast": 0.0, **ed.render_lift}
     plate_parts = ("top_plate", *[n for n, k in ed.render_lift.items() if k >= 2])
     for name, part in parts.all_parts(L).items():
         if (name in plate_parts and not plate) or (only and name not in only):

@@ -282,6 +282,7 @@ def bom_rows(L: Layout) -> list[list[str]]:
             ["frame (colour B)", "1", "PLA/PETG, accent colour"],
             ["base (colour A)", "1", "PLA/PETG"],
             ["bar_spine", "1", "PLA/PETG, 100 %"],
+            ["ballast", "1", "PLA/PETG, 100 %, drop into the base"],
             *L.ed.bom_printed,
             ["M3x8 countersunk ISO 10642", "8", "case screws"],
             ["M3 heat-set insert 5.7x4.6", "8", "plate bosses"],

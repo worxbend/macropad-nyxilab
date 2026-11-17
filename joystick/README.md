@@ -28,7 +28,7 @@ make test-joystick                # unit tests of the stick maths on this PC
 - **Case**: the stick's dome sweeps wide when tilted, so the module stands on four
   posts that grow out of the **base** (tilted 10°, M3 self-tapping screws), and the
   top plate has a Ø32 bevelled opening. A 1.2 mm relief in the base clears the solder
-  joints. Fit checks: 169 pairs, including the dome's full 25° sweep.
+  joints. Fit checks: 192 pairs, including the dome's full 25° sweep.
 - **Firmware**: `STICK(JoyMode::Mouse | Scroll | Arrows | Off)` per layer in
   `keymap.cpp`; FN + JOY cycles the mode of the current layer, FN + CAL re-centres.
   Stick click = left click / middle click / Enter depending on the mode. Calibration
@@ -37,7 +37,7 @@ make test-joystick                # unit tests of the stick maths on this PC
 
 ## Files to print
 
-`cad/exports/3mf/`: `top_plate`, `frame`, `base`, `bar_spine`, plus the fit-test
+`cad/exports/3mf/`: `top_plate`, `frame`, `base`, `bar_spine`, `ballast`, plus the fit-test
 coupons in `3mf/fit-tests/` (`fit_plate_joy`, `fit_joystick` are the ones only this
 edition has). See [docs/printing.md](../docs/printing.md).
 

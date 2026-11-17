@@ -133,15 +133,21 @@ should light in the layer colour and flash on every key press. The serial consol
 
 ## 6 · Close the case
 
-1. Fold the wires into the case: keep them out of the joystick opening and away from the
-   stick's mechanism, and don't cover the LEDs.
-2. Lower the top plate onto the frame: the joystick knob passes through its opening (or
+1. Drop the **ballast** into the base. It lowers over the Pico, the LED sticks and, on
+   the joystick edition, the joystick. That edition also has a smaller strip, which sits
+   between the left LED stick and the Pico. The boss holes stay open. Leave the LEDs
+   uncovered.
+2. Press the harness into the trenches: bar-display leads in the left lane, the LED
+   jumper in the cross lane between the sticks, the matrix slack in the centre lane,
+   and the 1.9" wires in the lane on the Pico's right. Keep the rest out of the joystick
+   opening and away from the stick's mechanism.
+3. Lower the top plate onto the frame: the joystick knob passes through its opening (or
    the encoder module hangs into the space in front of the Pico), the lip drops inside
-   the frame and the bosses slide into their saddles.
-3. Turn the pad over and drive the **8 × M3×8 countersunk** screws. Tighten evenly in a
+   the frame and the bosses pass through the ballast into their saddles.
+4. Turn the pad over and drive the **8 × M3×8 countersunk** screws. Tighten evenly in a
    cross pattern until the seams close – do not overtighten.
-4. Fit the keycaps.
-5. Rotary edition: turn the shaft so its flat points where you want the indicator dot to
+5. Fit the keycaps.
+6. Rotary edition: turn the shaft so its flat points where you want the indicator dot to
    start, line up the flat in the knob's bore and **press the knob on until it stops** on
    the shaft tip. It then sits 1 mm above the plate, and pushing the knob presses the
    encoder's switch.
@@ -149,5 +155,6 @@ should light in the layer colour and flash on every key press. The serial consol
 ## Opening it again
 
 Pull the knob off (rotary edition), remove the 8 bottom screws and lift the top plate; it
-stays connected to the Pico by the wires. The Pico comes out with its two screws; tilt
-it out of the port. The LED sticks and their wiring stay in the base.
+stays connected to the Pico by the wires. The ballast stays in the base. The Pico comes
+out with its two screws; tilt it out of the port. The LED sticks and their wiring stay
+in the base.

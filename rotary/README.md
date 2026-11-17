@@ -30,7 +30,7 @@ make test-rotary                  # unit tests of the quadrature decoder on this
   12.5 mm square pocket underneath keys the body so it can't turn. The base has no
   posts. The **knob** (Ø30 × 19, 36 flutes, indicator dimple) is a press fit on the
   D-shaft; its bore ends at the shaft tip, so it stops 1 mm above the plate and a push
-  goes into the encoder's switch. An engraved ring frames it. Fit checks: 191 pairs,
+  goes into the encoder's switch. An engraved ring frames it. Fit checks: 215 pairs,
   including the spinning knob's envelope.
 - **Firmware**: `KNOB(cw, ccw, press, "LABEL")` per layer in `keymap.cpp`
   (volume / undo-redo / scroll / screen brightness by default). FN + KNOB cycles the
@@ -41,7 +41,7 @@ make test-rotary                  # unit tests of the quadrature decoder on this
 
 ## Files to print
 
-`cad/exports/3mf/`: `top_plate`, `frame`, `base`, `bar_spine`, **`knob`** (top face
+`cad/exports/3mf/`: `top_plate`, `frame`, `base`, `bar_spine`, `ballast`, **`knob`** (top face
 down, fine layers), plus the fit-test coupons in `3mf/fit-tests/` (`fit_plate_enc` is
 the one only this edition has). Print the knob early: it is the best test of the
 shaft fit (`Knob.bore_clear` in `cad/edition.py`). See

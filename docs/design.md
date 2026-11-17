@@ -157,7 +157,7 @@ you if something no longer fits (8° gives ~18.3 → 32 mm).
 
 Every build runs:
 
-* **Interference pairs** with manifold3d: **169** for the joystick edition, **191** for the
+* **Interference pairs** with manifold3d: **192** for the joystick edition, **215** for the
   rotary edition, **0 clashes**. Each printed part is tested against each component
   keep-out (component + solder joints + hand-wiring room), against the joystick knob's
   full sweep (all directions to 25°, plus 1.5 mm press travel) or the spinning knob's

@@ -69,7 +69,8 @@ params.py      shared dimensions (components, fasteners, tolerances, case)
 edition.py     the Edition interface: the hooks an edition implements (geometry, checks, drawings)
 layout.py      derived positions: key grid, module placements, bosses, heights; Layout(edition)
 components.py  reference models of switches, keycaps, Pico 2, displays, LED sticks (+ keep-outs)
-parts.py       top_plate, frame, base, bar_spine; print orientation (the edition adds its parts)
+parts.py       top_plate, frame, base, bar_spine, ballast; print orientation (the edition adds its parts)
+ballast.py     drop-in weight and the cable lanes
 fit_tests.py   quick coupons for the critical fits (+ helpers for the editions' coupons)
 checks.py      interference, clearance and printability checks (manifold3d, trimesh)
 export.py      STEP / STL / 3MF / GLB writers, FreeCAD hand-off

@@ -166,7 +166,8 @@ tools/               UI simulator, wiring diagrams + maps, soldering figures, vi
    something off? measure it, tweak `common/cad/macropad_cad/params.py` (or the edition's
    `edition.py`), run `make cad`. easy.
 3. **print the case**: `top_plate` (color A, top face down), `frame` (color B, translucent if you
-   want the glow), `base` (color A), the tiny `bar_spine`, and the `knob` for the rotary edition.
+   want the glow), `base` (color A), the tiny `bar_spine`, the `ballast` (flat bottom down,
+   100 % infill), and the `knob` for the rotary edition.
    settings in [docs/printing.md](docs/printing.md).
 4. **solder it and put it together**: the [build guide](docs/build-guide.md) is the route, with
    [docs/soldering.md](docs/soldering.md) → [docs/wiring.md](docs/wiring.md) →
@@ -224,7 +225,7 @@ flowchart LR
 
 we don't just vibe, we verify:
 
-- **169 collision checks** (joystick) and **191** (rotary) on every build: each printed part
+- **192 collision checks** (joystick) and **215** (rotary) on every build: each printed part
   against each component (plus room for solder joints and wiring), against the joystick's full
   25° swing or the spinning knob, and every component against every other, LED sticks
   included. **0 clashes.**
