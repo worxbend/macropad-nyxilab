@@ -149,6 +149,8 @@ def rewrite_link(href: str, src_dir: Path) -> str:
         return page + anchor
     if rel == "docs/viewer.html":
         return "viewer.html" + anchor
+    if rel == "docs/nyxilab-build-guide.pdf":
+        return "downloads/nyxilab-build-guide.pdf" + anchor
     if rel.startswith("docs/images/"):
         return "../" + rel[len("docs/"):]
     if repo_path.is_dir():
@@ -214,6 +216,10 @@ def downloads_page() -> str:
     rows = []
     dl = GUIDE / "downloads"
     dl.mkdir(parents=True, exist_ok=True)
+    guide_pdf = REPO / "docs" / "nyxilab-build-guide.pdf"
+    if guide_pdf.exists():
+        shutil.copy(guide_pdf, dl / guide_pdf.name)
+        rows.append(("Illustrated build guide (print, wire, solder, flash)", guide_pdf.name, guide_pdf.stat().st_size))
     for ed in ("joystick", "rotary"):
         for env, board in (("pico2", "Pico 2 (RP2350)"), ("pico", "Pico (RP2040)")):
             f = REPO / ed / "firmware" / "dist" / f"nyxilab-macropad-{ed}-{env}.uf2"
