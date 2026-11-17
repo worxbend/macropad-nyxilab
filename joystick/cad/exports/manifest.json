@@ -70,12 +70,12 @@
     },
     "bar_spine": {
       "bed_footprint_mm": [
-        71.6,
-        24.1
+        71.8,
+        24.5
       ],
       "height_mm": 6.2,
-      "volume_cm3": 3.1,
-      "solid_mass_g_pla": 4.0,
+      "volume_cm3": 2.7,
+      "solid_mass_g_pla": 3.0,
       "notes": "Print as exported (flat side down). 100% infill or 5 walls - it is a small spring clamp."
     },
     "ballast": {

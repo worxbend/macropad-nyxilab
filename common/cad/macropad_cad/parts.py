@@ -353,6 +353,27 @@ def _bosses_in_bar_frame(L: Layout, gap: float) -> Part:
     return L.loc_bar.inverse() * body
 
 
+def _screw_pads(b, z0: float, zb: float, clear_d: float) -> Part:
+    """Round pad around each M2 head, 2 mm outside the seat.
+
+    A rectangular foot of that width met the plate. The cap toward the
+    components stays only as deep as the head seat.
+    """
+    head_d, head_seat, wall = 4.2, 2.5, 2.0
+    reach = head_d / 2 + wall
+    stop = 5.5  # SMD and ZIF hang below the PCB from x = 5.9
+    pads = cyl(b.hole_x, b.hole_y, z0, zb - 0.2, 2 * reach)
+    pads += cyl(b.hole_x, -b.hole_y, z0, zb - 0.2, 2 * reach)
+    pads -= box(stop, b.hole_x + reach + 1, -(b.hole_y + reach + 1), b.hole_y + reach + 1,
+                z0 + head_seat, zb)
+    # The pads end 0.05 mm short of the beam, so the neck joins them to it.
+    pads += box(b.hole_x, 6.0, -6.0, 6.0, z0, zb - b.back_h - 1.0)
+    for sy in (-1, 1):
+        pads -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, zb + 1, clear_d)
+        pads -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, z0 + head_seat, head_d)
+    return pads
+
+
 @lru_cache(maxsize=None)
 def bar_spine_local(L: Layout) -> Part:
     """Clamp for the bar display, in the bar module frame (z=0 = glass top).
@@ -365,19 +386,9 @@ def bar_spine_local(L: Layout) -> Part:
     zb = -(b.lcm_t + b.tape_t + b.pcb_t)  # PCB back
     z0 = zb - 6.0  # flat print face
     x_pad0, x_pad1 = b.pcb_l - b.free_back_zone[1], b.pcb_l - b.free_back_zone[0]
-    # 1.8 mm outside the M2 head seat. The old foot left ~0.3 mm and the seat broke the edge.
-    head_d, head_seat, screw_wall = 4.2, 2.5, 1.8
-    reach = head_d / 2 + screw_wall
-    parts_x0 = 5.9  # SMD and ZIF hang below the PCB from here (bar_model)
-    span = (-(b.hole_y + reach), b.hole_y + reach)
-    tall = box(b.hole_x - reach, parts_x0 - 0.4, *span, z0, zb - 0.2)
-    flange = box(b.hole_x - reach, b.hole_x + reach, *span, z0, z0 + head_seat)
     beam = box(4.0, x_pad0 + 1.0, -4.0, 4.0, z0, zb - b.back_h - 1.0)
     pad = box(x_pad0, x_pad1, -6.0, 6.0, z0, zb + 0.2)
-    spine = tall + flange + beam + pad - _bosses_in_bar_frame(L, 0.5)
-    for sy in (-1, 1):
-        spine -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, zb + 1, fas.m2_clear_d)
-        spine -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, z0 + head_seat, head_d)
+    spine = _screw_pads(b, z0, zb, fas.m2_clear_d) + beam + pad - _bosses_in_bar_frame(L, 0.5)
     return spine
 
 
