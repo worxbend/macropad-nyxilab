@@ -1,6 +1,7 @@
 # Publishes a GitHub release on every v* tag: one zip per edition with the 3MF, STEP and STL
-# files, the drawings (incl. the 1:1 top-plate template) and the renders (tools/release_archive.py).
-# The CAD outputs are committed, so this only re-runs the CAD checks and packs files.
+# files, the drawings (incl. the 1:1 top-plate template), the renders, and the build guide
+# (tools/release_archive.py). The CAD outputs are committed, so this only re-runs the CAD
+# checks and packs files.
 name: Release
 
 on:
@@ -13,6 +14,7 @@ permissions:
 jobs:
   release:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -27,4 +29,4 @@ jobs:
       - name: Publish the release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/*.zip --title "$GITHUB_REF_NAME" --generate-notes --verify-tag
+        run: gh release create "$GITHUB_REF_NAME" dist/*.zip dist/nyxilab-build-guide.pdf --title "$GITHUB_REF_NAME" --generate-notes --verify-tag

@@ -4,12 +4,14 @@
     python3 tools/release_archive.py [VERSION]   -> dist/nyxilab-macropad-<edition>-<VERSION>.zip
 
 Each zip holds 3mf/, step/, stl/ (print-ready, oriented on the bed), drawings/ (blueprints and
-template_top_plate_1to1.pdf, the top plate printed at 100 % on paper), renders/ (docs/images/<edition>)
-and manifest.json (per-part print notes).  .github/workflows/release.yml runs this on a v* tag.
+template_top_plate_1to1.pdf, the top plate printed at 100 % on paper), renders/ (docs/images/<edition>),
+manifest.json (per-part print notes), and docs/nyxilab-build-guide.pdf. The same PDF is also copied
+to dist/ so the release can attach it on its own. .github/workflows/release.yml runs this on a v* tag.
 """
 
 from __future__ import annotations
 
+import shutil
 import sys
 import zipfile
 from pathlib import Path
@@ -18,6 +20,7 @@ REPO = Path(__file__).resolve().parents[1]
 DIST = REPO / "dist"
 EDITIONS = ("joystick", "rotary")
 EXPORT_DIRS = ("3mf", "step", "stl", "drawings")
+GUIDE = REPO / "docs" / "nyxilab-build-guide.pdf"
 
 
 def edition_files(edition: str) -> list[tuple[Path, str]]:
@@ -31,6 +34,9 @@ def edition_files(edition: str) -> list[tuple[Path, str]]:
         if not found:
             sys.exit(f"release_archive: nothing in {folder.relative_to(REPO)}")
         files += [(p, f"{name}/{p.relative_to(folder).as_posix()}") for p in found]
+    if not GUIDE.is_file():
+        sys.exit(f"release_archive: missing {GUIDE.relative_to(REPO)}")
+    files.append((GUIDE, GUIDE.name))
     return files
 
 
@@ -49,6 +55,8 @@ def main() -> None:
     for edition in EDITIONS:
         out = build(edition, version)
         print(f"{out.relative_to(REPO)}  {out.stat().st_size / 1e6:.1f} MB")
+    shutil.copyfile(GUIDE, DIST / GUIDE.name)
+    print(f"{(DIST / GUIDE.name).relative_to(REPO)}  {GUIDE.stat().st_size / 1e6:.1f} MB")
 
 
 if __name__ == "__main__":
