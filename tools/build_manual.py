@@ -476,7 +476,7 @@ def build() -> int:
                     ["top_plate", "159 × 100", "31 mm", "Top face down", "0.2 mm, 4 walls, 20% gyroid, 5 top and bottom layers"],
                     ["frame", "159 × 98", "27 mm", "Flat bottom down", "0.2 mm, 3 walls, 15% infill"],
                     ["base", "159 × 98", "10 mm", "Flat bottom down", "0.2 mm, 3 walls, 20% infill"],
-                    ["bar_spine", "69 × 19", "6 mm", "Flat side down", "0.2 mm, 100% infill"],
+                    ["bar_spine", "72 × 24", "6 mm", "Flat side down", "0.2 mm, 100% infill"],
                     ["ballast", "149 × 88", "19 mm", "Flat bottom down, trenches up", "0.2 mm, 100% infill"],
                     ["knob (rotary)", "Ø30", "19 mm", "Top face down", "0.12–0.16 mm, 4 walls, 30% infill, no brim"],
                 ],

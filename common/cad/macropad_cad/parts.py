@@ -339,6 +339,20 @@ def _led_posts(L: Layout, body: Part) -> Part:
 
 
 # --------------------------------------------------------------- bar spine
+def _bosses_in_bar_frame(L: Layout, gap: float) -> Part:
+    """Case bosses as a clearance volume in the bar frame.
+
+    The outer screw sits against the back-left boss, so the foot is cut back
+    there and stays thick on the free sides.
+    """
+    radius = L.p.fas.boss_d / 2 + gap
+    bosses = [Pos(x, y, -20) * Cylinder(radius, 80, align=CXY) for _, x, y in L.bosses]
+    body = bosses[0]
+    for boss in bosses[1:]:
+        body += boss
+    return L.loc_bar.inverse() * body
+
+
 @lru_cache(maxsize=None)
 def bar_spine_local(L: Layout) -> Part:
     """Clamp for the bar display, in the bar module frame (z=0 = glass top).
@@ -351,13 +365,19 @@ def bar_spine_local(L: Layout) -> Part:
     zb = -(b.lcm_t + b.tape_t + b.pcb_t)  # PCB back
     z0 = zb - 6.0  # flat print face
     x_pad0, x_pad1 = b.pcb_l - b.free_back_zone[1], b.pcb_l - b.free_back_zone[0]
-    cross = box(1.0, 4.8, -9.6, 9.6, z0, zb)
+    # 1.8 mm outside the M2 head seat. The old foot left ~0.3 mm and the seat broke the edge.
+    head_d, head_seat, screw_wall = 4.2, 2.5, 1.8
+    reach = head_d / 2 + screw_wall
+    parts_x0 = 5.9  # SMD and ZIF hang below the PCB from here (bar_model)
+    span = (-(b.hole_y + reach), b.hole_y + reach)
+    tall = box(b.hole_x - reach, parts_x0 - 0.4, *span, z0, zb - 0.2)
+    flange = box(b.hole_x - reach, b.hole_x + reach, *span, z0, z0 + head_seat)
     beam = box(4.0, x_pad0 + 1.0, -4.0, 4.0, z0, zb - b.back_h - 1.0)
     pad = box(x_pad0, x_pad1, -6.0, 6.0, z0, zb + 0.2)
-    spine = cross + beam + pad
+    spine = tall + flange + beam + pad - _bosses_in_bar_frame(L, 0.5)
     for sy in (-1, 1):
         spine -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, zb + 1, fas.m2_clear_d)
-        spine -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, z0 + 2.5, 4.2)
+        spine -= cyl(b.hole_x, sy * b.hole_y, z0 - 1, z0 + head_seat, head_d)
     return spine
 
 

@@ -16,7 +16,7 @@ Or grab the zips from the [downloads page](https://worxbend.github.io/macropad-n
 | `top_plate` | A (e.g. white) | 159 × 100 mm | 31 mm | top face **down** | 0.2 mm layers, 4 walls, 20 % gyroid, 5 top/bottom layers |
 | `frame` | B (accent, e.g. violet) | 159 × 98 mm | 27 mm | flat bottom down | 0.2 mm, 3 walls, 15 % infill |
 | `base` | A | 159 × 98 mm | 10 mm | flat bottom down | 0.2 mm, 3 walls, 20 % infill |
-| `bar_spine` | any | 69 × 19 mm | 6 mm | flat side down | 0.2 mm, 100 % infill |
+| `bar_spine` | any | 72 × 24 mm | 6 mm | flat side down | 0.2 mm, 100 % infill |
 | `ballast` | any | 149 × 88 mm | 19 mm | flat bottom down | 0.2 mm, 100 % infill |
 | `knob` (rotary) | B, like the frame | Ø30 mm | 19 mm | top face **down** | 0.12–0.16 mm layers, 4 walls, 30 % infill |
 
