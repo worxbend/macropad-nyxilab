@@ -7,7 +7,7 @@ There are two editions of the same case. They share the frame, the bar-display s
 the layout, the electronics and the firmware, and differ only in the centre control:
 
 - **joystick edition**: KY-023 thumbstick ([`joystick/`](../joystick), files in `joystick/cad/exports/`)
-- **rotary edition**: KY-040 rotary encoder with a printed Ø30 knob ([`rotary/`](../rotary), files in `rotary/cad/exports/`)
+- **rotary edition**: KY-040 rotary encoder with a printed Ø48 knob ([`rotary/`](../rotary), files in `rotary/cad/exports/`)
 
 The case model is one shared package (`common/cad/macropad_cad`); each edition adds its
 centre control in its own `cad/edition.py`. Frame and bar spine come out identical.
@@ -114,14 +114,17 @@ the knob is turned hard. It hangs from the plate on its own. The base has no pos
 this edition, and the solder joints clear the base by 6.5 mm. The case height and the
 frame are unchanged, so both editions share the frame and the spine.
 
-The printed **knob** (Ø30 × 19, 36 flutes, indicator dimple) is a press fit on the
-6 mm D-shaft. Its bore is round below the flatted part of the shaft and D-shaped where
-the flat is (9.5 mm of D engagement), and it ends exactly at the shaft tip. So the knob
-presses on until it stops at 1 mm above the plate, and a push on the knob goes straight
-into the encoder's switch (0.5 mm travel, still clear of the plate). A recess under the
-knob covers the nut, the washer and the bushing thread. Around the knob, a 0.8 mm
-engraved ring (Ø36) frames it. A sunken well would have printed as a 34 mm bridge on
-the visible face; the ring prints as two tiny bridges instead.
+The printed **knob** (Ø48 × 18.7, 58 flutes, indicator dimple) is a press fit on the
+6 mm D-shaft. In side section it is a low arch: 7 mm skirt legs, a Ø14 tongue that
+ends 6.2 mm above the skirt, and a 45° shoulder into a flat crown. The bore is round
+below the flatted part of the shaft and D-shaped where the flat is (9.5 mm of D
+engagement), and it ends exactly at the shaft tip. The skirt sits 0.7 mm above the
+plate, so the nut and the washer are inside the arch; a push (0.5 mm travel) still
+has 0.2 mm left. The crown is 18.7 mm because the 20 mm shaft tip is 17.3 mm above
+the skirt and the skin over the tip is 1.4 mm. Ø48 leaves 2.7 mm to the 1.9" bevel
+and 9 mm to the nearest keycap. Around the knob, a 0.8 mm engraved ring (Ø36) is on
+the plate; the brim overhangs it. A sunken well would have printed as a 34 mm bridge
+on the visible face; the ring prints as two tiny bridges instead.
 
 ### RGB LED sticks (both editions)
 Two 53 × 10 mm sticks of eight WS2812B LEDs lie on the base floor, one each side of the

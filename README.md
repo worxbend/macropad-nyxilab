@@ -34,7 +34,7 @@ and each edition is its own pair of projects.
 | 🕹️ **joystick edition** | 🎛️ **rotary edition** |
 |---|---|
 | <img src="docs/images/joystick/hero.png" alt="joystick edition"> | <img src="docs/images/rotary/hero.png" alt="rotary edition"> |
-| KY-023 thumbstick: mouse, scroll or arrow keys, per layer | KY-040 encoder + a chunky printed Ø30 knob: volume, undo/redo, scroll, zoom… |
+| KY-023 thumbstick: mouse, scroll or arrow keys, per layer | KY-040 encoder + a chunky printed Ø48 knob: volume, undo/redo, scroll, zoom… |
 | [`joystick/cad`](joystick/cad) · [`joystick/firmware`](joystick/firmware) | [`rotary/cad`](rotary/cad) · [`rotary/firmware`](rotary/firmware) |
 | `nyxilab-macropad-joystick-pico2.uf2` | `nyxilab-macropad-rotary-pico2.uf2` |
 | [read more →](joystick/README.md) | [read more →](rotary/README.md) |

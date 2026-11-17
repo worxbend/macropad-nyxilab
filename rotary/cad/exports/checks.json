@@ -4,12 +4,13 @@
   "failing": 0,
   "clearances_mm": {
     "encoder joints above base": 6.5,
-    "knob above the plate": 1.0,
-    "engraved ring outside the knob": 2.6,
-    "shaft engagement in the knob": 12.0,
+    "knob above the plate": 0.7,
+    "engraved ring outside the knob": -6.4,
+    "shaft engagement in the knob": 11.1,
     "D-flat engagement in the knob": 9.5,
-    "knob top skin over the bore": 2.0,
-    "knob gap while pressed": 0.5,
+    "knob top skin over the bore": 1.4,
+    "tongue above the bushing": 2.9,
+    "knob gap while pressed": 0.2,
     "bushing thread above the nut": 1.5,
     "LED stick joints above base": 1.5,
     "LED sticks to nearest neighbour": 1.5,
@@ -101,7 +102,7 @@
       "bridges(area,short_span)": []
     },
     "knob": {
-      "steep_down_area_mm2": 36.0,
+      "steep_down_area_mm2": 55.1,
       "bridges(area,short_span)": [
         [
           5.3,
@@ -132,8 +133,8 @@
   },
   "viewer": {
     "centre_label": "Encoder",
-    "centre": "KY-040 + \u00d830 knob, 20 detents",
-    "height_extra": " \u00b7 knob top 44.8",
+    "centre": "KY-040 + \u00d848 knob, 20 detents",
+    "height_extra": " \u00b7 knob top 41.8",
     "section_note": "80.5 mm passes through the knob, encoder, main display, Pico and USB-C port"
   }
 }

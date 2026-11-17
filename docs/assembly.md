@@ -149,7 +149,7 @@ should light in the layer colour and flash on every key press. The serial consol
 5. Fit the keycaps.
 6. Rotary edition: turn the shaft so its flat points where you want the indicator dot to
    start, line up the flat in the knob's bore and **press the knob on until it stops** on
-   the shaft tip. It then sits 1 mm above the plate, and pushing the knob presses the
+   the shaft tip. It then sits 0.7 mm above the plate, and pushing the knob presses the
    encoder's switch.
 
 ## Opening it again

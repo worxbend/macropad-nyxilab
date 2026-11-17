@@ -14,13 +14,15 @@ import math
 from dataclasses import dataclass, field
 from functools import lru_cache
 
-from build123d import Cylinder, Location, Part, Pos, RegularPolygon, Rot, Vector, chamfer, extrude
+from build123d import (
+    Axis, BuildLine, BuildSketch, Cylinder, Line, Location, Part, Plane, Pos, RegularPolygon, Rot,
+    ThreePointArc, extrude, make_face, revolve,
+)
 
 from macropad_cad.components import CXY, box, cyl
 from macropad_cad.edition import Edition
 from macropad_cad.fit_tests import plate_patch
 from macropad_cad.layout import Layout
-from macropad_cad.parts import outer_edges_of_face
 
 
 @dataclass(frozen=True)
@@ -61,23 +63,29 @@ class EncoderKY040:
 
 @dataclass(frozen=True)
 class Knob:
-    """Printed knob (press-fit on the D-shaft)."""
+    """Printed knob (press-fit on the D-shaft).
 
-    d: float = 30.0
-    h: float = 19.0
-    top_chamfer: float = 1.2
+    Side section is a low arch: thick skirt legs, a shorter centre tongue, a
+    45° shoulder into a flat crown. The crown stays one ``skin`` above the
+    20 mm shaft tip, so the height cannot drop further on this shaft.
+    """
+
+    d: float = 48.0  # Ø50 leaves 1.7 mm to the 1.9" bevel
+    skin: float = 1.4  # PLA over the shaft tip; thinner punches through on a press
     bottom_chamfer: float = 0.6
-    skirt_d: float = 17.0  # recess underneath for the nut, washer and bushing
-    skirt_h: float = 5.5
+    wall: float = 7.0  # radial thickness of each skirt leg
+    shoulder: float = 7.0  # 45° chamfer from the leg into the flat crown
+    hub_d: float = 14.0  # centre tongue
+    hub_z: float = 6.2  # tongue ends above the bushing (~3.3 in this frame at gap 0.7)
     bore_clear: float = 0.10  # added to the D-bore; 0 = tighter, 0.2 = looser
     bore_extra: float = 0.0  # 0 = the bore ends at the shaft tip: the knob presses on until it stops,
     #                           and pushing the knob pushes the shaft (the switch), not the knob down the shaft
-    flutes: int = 36
+    flutes: int = 58  # same spacing as 36 flutes on the old Ø30
     flute_r: float = 0.9
-    dot_d: float = 2.6  # indicator dimple on the top face
+    dot_d: float = 2.6  # indicator dimple on the flat crown
     dot_depth: float = 0.6
-    dot_r: float = 10.0
-    gap: float = 1.0  # knob skirt above the plate surface
+    dot_r: float = 12.0
+    gap: float = 0.7  # skirt above the plate; press travel is 0.5, so 0.2 remains
 
 
 @dataclass(frozen=True)
@@ -143,10 +151,13 @@ class RotaryEdition(Edition):
         e, k, m = self.p.enc, self.p.knob, self.p.mount
         return e.shaft_len - m.clamp_t - k.gap
 
+    def crown(self) -> float:
+        """Crown height above the skirt. One skin above the shaft tip."""
+        return self.shaft_tip() + self.p.knob.skin
+
     def top_z(self, L: Layout) -> float:
-        """Height of the knob's highest point above the desk."""
-        k = self.p.knob
-        return (self.loc_knob(L) * Pos(0, k.d / 2 - k.top_chamfer, k.h)).position.Z
+        """Height of the crown above the desk."""
+        return (self.loc_knob(L) * Pos(0, 0, self.crown())).position.Z
 
     # -------------------------------------------------------- reference model
     @lru_cache(maxsize=None)
@@ -199,35 +210,56 @@ class RotaryEdition(Edition):
     def knob_envelope(self, margin: float = 0.4) -> Part:
         """Space the spinning knob needs (its cylinder + margin), in the knob frame."""
         k = self.p.knob
-        return cyl(0, 0, -margin, k.h + margin, k.d + 2 * margin)
+        return cyl(0, 0, -margin, self.crown() + margin, k.d + 2 * margin)
 
     # ------------------------------------------------------------ printed knob
+    def _knob_arch(self) -> Part:
+        """Revolved side section: skirt legs, short tongue, flat crown.
+
+        The crown is flat and the shoulder is 45° so the part prints crown-down
+        without a downward face. A shallow arch across the whole diameter would not.
+        """
+        k = self.p.knob
+        h = self.crown()
+        radius, inner, hub = k.d / 2, k.d / 2 - k.wall, k.hub_d / 2
+        leg_top = h - k.shoulder - 2.2  # inner leg meets the curved underside
+        tongue_top = h - k.skin - 3.0  # roof beside the bore stays solid
+        span = ((hub + inner) / 2, (tongue_top + leg_top) / 2 + 1.0)
+        with BuildLine(Plane.XZ) as wire:
+            Line((inner, 0), (radius - k.bottom_chamfer, 0))
+            Line((radius - k.bottom_chamfer, 0), (radius, k.bottom_chamfer))
+            Line((radius, k.bottom_chamfer), (radius, h - k.shoulder))
+            Line((radius, h - k.shoulder), (radius - k.shoulder, h))
+            Line((radius - k.shoulder, h), (0, h))
+            Line((0, h), (0, k.hub_z))
+            Line((0, k.hub_z), (hub, k.hub_z))
+            Line((hub, k.hub_z), (hub, tongue_top))
+            ThreePointArc((hub, tongue_top), span, (inner, leg_top))
+            Line((inner, leg_top), (inner, 0))
+        return revolve(make_face(wire.line), axis=Axis.Z)
+
     @lru_cache(maxsize=None)
     def knob_local(self) -> Part:
-        """The knob in its own frame: axis on z, bottom face at z = 0.
+        """Knob frame: axis on z, skirt bottom at z = 0.
 
-        Fluted grip band, recess underneath for the nut/washer/bushing, a D-bore
-        press-fit on the EC11 shaft and an indicator dimple on the top face.
+        Flutes on the straight leg, D-bore up the tongue ending at the shaft
+        tip, indicator dimple on the crown.
         """
         k, e = self.p.knob, self.p.enc
-        body = Cylinder(k.d / 2, k.h, align=CXY)
-        body = chamfer(outer_edges_of_face(body, Vector(0, 0, 1)), k.top_chamfer)
-        body = chamfer(outer_edges_of_face(body, Vector(0, 0, -1)), k.bottom_chamfer)
-        z0, z1 = k.bottom_chamfer + 1.5, k.h - k.top_chamfer - 1.5
+        h = self.crown()
+        body = self._knob_arch()
+        z0, z1 = k.bottom_chamfer + 0.8, h - k.shoulder - 0.4
         for i in range(k.flutes):
             a = 2 * math.pi * i / k.flutes
             r = k.d / 2 + k.flute_r * 0.25
             body -= Pos(r * math.cos(a), r * math.sin(a), z0) * Cylinder(k.flute_r, z1 - z0, align=CXY)
-        body -= Pos(0, 0, -1) * Cylinder(k.skirt_d / 2, k.skirt_h + 1, align=CXY)
-        # bore: round where the shaft is round, D-shaped where it is flatted, ends at the tip
         tip = self.shaft_tip()
-        flat_z = tip - e.flat_len + 0.5
         rb = (e.shaft_d + k.bore_clear) / 2
         flat = e.shaft_flat - e.shaft_d / 2 + k.bore_clear / 2
-        bore = Pos(0, 0, k.skirt_h - 0.5) * Cylinder(rb, tip + k.bore_extra - k.skirt_h + 0.5, align=CXY)
-        bore -= box(flat, rb + 1, -rb - 1, rb + 1, flat_z, k.h + 1)
+        bore = Pos(0, 0, k.hub_z) * Cylinder(rb, tip + k.bore_extra - k.hub_z, align=CXY)
+        bore -= box(flat, rb + 1, -rb - 1, rb + 1, tip - e.flat_len + 0.5, h + 1)
         body -= bore
-        body -= Pos(k.dot_r, 0, k.h - k.dot_depth) * Cylinder(k.dot_d / 2, k.dot_depth + 1, align=CXY)
+        body -= Pos(k.dot_r, 0, h - k.dot_depth) * Cylinder(k.dot_d / 2, k.dot_depth + 1, align=CXY)
         return body
 
     # ---------------------------------------------------------- case geometry
@@ -283,9 +315,10 @@ class RotaryEdition(Edition):
             "encoder joints above base": front.Z - c.base_t,
             "knob above the plate": k.gap,
             "engraved ring outside the knob": (m.ring_d - m.ring_w) / 2 - k.d / 2,
-            "shaft engagement in the knob": tip - (k.skirt_h - 0.5),
+            "shaft engagement in the knob": tip - k.hub_z,
             "D-flat engagement in the knob": tip - (tip - e.flat_len + 0.5),
-            "knob top skin over the bore": k.h - (tip + k.bore_extra),
+            "knob top skin over the bore": self.crown() - (tip + k.bore_extra),
+            "tongue above the bushing": k.hub_z - (e.bushing_h - m.clamp_t - k.gap),
             "knob gap while pressed": k.gap - e.push_travel,
             "bushing thread above the nut": e.bushing_h - m.clamp_t - e.washer_t - e.nut_t,
         }
@@ -313,8 +346,7 @@ class RotaryEdition(Edition):
         return [(L.v_c * L.cos + 27, L.H_f + 24, "printed knob"), (L.v_c * L.cos, 8.5, "KY-040 encoder")]
 
     def side_view_dims(self, s, side, L: Layout) -> None:
-        k = self.p.knob
-        q = (self.loc_knob(L) * Pos(0, k.d / 2 - k.top_chamfer, k.h)).position
+        q = (self.loc_knob(L) * Pos(0, 0, self.crown())).position
         s.dim(side, (0, 0), (q.Y, q.Z), -7, horizontal=False, text=f"{q.Z:.1f} knob top")
 
     def plate_notes(self, L: Layout) -> list[str]:
@@ -338,13 +370,14 @@ class RotaryEdition(Edition):
         from macropad_cad.drawings import HID, View, _norm, draw_section, project, section_polys
 
         k, e = self.p.knob, self.p.enc
+        h = self.crown()
         kl = self.knob_local()
         o, sc = (245, 70), 2.0
         # rotate so the D-flat faces +y and cut on the axis: shows the round / flatted bore step
         draw_section(s, section_polys(Rot(0, 0, 90) * kl, 0.0), sc, o, face="#f3eefb", lw=0.7)
-        v = View([], [], sc, o, (-k.d / 2, 0, k.d / 2, k.h))
+        v = View([], [], sc, o, (-k.d / 2, 0, k.d / 2, h))
         s.dim(v, (-k.d / 2, 0), (k.d / 2, 0), -7, text=f"D{k.d:.1f}")
-        s.dim(v, (k.d / 2, 0), (k.d / 2, k.h), 6, text=f"{k.h:.1f}")
+        s.dim(v, (k.d / 2, 0), (k.d / 2, h), 6, text=f"{h:.1f}")
         s.text(o[0], o[1] - 15, "KNOB - SECTION THROUGH THE D-FLAT 2:1", 7.5, ha="center", weight="bold")
         s.text(o[0], o[1] - 20, "(printed top face down, i.e. upside down from this view)", 5.8, ha="center", color=HID)
         below = _norm(project(kl, (0, 0, -500), (0, 1, 0), (0, 0, 0), sc, (0, 0)))
@@ -355,11 +388,11 @@ class RotaryEdition(Edition):
         rb = (e.shaft_d + k.bore_clear) / 2
         flat = e.shaft_flat - e.shaft_d / 2 + k.bore_clear / 2
         s.note(210, 158, [
-            f"D{k.d:.0f} x {k.h:.0f}, {k.flutes} flutes, {k.top_chamfer:.1f} top chamfer, "
+            f"D{k.d:.0f} x {h:.1f} arch, {k.flutes} flutes, {k.shoulder:.1f} shoulder at 45 deg, "
             f"indicator dimple D{k.dot_d:.1f} at R{k.dot_r:.0f}",
             f"D-bore D{2 * rb:.2f}, {rb + flat:.2f} across the flat; round below the flat so it only grips the D",
-            f"Bore ends at the shaft tip ({k.h - tip - k.bore_extra:.1f} under the top): press on until it stops",
-            f"Skirt recess D{k.skirt_d:.1f} x {k.skirt_h:.1f} clears the M7 nut, washer and bushing thread",
+            f"Bore ends at the shaft tip ({k.skin:.1f} under the crown): press on until it stops",
+            f"Skirt legs {k.wall:.1f} thick, tongue D{k.hub_d:.0f} ends {k.hub_z:.1f} above the skirt",
             f"Rides {k.gap:.1f} above the plate.  Print top face down, 4 walls, 30 % infill, no supports",
             f"Too tight / loose on the shaft: Knob.bore_clear in rotary/cad/edition.py ({k.bore_clear:.2f} now)",
         ], 6.3, title="Knob (rotary edition)")

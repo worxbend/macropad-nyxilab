@@ -1,6 +1,6 @@
 # Rotary edition
 
-The Nyxilab macropad with a **KY-040 rotary encoder** and a printed Ø30 knob in the
+The Nyxilab macropad with a **KY-040 rotary encoder** and a printed Ø48 knob in the
 middle: volume, undo/redo, scrolling, zoom, per layer, and a click.
 
 ![Rotary edition](../docs/images/rotary/hero.png)
@@ -28,9 +28,9 @@ make test-rotary                  # unit tests of the quadrature decoder on this
 - **Case**: the encoder is panel-mounted in the **top plate**: its M7 bushing goes up
   through a Ø7.4 hole, the washer and nut clamp a 2 mm section from the top, and a
   12.5 mm square pocket underneath keys the body so it can't turn. The base has no
-  posts. The **knob** (Ø30 × 19, 36 flutes, indicator dimple) is a press fit on the
-  D-shaft; its bore ends at the shaft tip, so it stops 1 mm above the plate and a push
-  goes into the encoder's switch. An engraved ring frames it. Fit checks: 215 pairs,
+  posts. The **knob** (Ø48 × 18.7, 58 flutes, indicator dimple) is a press fit on the
+  D-shaft; its bore ends at the shaft tip, so it stops 0.7 mm above the plate and a push
+  goes into the encoder's switch. The Ø36 ring stays on the plate, under the brim. Fit checks: 215 pairs,
   including the spinning knob's envelope.
 - **Firmware**: `KNOB(cw, ccw, press, "LABEL")` per layer in `keymap.cpp`
   (volume / undo-redo / scroll / screen brightness by default). FN + KNOB cycles the

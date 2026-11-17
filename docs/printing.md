@@ -16,13 +16,13 @@ Or grab the zips from the [downloads page](https://worxbend.github.io/macropad-n
 | `top_plate` | A (e.g. white) | 159 × 100 mm | 31 mm | top face **down** | 0.2 mm layers, 4 walls, 20 % gyroid, 5 top/bottom layers |
 | `frame` | B (accent, e.g. violet) | 159 × 98 mm | 27 mm | flat bottom down | 0.2 mm, 3 walls, 15 % infill |
 | `base` | A | 159 × 98 mm | 10 mm | flat bottom down | 0.2 mm, 3 walls, 20 % infill |
-| `bar_spine` | any | 72 × 24 mm | 6 mm | flat side down | 0.2 mm, 100 % infill |
+| `bar_spine` | any | 72 × 25 mm | 6 mm | flat side down | 0.2 mm, 100 % infill |
 | `ballast` | any | 149 × 88 mm | 19 mm | flat bottom down | 0.2 mm, 100 % infill |
-| `knob` (rotary) | B, like the frame | Ø30 mm | 19 mm | top face **down** | 0.12–0.16 mm layers, 4 walls, 30 % infill |
+| `knob` (rotary) | B, like the frame | Ø48 mm | 18.7 mm | top face **down** | 0.12–0.16 mm layers, 4 walls, 30 % infill |
 
 Material: PLA or PETG both work. PETG is a little tougher for the self-tapping screws
 and the clips of the switches; PLA gives crisper edges. Approximate filament use:
-top plate ~60 g, frame ~30 g, base ~50 g, knob ~12 g, ballast ~100 g (joystick) or
+top plate ~60 g, frame ~30 g, base ~50 g, knob ~24 g, ballast ~100 g (joystick) or
 ~107 g (rotary). The ballast figure is the solid mass: print it at 100 % infill.
 
 **Make the LEDs visible: print the frame translucent.** The two RGB sticks sit inside
@@ -62,11 +62,11 @@ sits between the left LED stick and the Pico. Print both.
 ## The knob (rotary edition)
 
 - Print it **top face down** (as exported). The fluted grip then runs straight up the
-  sides and the indicator dimple stays crisp; the top chamfer prints fine at 45°.
+  sides, the indicator dimple stays crisp, and the 45° shoulder prints without supports.
 - Use fine layers (0.12–0.16 mm) for a smooth grip, 4 walls so the D-bore has solid
   walls, and no brim.
 - The bore is a press fit on the 6 mm D-shaft and ends exactly at the shaft tip, so the
-  knob stops at the right height (1 mm above the plate). Too tight or too loose? Change
+  knob stops at the right height (0.7 mm above the plate). Too tight or too loose? Change
   `Knob.bore_clear` in `rotary/cad/edition.py` (default 0.10 mm; 0.05 is tighter,
   0.20 looser), run `make cad-rotary` and reprint just the knob. It is a 30-minute print.
 - Shaft lengths vary between KY-040 batches (15, 20 and 25 mm exist). Measure from the
