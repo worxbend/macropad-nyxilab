@@ -80,7 +80,9 @@ class Engine {
   // knob binding wins, and on the base layer a preset picked with KNOB_CYCLE
   // replaces the layer's own.  So "hold FN + turn" uses the FN layer's binding.
   void set_encoder_presets(const EncoderDef* presets, uint8_t n);
-  const EncoderDef& encoder_binding() const;
+  const EncoderDef& encoder_binding() const { return binding_among(layer_mask()); }
+  // The base layer's binding alone: what KNOB_CYCLE picks, also while a held layer's binding is in effect.
+  const EncoderDef& base_encoder_binding() const { return binding_among(1u << base_); }
   void encoder_step(int8_t dir, uint32_t now);  // one detent, +1 = clockwise
   void encoder_button(bool pressed, uint32_t now);
   bool encoder_pressed() const { return enc_down_; }
@@ -107,7 +109,10 @@ class Engine {
   void release_action(Action a);
   void resolve_pending_as_hold(uint32_t now);
   bool usage_is_held(uint8_t usage) const;
+  void retrigger_held_usage(Action a, uint32_t now);  // call before pressing `a`
+  bool tap_waits_for_retrigger() const;               // the tap that is down has its usage in the gap
   bool service_taps(uint32_t now);
+  const EncoderDef& binding_among(uint32_t layers) const;  // the highest of these layers with a knob binding
   void rebuild();
 
   EngineHost& host_;
@@ -125,8 +130,8 @@ class Engine {
   static constexpr uint8_t MAX_HELD = 16;
   Action held_[MAX_HELD] = {};
   uint8_t n_held_ = 0;
-  // A key pressed onto a held key with the same usage: the usage leaves the report for TAP_MS,
-  // so the host sees a second press (UNDO rolled into REDO).
+  // A key or knob tap pressed onto a held key with the same usage: the usage leaves the report for
+  // TAP_MS, so the host sees a second press (UNDO rolled into REDO).
   uint8_t retrigger_ = 0;
   uint32_t retrigger_t_ = 0;
 

@@ -35,6 +35,8 @@ void KnobCentre::on_mode(uint8_t mode, uint32_t now) {
     engine_->set_enc_preset(base, mode);  // a preset index, or ENC_LAYER_DEFAULT
   hw::settings().centre_modes[base] = engine_->enc_preset(base);
   app::settings_changed(now);
+  pick_shown_ = true;  // FN is held, so its own binding is in effect and would hide the pick
+  pick_at_ = now;
 }
 
 bool KnobCentre::on_sys(mp::SysCmd cmd, uint32_t now) {
@@ -45,6 +47,8 @@ bool KnobCentre::on_sys(mp::SysCmd cmd, uint32_t now) {
 }
 
 void KnobCentre::task(uint32_t now) {
+  // signed: on_mode's stamp can be newer than this pass's `now`
+  if (pick_shown_ && int32_t(now - pick_at_) >= PICK_SHOWN_MS) pick_shown_ = false;
   if (diagnostics_) {
     if (now - diagnostics_start_ >= 5000) {
       diagnostics_ = false;
@@ -88,7 +92,7 @@ void KnobCentre::fill_ui(ui::UiState& u) {
   u.centre_encoder = true;
   u.enc_pos = engine_->encoder_position();
   u.enc_press = engine_->encoder_pressed();
-  u.enc_label = engine_->encoder_binding().label;
+  u.enc_label = (pick_shown_ ? engine_->base_encoder_binding() : engine_->encoder_binding()).label;
 }
 
 void KnobCentre::info() {

@@ -464,6 +464,25 @@ void test_second_key_with_a_held_usage_is_pressed_again() {
   TEST_ASSERT_TRUE(e.hid() == HidState{});
 }
 
+void test_knob_tap_with_a_held_usage_is_pressed_again() {
+  Host h;
+  Engine e(h);
+  e.process(press(3, 2, 0));               // C, held
+  e.queue_tap(KC(MOD_LCTRL, hid::C), 10);  // a detent bound to Ctrl+C: the host must see C go up and down again
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);
+  e.tick(10 + Engine::TAP_MS - 1);
+  TEST_ASSERT_FALSE(e.hid().has_key(hid::C));
+  e.tick(10 + Engine::TAP_MS);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::C));
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
+  e.tick(10 + 2 * Engine::TAP_MS - 1);  // the tap's own hold time starts when the gap ends
+  TEST_ASSERT_EQUAL_HEX8(MOD_LCTRL, e.hid().mods);
+  e.tick(10 + 2 * Engine::TAP_MS);
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::C));  // the key is still held
+  TEST_ASSERT_EQUAL_HEX8(0, e.hid().mods);    // the tap is over
+}
+
 void test_second_key_gap_waits_for_usb_delivery() {
   Host h;
   Engine e(h);
@@ -1327,6 +1346,7 @@ int main() {
   RUN_TEST(test_ascii_mapping);
   RUN_TEST(test_report_holds_six_keys_and_one_of_each_usage);
   RUN_TEST(test_second_key_with_a_held_usage_is_pressed_again);
+  RUN_TEST(test_knob_tap_with_a_held_usage_is_pressed_again);
   RUN_TEST(test_second_key_gap_waits_for_usb_delivery);
   RUN_TEST(test_seventh_shortcut_brings_no_modifiers_without_its_key);
   RUN_TEST(test_repeated_and_out_of_range_events_are_ignored);

@@ -664,6 +664,33 @@ static void test_keymap_fn_keys_reach_the_knob() {
   expected.push_back(mp::SYS_DISPLAYS_TOGGLE);
   assert(host.sys == expected);
 }
+
+static void test_fn_knob_names_the_pick_while_fn_is_held() {
+  for (int& pin : mock_pins) pin = 1;
+  hw::settings_load();  // drop what earlier groups left in the settings
+  KnobHost host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  host.centre = &centre;
+  const auto label = [&] {
+    ui::UiState u;
+    centre.fill_ui(u);
+    return std::string(u.enc_label);
+  };
+  engine.process({3, 0, true, 0});  // LAYER
+  engine.tick(300);                 // held: FN's own knob binding is in effect
+  assert(label() == "BRIGHT");
+  mock_now = 331;                     // the callback's millis() can be newer than the loop's `now`
+  engine.process({1, 0, true, 330});  // KNOB: the next preset for the base layer
+  centre.task(330);
+  assert(label() == "SCROLL");  // the displays name the pick, though a turn still dims
+  centre.task(331 + KnobCentre::PICK_SHOWN_MS - 1);
+  assert(label() == "SCROLL");
+  centre.task(331 + KnobCentre::PICK_SHOWN_MS);
+  assert(label() == "BRIGHT");
+  hw::settings_load();  // nothing was committed: back to the stored settings
+}
 #endif
 
 #ifdef TEST_JOYSTICK
@@ -1054,7 +1081,8 @@ int main() {
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
+  test_fn_knob_names_the_pick_while_fn_is_held();
   test_host_link_round_trip();
-  puts("29 hardware/control regression groups passed");
+  puts("30 hardware/control regression groups passed");
 #endif
 }

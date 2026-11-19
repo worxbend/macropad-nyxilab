@@ -22,6 +22,9 @@ class KnobCentre : public app::Centre {
 
   bool reversed() const;
 
+  // How long the displays name a preset picked with FN + KNOB, while FN's own binding is in effect.
+  static constexpr uint16_t PICK_SHOWN_MS = 1500;
+
  private:
   static void isr();  // both CLK and DT, on every edge
 
@@ -35,4 +38,6 @@ class KnobCentre : public app::Centre {
   bool sw_ = false;
   bool diagnostics_ = false;
   uint32_t diagnostics_start_ = 0, diagnostics_last_ = 0;
+  bool pick_shown_ = false;
+  uint32_t pick_at_ = 0;
 };

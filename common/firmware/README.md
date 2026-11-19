@@ -52,7 +52,8 @@ Once the case is closed you do not need BOOTSEL any more:
   curve, auto-learned travel
 - **Rotary edition**: every layer says what the knob does (turn clockwise, turn
   counter-clockwise, press). FN + KNOB switches the current layer to a preset (volume,
-  scroll, zoom, arrows) and back. The knob is read by pin-change interrupts with a
+  scroll, zoom, arrows) and back; the displays name the pick for 1.5 s, because FN's own
+  binding is in effect while LAYER is held. The knob is read by pin-change interrupts with a
   detent-synchronised decoder, so bounce never adds steps; key taps from fast turns are
   queued with a 16-detent backlog. Taps and macros wait for USB delivery (with no
   host they play out and are dropped), and taps for a running macro; keys and stick
@@ -143,7 +144,7 @@ samples are skipped when the serial transmit buffer is full.
 
 ```
 common/firmware/lib/
-  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 71 tests)
+  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 72 tests)
     keycodes.h          action encoding (32-bit: type | argument) + HID usages
     keymap.h            layer / key / centre-control types; the layers live in the editions
     debounce.h          per-key deferred debounce

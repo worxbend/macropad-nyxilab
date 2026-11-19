@@ -188,7 +188,9 @@ void render_host_main(GFXcanvas16& c, const UiState& s) {
     } else {
       small(c, "start the bridge on your computer:", 58, 92, SUBTLE);
       small(c, "systemctl --user start nyxd", 79, 108, WARN);
-      small(c, "keys and knob keep working; FN = settings", 37, 140, MUTED);
+      const char* hint = s.centre_encoder ? "keys and knob keep working; FN = settings"
+                                          : "keys and stick keep working; FN = settings";
+      small(c, hint, (320 - 6 * int(strlen(hint))) / 2, 140, MUTED);
     }
     return;
   }

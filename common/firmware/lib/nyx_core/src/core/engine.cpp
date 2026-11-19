@@ -94,10 +94,7 @@ void Engine::process(const KeyEvent& ev) {
       tap_phase_ = TapPhase::Gap;
       tap_t0_ = ev.time;
     }
-    if (act_type(a) == ActType::Key && usage_is_held(uint8_t(act_arg(a) & 0xFF))) {
-      retrigger_ = uint8_t(act_arg(a) & 0xFF);
-      retrigger_t_ = ev.time;
-    }
+    retrigger_held_usage(a, ev.time);
     press_action(a, ev.time);
   } else {
     if (!down_[r][c]) return;
@@ -130,6 +127,18 @@ bool Engine::usage_is_held(uint8_t usage) const {
   return false;
 }
 
+void Engine::retrigger_held_usage(Action a, uint32_t now) {
+  const uint8_t usage = uint8_t(act_arg(a) & 0xFF);
+  if (act_type(a) != ActType::Key || !usage_is_held(usage)) return;
+  retrigger_ = usage;
+  retrigger_t_ = now;
+}
+
+bool Engine::tap_waits_for_retrigger() const {
+  return tap_phase_ == TapPhase::Down && retrigger_ && act_type(tap_cur_) == ActType::Key &&
+         (act_arg(tap_cur_) & 0xFF) == retrigger_;
+}
+
 void Engine::resolve_pending_as_hold(uint32_t now) {
   if (!pending_.active) return;
   pending_.active = false;
@@ -149,6 +158,7 @@ void Engine::tick(uint32_t now, bool output_ready) {
     if (macro_started_) macro_next_ = now + 8;
   }
   if (retrigger_ && output_ready && uint32_t(now - retrigger_t_) >= TAP_MS) {
+    if (tap_waits_for_retrigger()) tap_t0_ = now;  // the tap was out of the report: its hold time starts here
     retrigger_ = 0;
     changed = true;
   }
@@ -339,11 +349,10 @@ void Engine::set_encoder_presets(const EncoderDef* presets, uint8_t n) {
   n_presets_ = presets ? n : 0;
 }
 
-const EncoderDef& Engine::encoder_binding() const {
+const EncoderDef& Engine::binding_among(uint32_t layers) const {
   static const EncoderDef kNone = {XX, XX, XX, ""};
-  const uint32_t m = layer_mask();
   for (int l = NUM_LAYERS - 1; l >= 0; l--) {
-    if (!(m & (1u << l))) continue;
+    if (!(layers & (1u << l))) continue;
     if (l == base_ && enc_preset_[l] < n_presets_) return presets_[enc_preset_[l]];
     if (act_type(LAYERS[l].centre.knob.cw) != ActType::Transparent) return LAYERS[l].centre.knob;
   }
@@ -426,7 +435,7 @@ void Engine::clear_queued_taps() { tapq_n_ = 0; }
 
 bool Engine::service_taps(uint32_t now) {
   bool changed = false;
-  if (tap_phase_ == TapPhase::Down && uint32_t(now - tap_t0_) >= TAP_MS) {
+  if (tap_phase_ == TapPhase::Down && !tap_waits_for_retrigger() && uint32_t(now - tap_t0_) >= TAP_MS) {
     release_action(tap_cur_);
     tap_phase_ = TapPhase::Gap;
     tap_t0_ = now;
@@ -437,6 +446,7 @@ bool Engine::service_taps(uint32_t now) {
     tap_cur_ = tapq_[tapq_head_];
     tapq_head_ = uint8_t((tapq_head_ + 1) % TAP_QUEUE);
     tapq_n_--;
+    retrigger_held_usage(tap_cur_, now);
     press_action(tap_cur_, now);
     tap_phase_ = TapPhase::Down;
     tap_t0_ = now;
