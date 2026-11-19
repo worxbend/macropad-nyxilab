@@ -13,6 +13,8 @@ namespace {
 Adafruit_NeoPixel g_strip(cfg::LED_COUNT, cfg::LED_PIN, NEO_GRB + NEO_KHZ800);
 uint32_t g_last_frame = 0;
 bool g_dark = false;
+bool g_started = false;  // the boot wave's clock starts with the first frame
+uint32_t g_boot_ms = 0;
 
 }  // namespace
 
@@ -27,7 +29,12 @@ void leds_begin() {
 void leds_task(uint32_t now, const UiState& s) {
   if (!cfg::LED_COUNT || now - g_last_frame < 20) return;  // 50 fps
   g_last_frame = now;
+  if (!g_started) {
+    g_started = true;
+    g_boot_ms = now;
+  }
   mp::LedInput in;
+  in.since_boot_ms = now - g_boot_ms;
   in.mode = mp::LedMode(s.led_mode < uint8_t(mp::LedMode::Count) ? s.led_mode : 0);
   in.color565 = mp::LAYERS[s.top_layer].color;
   in.level = s.brightness;  // follows the backlight: dims when idle, off while the host sleeps

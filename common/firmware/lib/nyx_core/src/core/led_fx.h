@@ -25,6 +25,7 @@ struct LedInput {
   uint8_t max_level = 255;               // brightness cap
   uint16_t budget_ma = 0;                // LED current limit (0 = none): frames are scaled down to fit
   uint32_t since_hit_ms = 0xFFFFFFFFu;  // time since the last key press or knob detent
+  uint32_t since_boot_ms = 0xFFFFFFFFu;  // time since the sticks were started: the boot wave
 };
 
 // Current of one colour channel at 255 (WS2812B at 5 V: 12..16 mA; less on 4.3 V).
@@ -34,6 +35,16 @@ uint32_t led_current_ma(const Rgb* px, uint8_t n);  // estimate for a frame
 constexpr uint16_t LED_PULSE_MS = 400;     // key-press flash decay (Layer mode)
 constexpr uint16_t LED_BREATHE_MS = 4000;  // breathing period
 constexpr uint16_t LED_RAINBOW_MS = 8000;  // one turn of the colour wheel
+// Boot sequence, in green: LED i lights LED_BOOT_STEP_MS after LED i - 1 (along the chain: right stick back
+// to front, then left stick front to back), all of them blink LED_BOOT_BLINKS times, stay dark for
+// LED_BOOT_OFF_MS, and then the chosen effect takes over.
+constexpr uint16_t LED_BOOT_STEP_MS = 40;
+constexpr uint16_t LED_BOOT_BLINK_MS = 150;  // half a blink: off, then on
+constexpr uint8_t LED_BOOT_BLINKS = 2;
+constexpr uint16_t LED_BOOT_OFF_MS = 400;
+constexpr uint32_t led_boot_ms(uint8_t n) {
+  return uint32_t(n) * LED_BOOT_STEP_MS + 2u * LED_BOOT_BLINKS * LED_BOOT_BLINK_MS + LED_BOOT_OFF_MS;
+}
 
 // Fill out[0..n) for time `now` (ms).
 void led_frame(const LedInput& in, uint32_t now, Rgb* out, uint8_t n);

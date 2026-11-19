@@ -12,6 +12,20 @@ uint8_t wave(uint32_t t, uint32_t period) {
 
 uint8_t scale8(uint8_t v, uint8_t k) { return uint8_t((uint16_t(v) * (uint16_t(k) + 1)) >> 8); }
 
+// Whether LED i is lit at time t of the boot sequence (t < led_boot_ms(n)).
+bool boot_lit(uint32_t t, uint8_t i, uint8_t n) {
+  const uint32_t filled = uint32_t(n) * LED_BOOT_STEP_MS;
+  if (t < filled) return t >= uint32_t(i) * LED_BOOT_STEP_MS;  // the run along the chain
+  const uint32_t half = (t - filled) / LED_BOOT_BLINK_MS;     // blinks: off, on, off, on, ...
+  return half < 2u * LED_BOOT_BLINKS && half % 2 == 1;        // then dark
+}
+
+void boot_sequence(const LedInput& in, Rgb* out, uint8_t n) {
+  const uint8_t green = scale8(in.level, in.max_level);
+  for (uint8_t i = 0; i < n; i++)
+    out[i] = boot_lit(in.since_boot_ms, i, n) ? Rgb{0, green, 0} : Rgb{0, 0, 0};
+}
+
 }  // namespace
 
 Rgb rgb565_to_rgb(uint16_t c) {
@@ -71,6 +85,7 @@ void led_frame(const LedInput& in, uint32_t now, Rgb* out, uint8_t n) {
       c = hsv(uint16_t((now % LED_RAINBOW_MS) * 1536 / LED_RAINBOW_MS + uint32_t(i) * 1536 / n), 255, 255);
     out[i] = gain ? Rgb{scale8(c.r, gain), scale8(c.g, gain), scale8(c.b, gain)} : Rgb{0, 0, 0};
   }
+  if (in.mode != LedMode::Off && in.since_boot_ms < led_boot_ms(n)) boot_sequence(in, out, n);
   // keep the whole strip inside the current budget (USB 2.0 port: 500 mA for everything)
   if (in.budget_ma) {
     uint32_t sum = 0;

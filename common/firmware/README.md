@@ -65,7 +65,8 @@ Once the case is closed you do not need BOOTSEL any more:
   mounted host gets only what is held at that moment.
 - **RGB LED sticks** (2 × 8 WS2812B, both editions): layer colour with a flash on every key
   press or knob click, breathing, or a rainbow running around the case; FN + LED cycles
-  the modes. They follow the display brightness and idle dimming and go dark while the host
+  the modes. At power-up a green run fills the chain, blinks twice and goes dark, then the
+  chosen effect starts (1.6 s; not in Off mode). They follow the display brightness and idle dimming and go dark while the host
   sleeps; a 250 mA current budget keeps the pad inside a USB 2.0 port's limit.
 - Main display (1.9"): layer name, the 12 key labels in their physical layout with live
   press highlight, the joystick position and mode or a knob dial with its current
@@ -145,7 +146,7 @@ samples are skipped when the serial transmit buffer is full.
 
 ```
 common/firmware/lib/
-  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 72 tests)
+  nyx_core/src/core/    pure C++ (no Arduino), unit-tested here (pio test -e native, 74 tests)
     keycodes.h          action encoding (32-bit: type | argument) + HID usages
     keymap.h            layer / key / centre-control types; the layers live in the editions
     debounce.h          per-key deferred debounce

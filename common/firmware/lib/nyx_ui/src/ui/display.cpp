@@ -122,8 +122,9 @@ void display_begin() {
 
 void display_task(uint32_t now) {
   static UiState s;
-  if (fetch(s)) g_force = true;
-  leds_task(now, s);
+  static bool have_state = false;  // until core 0 publishes, s holds defaults, not the saved settings
+  if (fetch(s)) g_force = have_state = true;
+  if (have_state) leds_task(now, s);
   const uint8_t bl = s.displays_on ? s.brightness : 0;
   if (bl != g_applied_bl) {
     analogWrite(cfg::MAIN_BL, bl);

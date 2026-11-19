@@ -1005,6 +1005,70 @@ void test_led_layer_colour_and_flash() {
   TEST_ASSERT_EQUAL(rest, px[0].r);  // and back
 }
 
+static bool all_green(const Rgb* px, int n) {
+  for (int i = 0; i < n; i++)
+    if (px[i].r || px[i].b || px[i].g < 100) return false;
+  return true;
+}
+
+void test_led_boot_runs_green_blinks_twice_then_hands_over() {
+  LedInput in;
+  in.color565 = 0xF800;  // a red layer: the boot sequence is green anyway
+  Rgb normal[16], px[16];
+  led_frame(in, 0, normal, 16);
+  in.since_boot_ms = 0;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_TRUE(all_green(px, 1));                // the first LED lights at once
+  TEST_ASSERT_EQUAL(0, led_current_ma(px + 1, 15));  // the others wait their turn
+  in.since_boot_ms = 3 * LED_BOOT_STEP_MS;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_TRUE(all_green(px, 4));  // the run fills the chain and stays lit
+  TEST_ASSERT_EQUAL(0, led_current_ma(px + 4, 12));
+  const uint32_t filled = 16 * LED_BOOT_STEP_MS;
+  in.since_boot_ms = filled - 1;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_TRUE(all_green(px, 16));
+  for (uint8_t blink = 0; blink < LED_BOOT_BLINKS; blink++) {
+    const uint32_t t = filled + 2u * blink * LED_BOOT_BLINK_MS;
+    in.since_boot_ms = t;
+    led_frame(in, 0, px, 16);
+    TEST_ASSERT_EQUAL(0, led_current_ma(px, 16));  // blink: off
+    in.since_boot_ms = t + LED_BOOT_BLINK_MS;
+    led_frame(in, 0, px, 16);
+    TEST_ASSERT_TRUE(all_green(px, 16));  // and on again
+  }
+  in.since_boot_ms = filled + 2u * LED_BOOT_BLINKS * LED_BOOT_BLINK_MS;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(0, led_current_ma(px, 16));  // then off for a moment
+  in.since_boot_ms = led_boot_ms(16) - 1;
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(0, led_current_ma(px, 16));
+  in.since_boot_ms = led_boot_ms(16);
+  led_frame(in, 0, px, 16);
+  for (int i = 0; i < 16; i++) TEST_ASSERT_TRUE(px[i].r == normal[i].r && px[i].g == normal[i].g && px[i].b == normal[i].b);
+}
+
+void test_led_boot_keeps_the_limits() {
+  LedInput in;
+  in.budget_ma = 60;  // lower than 16 green LEDs at full level
+  in.since_boot_ms = 16 * LED_BOOT_STEP_MS - 1;
+  Rgb px[16];
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_TRUE(led_current_ma(px, 16) <= 60 && led_current_ma(px, 16) > 40);
+  in.budget_ma = 0;
+  in.max_level = 128;  // the brightness cap
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(128, px[0].g);
+  in.max_level = 255;
+  in.level = 0;  // backlight off at boot: nothing either
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(0, led_current_ma(px, 16));
+  in.level = 255;
+  in.mode = LedMode::Off;  // the user turned the LEDs off
+  led_frame(in, 0, px, 16);
+  TEST_ASSERT_EQUAL(0, led_current_ma(px, 16));
+}
+
 void test_led_levels_budget_and_off() {
   LedInput in;
   in.color565 = 0xFFFF;  // white: the worst case for current
@@ -1379,6 +1443,8 @@ int main() {
   RUN_TEST(test_fn_layer_is_never_the_base_layer);
   RUN_TEST(test_knob_cycle_on_a_base_layer_without_its_own_knob);
   RUN_TEST(test_led_layer_colour_and_flash);
+  RUN_TEST(test_led_boot_runs_green_blinks_twice_then_hands_over);
+  RUN_TEST(test_led_boot_keeps_the_limits);
   RUN_TEST(test_led_levels_budget_and_off);
   RUN_TEST(test_led_rainbow_and_breathe);
   RUN_TEST(test_led_colour_conversions);
