@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from functools import lru_cache
 
 from build123d import (
-    Axis, BuildLine, BuildSketch, Cylinder, Line, Location, Part, Plane, Pos, RegularPolygon, Rot,
+    Axis, BuildLine, Cylinder, Line, Location, Part, Plane, Pos, RegularPolygon, Rot,
     ThreePointArc, extrude, make_face, revolve,
 )
 
@@ -384,7 +384,6 @@ class RotaryEdition(Edition):
         below.origin = (292, 62)
         s.draw(below, lw=0.5)
         s.label(below, "KNOB - FROM BELOW 2:1", dy=-6)
-        tip = self.shaft_tip()
         rb = (e.shaft_d + k.bore_clear) / 2
         flat = e.shaft_flat - e.shaft_d / 2 + k.bore_clear / 2
         s.note(210, 158, [

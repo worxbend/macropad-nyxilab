@@ -47,7 +47,7 @@ def require_reportlab():
 def build() -> int:
     require_reportlab()
     from reportlab.lib.colors import HexColor, white
-    from reportlab.lib.enums import TA_CENTER, TA_LEFT
+    from reportlab.lib.enums import TA_CENTER
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.styles import ParagraphStyle
     from reportlab.lib.units import mm
