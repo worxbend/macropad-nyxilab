@@ -785,7 +785,7 @@ def build() -> int:
                     ["A whole row or column is dead", "The tail at the Pico. Rows are GP2 to GP5. Columns are GP6 to GP8."],
                     ["Presses show up doubled", "A cracked joint that opens and closes. Debounce is already 5 ms."],
                     ["A screen stays white or black", "Its VCC and GND, then SCL and SDA, then RES. Main screen is SPI0. Bar is SPI1."],
-                    ["The picture is upside down", "Not a joint. MAIN_ROTATION (1 or 3) or BAR_ROTATION (2 or 0) in config.h."],
+                    ["The picture is upside down", "Not a joint. MAIN_ROTATION (1 or 3) or BAR_ROTATION (0 or 2) in config.h."],
                     ["Colours look inverted", "MAIN_INVERT or BAR_INVERT in config.h."],
                     ["Red and blue are swapped", "MAIN_BGR or BAR_BGR in config.h."],
                     ["Garbled pixels", "SPI wires too long or too close to the LED data wire. SPI_HZ can go down to 20 MHz."],

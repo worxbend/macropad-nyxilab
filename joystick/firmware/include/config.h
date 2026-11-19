@@ -46,7 +46,7 @@ constexpr bool MAIN_BGR = false;                // set if red and blue are swapp
 // ---- bar display: 2.25" 76x284 ST7789P3 on SPI1 --------------------------------
 constexpr uint8_t BAR_SCK = 10, BAR_MOSI = 11, BAR_CS = 13, BAR_DC = 12, BAR_RST = 14, BAR_BL = 15;
 constexpr uint16_t BAR_W = 76, BAR_H = 284;
-constexpr uint8_t BAR_ROTATION = 2;  // portrait, header towards the user; use 0 if upside down
+constexpr uint8_t BAR_ROTATION = 0;  // portrait, the way the case holds the module (seen on a build); use 2 if upside down
 constexpr bool BAR_INVERT = true;
 constexpr bool BAR_BGR = false;
 

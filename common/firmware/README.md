@@ -132,7 +132,7 @@ immediately. A fifth field, `View::Host`, makes a layer show the host dashboard 
 of its key labels (the HOST layer does this).
 
 **Display orientation**: if an image is upside down, change `MAIN_ROTATION` (1 ↔ 3) or
-`BAR_ROTATION` (2 ↔ 0). Wrong colours: toggle `*_INVERT`; red/blue swapped: set `*_BGR`.
+`BAR_ROTATION` (0 ↔ 2). Wrong colours: toggle `*_INVERT`; red/blue swapped: set `*_BGR`.
 
 ## Serial console
 
