@@ -81,8 +81,12 @@ Free for later: GP0/GP1 (UART), GP9.
 
 Each display has its own SPI peripheral, so a wiring problem on one never affects the
 other. Keep the SPI wires reasonably short (the Pico sits right under the 1.9" display).
-`SPI_HZ` in `config.h` defaults to 40 MHz, which is safe for hand-wired leads; try
-62.5 MHz for a faster refresh, or 20 MHz if you ever see garbled pixels.
+`SPI_HZ` in `config.h` defaults to 40 MHz, which is safe for hand-wired leads; use
+20 MHz if you ever see garbled pixels. The clock is the system clock divided by an even
+number: the Pico 2 runs 37.5 MHz at that setting and the next step up is 75 MHz
+(`SPI_HZ = 75000000`), the original Pico runs 31.25 MHz and steps up to 62.5 MHz. A
+faster clock only shortens big redraws such as a layer change; the firmware sends just
+the parts of a frame that changed.
 
 ## Joystick (KY-023), joystick edition
 

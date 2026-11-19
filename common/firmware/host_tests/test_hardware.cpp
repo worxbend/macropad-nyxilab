@@ -13,7 +13,7 @@
 #include "hw/matrix.h"
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
-#include "ui/dirty_rows.h"
+#include "ui/dirty_tiles.h"
 #include "ui/host_fmt.h"
 #ifdef TEST_JOYSTICK
 #include "stick.h"
@@ -895,27 +895,43 @@ static void test_stick_motion_wakes_and_does_not_starve_the_save() {
 }
 #endif
 
-static void test_display_pushes_only_the_rows_that_changed() {
-  constexpr int w = 4, h = 6;
+static void test_display_pushes_only_the_tiles_that_changed() {
+  constexpr int w = 40, h = 20;  // 3 x 3 tiles of 16 x 8; the last column is 8 wide, the last row 4 high
   uint16_t frame[w * h] = {};
-  uint32_t shown[h] = {};
-  ui::changed_rows(frame, w, h, shown);  // remember the frame as shown
-  ui::RowSpan rows = ui::changed_rows(frame, w, h, shown);
-  assert(rows.count == 0);  // an identical frame costs no SPI time
-  frame[2 * w + 3] = 0x1234;  // last pixel of row 2
-  rows = ui::changed_rows(frame, w, h, shown);
-  assert(rows.first == 2 && rows.count == 1);
-  frame[1 * w] = 1;  // rows 1 and 4 change, 2 and 3 do not: one band covers them
-  frame[4 * w + 1] = 2;
-  rows = ui::changed_rows(frame, w, h, shown);
-  assert(rows.first == 1 && rows.count == 4);
-  frame[5 * w] = frame[5 * w + 1] = 7;  // 7,7,0,0 -> 0,7,7,0: same pixels, other columns
-  ui::changed_rows(frame, w, h, shown);
-  frame[5 * w] = 0;
-  frame[5 * w + 2] = 7;
-  rows = ui::changed_rows(frame, w, h, shown);
-  assert(rows.first == 5 && rows.count == 1);
-  assert(ui::changed_rows(frame, w, h, shown).count == 0);  // the hashes follow every call
+  uint32_t shown[ui::tile_count(w, h)] = {};
+  std::vector<ui::Rect> rects;
+  const auto push_changed = [&] {
+    rects.clear();
+    ui::for_each_changed_rect(frame, w, h, shown, [&](const ui::Rect& r) { rects.push_back(r); });
+  };
+  const auto is = [](const ui::Rect& r, int x, int y, int rw, int rh) {
+    return r.x == x && r.y == y && r.w == rw && r.h == rh;
+  };
+  push_changed();  // remember the frame as shown
+  push_changed();
+  assert(rects.empty());  // an identical frame costs no SPI time
+  frame[9 * w + 17] = 0x1234;  // one pixel of the middle tile
+  push_changed();
+  assert(rects.size() == 1 && is(rects[0], 16, 8, 16, 8));
+  frame[0] = 1;  // opposite corners: two small windows, not the frame between them
+  frame[19 * w + 39] = 2;
+  push_changed();
+  assert(rects.size() == 2 && is(rects[0], 0, 0, 16, 8) && is(rects[1], 32, 16, 8, 4));
+  frame[3] = 5;  // both ends of one tile row: one window across, the tile between them included
+  frame[35] = 5;
+  push_changed();
+  assert(rects.size() == 1 && is(rects[0], 0, 0, 40, 8));
+  for (int y : {1, 9, 17}) frame[y * w + 20] = 9;  // the same tiles in every tile row: one window down the frame
+  push_changed();
+  assert(rects.size() == 1 && is(rects[0], 16, 0, 16, 20));
+  frame[10 * w + 1] = frame[10 * w + 2] = 7;  // 0,7,7,0 -> 0,0,7,7: same pixels, other columns
+  push_changed();
+  frame[10 * w + 1] = 0;
+  frame[10 * w + 3] = 7;
+  push_changed();
+  assert(rects.size() == 1 && is(rects[0], 0, 8, 16, 8));
+  push_changed();
+  assert(rects.empty());  // the hashes follow every call
 }
 
 static void test_host_dashboard_text_formats() {
@@ -1066,7 +1082,7 @@ int main() {
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
   test_settings_flush_saves_before_a_reboot();
-  test_display_pushes_only_the_rows_that_changed();
+  test_display_pushes_only_the_tiles_that_changed();
   test_host_dashboard_text_formats();
   test_matrix_scans_col2row_and_reads_the_boot_combo();
   test_console_takes_one_line_per_line_end();

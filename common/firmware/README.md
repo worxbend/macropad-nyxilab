@@ -83,7 +83,8 @@ Once the case is closed you do not need BOOTSEL any more:
   editions resets centre settings while retaining shared settings. Upgrading from
   settings version 5 resets all settings once.
 - Dual core: input + USB on core 0; the displays and the LEDs on core 1 (off-screen
-  canvases, no flicker)
+  canvases, no flicker). Up to 60 frames a second, the panels' own refresh rate; only the
+  16 × 8 tiles of a frame that changed are sent over SPI
 
 ## Default keymap
 
