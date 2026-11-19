@@ -64,6 +64,7 @@ jobs:
       - name: Build (warnings in our code fail the job)
         working-directory: ${{ matrix.edition }}/firmware
         run: |
+          set -o pipefail  # the default shell has none: without it tee hides a failed build
           pio run -e ${{ matrix.env }} 2>&1 | tee build.log
           if grep -E 'warning:' build.log | grep -v -E '\.platformio/|\.pio/libdeps/'; then
             echo "::error::compiler warnings in the project's code"; exit 1
@@ -72,6 +73,7 @@ jobs:
         with:
           name: nyxilab-macropad-${{ matrix.edition }}-${{ matrix.env }}
           path: ${{ matrix.edition }}/firmware/.pio/build/${{ matrix.env }}/firmware.uf2
+          if-no-files-found: error
 
   cad:
     name: CAD checks (interference, clearances, printability)
