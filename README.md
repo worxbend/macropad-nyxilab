@@ -74,8 +74,8 @@ every design decision had a reason, bestie. here's the tea:
 - **the knob is panel-mounted like a real audio knob.** the encoder's M7 nut clamps the plate,
   a square pocket underneath stops it from spinning, and the printed knob's bore ends exactly at
   the shaft tip, so you just press it on until it stops. pressing it clicks the switch, not the knob
-  down the shaft. an engraved ring frames it, because a sunken well would've printed as a 34 mm
-  bridge on the pretty side. no thanks.
+  down the shaft. a thin engraved ring sits under its brim, because a sunken well would've printed
+  as a 34 mm bridge on the pretty side. no thanks.
 - **the bar display only has holes at one end.** a tiny printed clamp (`bar_spine`) holds the
   other end. no glue, no hot-glue era.
 

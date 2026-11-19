@@ -1,6 +1,6 @@
 """Command line of an edition's ``build.py``.
 
-    python build.py check      fit / interference checks (non-zero exit on failure)
+    python build.py check      fit / interference checks (non-zero exit on an overlap or a negative clearance)
     python build.py export     STEP, STL, 3MF, GLB (+ FreeCAD if FREECAD_CMD is set)
     python build.py render     PNG renders into docs/images/<edition> (needs a GPU/EGL context)
     python build.py drawings   blueprint PDF/SVG + 1:1 template
@@ -24,8 +24,9 @@ from .layout import Layout
 def cmd_check(L: Layout, exports: Path) -> int:
     res = checks.run(L)
     clear = checks.clearance_report(L)
+    negative = [k for k, v in clear.items() if v < 0]
     for k, v in clear.items():
-        print(f"  {k:<36} {v:7.2f} mm")
+        print(f"  {'FAIL ' if k in negative else ''}{k:<36} {v:7.2f} mm")
     print("  printability (overhangs >50 deg, bridges):")
     over = checks.overhang_report(L)
     for name, rep in over.items():
@@ -36,7 +37,7 @@ def cmd_check(L: Layout, exports: Path) -> int:
                "clearances_mm": {k: round(v, 2) for k, v in clear.items()}, "printability": over,
                "viewer": {"centre_label": L.ed.centre_label, **L.ed.viewer_info(L, clear)}}
     (exports / "checks.json").write_text(json.dumps(summary, indent=2) + "\n")
-    return 0 if all(r.ok for r in res) else 1
+    return 0 if all(r.ok for r in res) and not negative else 1
 
 
 def cmd_export(L: Layout, exports: Path, freecad: bool = True) -> int:

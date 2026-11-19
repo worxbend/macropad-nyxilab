@@ -5,7 +5,7 @@
   "clearances_mm": {
     "encoder joints above base": 6.5,
     "knob above the plate": 0.7,
-    "engraved ring outside the knob": -6.4,
+    "knob brim over the engraved ring": 5.6,
     "shaft engagement in the knob": 11.1,
     "D-flat engagement in the knob": 9.5,
     "knob top skin over the bore": 1.4,

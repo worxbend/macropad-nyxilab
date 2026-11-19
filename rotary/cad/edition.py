@@ -92,7 +92,7 @@ class Knob:
 class EncoderMount:
     """How the module sits in the plate."""
 
-    ring_d: float = 36.0  # engraved ring around the knob (decorative, prints as tiny bridges)
+    ring_d: float = 36.0  # engraved ring under the knob's brim (decorative, prints as tiny bridges)
     ring_w: float = 0.8
     ring_depth: float = 0.5
     clamp_t: float = 2.0  # plate thickness clamped by the encoder nut (top surface down to the body)
@@ -267,7 +267,7 @@ class RotaryEdition(Edition):
         """Panel mount in the plate frame centred on the knob axis (w = 0 = top surface).
 
         A 2 mm clamp section for the M7 nut, a square pocket from below that keys
-        the encoder body so it cannot turn, and a thin engraved ring around the knob.
+        the encoder body so it cannot turn, and a thin engraved ring under the knob's brim.
         (A recessed well would print as a 34 mm bridge on the visible face.)
         """
         m, T = self.p.mount, L.p.case.plate_t
@@ -314,7 +314,7 @@ class RotaryEdition(Edition):
         return {
             "encoder joints above base": front.Z - c.base_t,
             "knob above the plate": k.gap,
-            "engraved ring outside the knob": (m.ring_d - m.ring_w) / 2 - k.d / 2,
+            "knob brim over the engraved ring": k.d / 2 - (m.ring_d + m.ring_w) / 2,
             "shaft engagement in the knob": tip - k.hub_z,
             "D-flat engagement in the knob": tip - (tip - e.flat_len + 0.5),
             "knob top skin over the bore": self.crown() - (tip + k.bore_extra),

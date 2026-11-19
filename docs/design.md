@@ -122,7 +122,7 @@ engagement), and it ends exactly at the shaft tip. The skirt sits 0.7 mm above t
 plate, so the nut and the washer are inside the arch; a push (0.5 mm travel) still
 has 0.2 mm left. The crown is 18.7 mm because the 20 mm shaft tip is 17.3 mm above
 the skirt and the skin over the tip is 1.4 mm. Ø48 leaves 2.7 mm to the 1.9" bevel
-and 9 mm to the nearest keycap. Around the knob, a 0.8 mm engraved ring (Ø36) is on
+and 9 mm to the nearest keycap. Under the knob, a 0.8 mm engraved ring (Ø36) is on
 the plate; the brim overhangs it. A sunken well would have printed as a 34 mm bridge
 on the visible face; the ring prints as two tiny bridges instead.
 
