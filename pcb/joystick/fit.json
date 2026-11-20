@@ -1,0 +1,4836 @@
+{
+ "pairs": 690,
+ "failing": 0,
+ "results": [
+  {
+   "a": "board left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R3C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R2C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R1C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R0C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R3C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R3C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R2C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R2C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R1C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R1C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R0C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R0C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 183.949,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko display bar",
+   "overlap_mm3": 122.228,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "ko joystick",
+   "overlap_mm3": 442.38,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "female joystick",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat headers",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat headers",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat headers",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "ko joystick",
+   "overlap_mm3": 68.627,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "wires joystick",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "ko led L",
+   "overlap_mm3": 0.049,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko led R",
+   "overlap_mm3": 318.216,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko led R",
+   "overlap_mm3": 28.8,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "chain LED",
+   "b": "ko led L",
+   "overlap_mm3": 28.8,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "chain LED",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "sweep joystick knob sweep",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "board right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "SH8 main display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pigtail main display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "SH8 bar display",
+   "overlap_mm3": 79.67,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pigtail bar display",
+   "overlap_mm3": 5.919,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "female joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 left",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FFC left",
+   "overlap_mm3": 0.054,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "SH8 main display",
+   "overlap_mm3": 79.73,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pigtail main display",
+   "overlap_mm3": 7.275,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "SH8 bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "female joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 right",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FFC right",
+   "overlap_mm3": 0.053,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pigtail main display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH8 main display",
+   "b": "SH8 bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "female joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "SH8 bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "female joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "female joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "female joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "wires joystick",
+   "overlap_mm3": 128.743,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "female joystick",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female joystick",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "SH5 joystick",
+   "overlap_mm3": 59.63,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "wires joystick",
+   "overlap_mm3": 61.66,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FFC left",
+   "overlap_mm3": 6.524,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FFC right",
+   "overlap_mm3": 9.154,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "PH3 LED",
+   "overlap_mm3": 116.39,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "SH5 joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "wires joystick",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 joystick",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires joystick",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FFC left",
+   "overlap_mm3": 0.207,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "FFC right",
+   "overlap_mm3": 0.199,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "PH3 LED",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  }
+ ]
+}

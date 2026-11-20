@@ -1,0 +1,393 @@
+{
+  "pico_pins": {
+    "1": "NC",
+    "2": "NC",
+    "3": "GND",
+    "4": "ROW0",
+    "5": "ROW1",
+    "6": "ROW2",
+    "7": "ROW3",
+    "8": "GND",
+    "9": "COL0",
+    "10": "COL1",
+    "11": "COL2",
+    "12": "NC",
+    "13": "GND",
+    "14": "BAR_SCK",
+    "15": "BAR_MOSI",
+    "16": "BAR_DC",
+    "17": "BAR_CS",
+    "18": "GND",
+    "19": "BAR_RST",
+    "20": "BAR_BL",
+    "21": "MAIN_DC",
+    "22": "MAIN_CS",
+    "23": "GND",
+    "24": "MAIN_SCK",
+    "25": "MAIN_MOSI",
+    "26": "MAIN_RST",
+    "27": "MAIN_BL",
+    "28": "GND",
+    "29": "C_SW",
+    "30": "NC",
+    "31": "C_A",
+    "32": "C_B",
+    "33": "GND",
+    "34": "LED_DATA",
+    "35": "NC",
+    "36": "3V3",
+    "37": "NC",
+    "38": "GND",
+    "39": "NC",
+    "40": "VBUS"
+  },
+  "boards": {
+    "left": {
+      "J1": {
+        "part": "FPC 20-pin 0.5 mm, to the hat",
+        "pins": [
+          "GND",
+          "3V3",
+          "ROW0",
+          "ROW1",
+          "ROW2",
+          "ROW3",
+          "COL0",
+          "GND",
+          "BAR_SCK",
+          "GND",
+          "BAR_MOSI",
+          "BAR_DC",
+          "BAR_CS",
+          "BAR_RST",
+          "BAR_BL",
+          "GND",
+          "C_A",
+          "C_B",
+          "C_SW",
+          "GND"
+        ]
+      },
+      "J2": {
+        "part": "JST-SH 8, bar display pigtail",
+        "pins": [
+          "GND",
+          "3V3",
+          "BAR_SCK",
+          "BAR_MOSI",
+          "BAR_RST",
+          "BAR_DC",
+          "BAR_CS",
+          "BAR_BL"
+        ]
+      },
+      "J3": {
+        "part": "JST-SH 5, encoder (rotary edition; not fitted on the joystick edition)",
+        "pins": [
+          "C_A",
+          "C_B",
+          "C_SW",
+          "3V3",
+          "GND"
+        ]
+      },
+      "C1": {
+        "part": "100 nF 0402, 3V3 at J1",
+        "pins": [
+          "3V3",
+          "GND"
+        ]
+      },
+      "switches": [
+        {
+          "ref": "SW_R0C0",
+          "diode": "D_R0C0",
+          "col": "COL0",
+          "row": "ROW0"
+        },
+        {
+          "ref": "SW_R1C0",
+          "diode": "D_R1C0",
+          "col": "COL0",
+          "row": "ROW1"
+        },
+        {
+          "ref": "SW_R2C0",
+          "diode": "D_R2C0",
+          "col": "COL0",
+          "row": "ROW2"
+        },
+        {
+          "ref": "SW_R3C0",
+          "diode": "D_R3C0",
+          "col": "COL0",
+          "row": "ROW3"
+        }
+      ]
+    },
+    "right": {
+      "J1": {
+        "part": "FPC 20-pin 0.5 mm, to the hat",
+        "pins": [
+          "GND",
+          "3V3",
+          "MAIN_BL",
+          "MAIN_RST",
+          "MAIN_CS",
+          "MAIN_DC",
+          "MAIN_MOSI",
+          "GND",
+          "MAIN_SCK",
+          "GND",
+          "COL2",
+          "COL1",
+          "ROW3",
+          "ROW2",
+          "ROW1",
+          "ROW0",
+          "GND",
+          "NC",
+          "NC",
+          "GND"
+        ]
+      },
+      "J2": {
+        "part": "JST-SH 8, main display pigtail",
+        "pins": [
+          "GND",
+          "3V3",
+          "MAIN_SCK",
+          "MAIN_MOSI",
+          "MAIN_RST",
+          "MAIN_DC",
+          "MAIN_CS",
+          "MAIN_BL"
+        ]
+      },
+      "C1": {
+        "part": "100 nF 0402, 3V3 at J1",
+        "pins": [
+          "3V3",
+          "GND"
+        ]
+      },
+      "switches": [
+        {
+          "ref": "SW_R0C1",
+          "diode": "D_R0C1",
+          "col": "COL1",
+          "row": "ROW0"
+        },
+        {
+          "ref": "SW_R0C2",
+          "diode": "D_R0C2",
+          "col": "COL2",
+          "row": "ROW0"
+        },
+        {
+          "ref": "SW_R1C1",
+          "diode": "D_R1C1",
+          "col": "COL1",
+          "row": "ROW1"
+        },
+        {
+          "ref": "SW_R1C2",
+          "diode": "D_R1C2",
+          "col": "COL2",
+          "row": "ROW1"
+        },
+        {
+          "ref": "SW_R2C1",
+          "diode": "D_R2C1",
+          "col": "COL1",
+          "row": "ROW2"
+        },
+        {
+          "ref": "SW_R2C2",
+          "diode": "D_R2C2",
+          "col": "COL2",
+          "row": "ROW2"
+        },
+        {
+          "ref": "SW_R3C1",
+          "diode": "D_R3C1",
+          "col": "COL1",
+          "row": "ROW3"
+        },
+        {
+          "ref": "SW_R3C2",
+          "diode": "D_R3C2",
+          "col": "COL2",
+          "row": "ROW3"
+        }
+      ]
+    },
+    "hat": {
+      "J1": {
+        "part": "FPC 20-pin 0.5 mm, from the left board",
+        "pins": [
+          "GND",
+          "3V3",
+          "ROW0",
+          "ROW1",
+          "ROW2",
+          "ROW3",
+          "COL0",
+          "GND",
+          "BAR_SCK",
+          "GND",
+          "BAR_MOSI",
+          "BAR_DC",
+          "BAR_CS",
+          "BAR_RST",
+          "BAR_BL",
+          "GND",
+          "C_A",
+          "C_B",
+          "C_SW",
+          "GND"
+        ]
+      },
+      "J2": {
+        "part": "FPC 20-pin 0.5 mm, from the right board",
+        "pins": [
+          "GND",
+          "3V3",
+          "MAIN_BL",
+          "MAIN_RST",
+          "MAIN_CS",
+          "MAIN_DC",
+          "MAIN_MOSI",
+          "GND",
+          "MAIN_SCK",
+          "GND",
+          "COL2",
+          "COL1",
+          "ROW3",
+          "ROW2",
+          "ROW1",
+          "ROW0",
+          "GND",
+          "NC",
+          "NC",
+          "GND"
+        ]
+      },
+      "J3": {
+        "part": "JST-SH 5, joystick (joystick edition; not fitted on the rotary edition)",
+        "pins": [
+          "GND",
+          "3V3",
+          "C_A",
+          "C_B",
+          "C_SW"
+        ]
+      },
+      "J4": {
+        "part": "JST-PH 3, LED sticks",
+        "pins": [
+          "LED_5V",
+          "LED_DIN",
+          "GND"
+        ]
+      },
+      "D1": {
+        "part": "Schottky 1 A SOD-123 (B5819W class), VBUS -> LED_5V",
+        "pins": [
+          "VBUS",
+          "LED_5V"
+        ]
+      },
+      "U1": {
+        "part": "74AHCT1G125 SOT-23-5: 3.3 V data -> 5 V data",
+        "pins": {
+          "1 OE": "GND",
+          "2 A": "LED_DATA",
+          "3 GND": "GND",
+          "4 Y": "LED_Y",
+          "5 VCC": "LED_5V"
+        }
+      },
+      "R1": {
+        "part": "330 R 0402, LED data series resistor",
+        "pins": [
+          "LED_Y",
+          "LED_DIN"
+        ]
+      },
+      "C1": {
+        "part": "10 uF 0805, LED_5V bulk",
+        "pins": [
+          "LED_5V",
+          "GND"
+        ]
+      },
+      "C2": {
+        "part": "100 nF 0402, U1 supply",
+        "pins": [
+          "LED_5V",
+          "GND"
+        ]
+      },
+      "C3": {
+        "part": "100 nF 0402, 3V3 at J1",
+        "pins": [
+          "3V3",
+          "GND"
+        ]
+      },
+      "C4": {
+        "part": "100 nF 0402, 3V3 at J2",
+        "pins": [
+          "3V3",
+          "GND"
+        ]
+      },
+      "H1": {
+        "part": "2 x 20 pin header 2.54 mm to the Pico 2's pin rows (the Pico's own pinout)",
+        "pins": {
+          "1": "NC",
+          "2": "NC",
+          "3": "GND",
+          "4": "ROW0",
+          "5": "ROW1",
+          "6": "ROW2",
+          "7": "ROW3",
+          "8": "GND",
+          "9": "COL0",
+          "10": "COL1",
+          "11": "COL2",
+          "12": "NC",
+          "13": "GND",
+          "14": "BAR_SCK",
+          "15": "BAR_MOSI",
+          "16": "BAR_DC",
+          "17": "BAR_CS",
+          "18": "GND",
+          "19": "BAR_RST",
+          "20": "BAR_BL",
+          "21": "MAIN_DC",
+          "22": "MAIN_CS",
+          "23": "GND",
+          "24": "MAIN_SCK",
+          "25": "MAIN_MOSI",
+          "26": "MAIN_RST",
+          "27": "MAIN_BL",
+          "28": "GND",
+          "29": "C_SW",
+          "30": "NC",
+          "31": "C_A",
+          "32": "C_B",
+          "33": "GND",
+          "34": "LED_DATA",
+          "35": "NC",
+          "36": "3V3",
+          "37": "NC",
+          "38": "GND",
+          "39": "NC",
+          "40": "VBUS"
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,8 @@
 #   make site              the website only (what GitHub Pages serves), then: python3 -m http.server -d site
 #   make site-dev          work on the website: build, serve on :8000, rebuild and reload on every save
 #   make site-renders      the product page's renders and scroll sequences (docs/images/site, needs EGL)
+#   make pcb               the PCB version: board outlines, connectors, cable routes, fit check, ballast (pcb/)
+#   make pcb-kicad         the four KiCad boards from it, routed by Freerouting, with KiCad's DRC (needs KiCad)
 #   make all               everything above
 
 PY          := $(CURDIR)/.venv/bin/python
@@ -22,7 +24,7 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site site-dev site-renders docs guide-pdf all clean
+        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site site-dev site-renders docs guide-pdf pcb pcb-kicad all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -138,6 +140,14 @@ site-dev:
 
 site-renders:
 	$(PY) tools/site_renders.py
+
+pcb:
+	$(PY) tools/pcb_layout.py
+	$(PY) tools/pcb_nets.py
+
+# KiCad's pcbnew module belongs to the system Python, not the venv
+pcb-kicad: pcb
+	/usr/bin/python3 tools/pcb_kicad.py --route
 
 docs: ui-sim diagrams viewer site-renders site
 

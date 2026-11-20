@@ -1,0 +1,4976 @@
+{
+ "pairs": 710,
+ "failing": 0,
+ "results": [
+  {
+   "a": "board left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R3C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R2C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R1C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R0C0",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pins R3C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R3C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R2C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R2C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R1C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R1C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R0C1",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pins R0C2",
+   "overlap_mm3": 41.385,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 183.949,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko display bar",
+   "overlap_mm3": 122.228,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "ko encoder",
+   "overlap_mm3": 269.875,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "female encoder",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat headers",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat headers",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat headers",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "wires encoder",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko led R",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko led R",
+   "overlap_mm3": 318.216,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "pigtail LED",
+   "b": "ko led L",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case top_plate",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case frame",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case base",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case bar_spine",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "case knob",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko display 1.9",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko display bar",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "ko led R",
+   "overlap_mm3": 28.8,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "chain LED",
+   "b": "ko led L",
+   "overlap_mm3": 28.8,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "chain LED",
+   "b": "pico pcb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pico usb",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pico chips",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "sweep knob envelope",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R3C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R2C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R1C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R0C0",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R3C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R3C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R2C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R2C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R1C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R1C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R0C1",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "chain LED",
+   "b": "pins R0C2",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "board right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "SH8 main display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pigtail main display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "SH8 bar display",
+   "overlap_mm3": 79.67,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "pigtail bar display",
+   "overlap_mm3": 5.919,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "female encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 left",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FFC left",
+   "overlap_mm3": 0.053,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "SH5 encoder",
+   "overlap_mm3": 59.63,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "wires encoder",
+   "overlap_mm3": 54.898,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "SH8 main display",
+   "overlap_mm3": 79.73,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "pigtail main display",
+   "overlap_mm3": 7.275,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "SH8 bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "female encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 right",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "FFC right",
+   "overlap_mm3": 0.053,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "board right",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "board right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pigtail main display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH8 main display",
+   "b": "SH8 bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "female encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 main display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "SH8 bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "female encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail main display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pigtail bar display",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "female encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH8 bar display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "female encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail bar display",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "hat",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "female encoder",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "female encoder",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "hat headers",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FFC left",
+   "overlap_mm3": 6.232,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 106.4,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "FFC right",
+   "overlap_mm3": 13.351,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat",
+   "b": "PH3 LED",
+   "overlap_mm3": 116.39,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "hat",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "hat headers",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FPC20 hat left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FFC left",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FFC left",
+   "overlap_mm3": 0.207,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "FPC20 right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC left",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "FPC20 hat right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "FFC right",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 right",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "FFC right",
+   "overlap_mm3": 0.199,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FPC20 hat right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "SH5 encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "wires encoder",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "FFC right",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "wires encoder",
+   "overlap_mm3": -0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "SH5 encoder",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "PH3 LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "wires encoder",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "PH3 LED",
+   "b": "pigtail LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": true
+  },
+  {
+   "a": "PH3 LED",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  },
+  {
+   "a": "pigtail LED",
+   "b": "chain LED",
+   "overlap_mm3": 0.0,
+   "ok": true,
+   "by_design": false
+  }
+ ]
+}

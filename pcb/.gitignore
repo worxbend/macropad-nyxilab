@@ -1,0 +1,7 @@
+# routing intermediates and KiCad's per-user files
+*.dsn
+*.ses
+*-freerouting.log
+*.kicad_prl
+*-backups/
+fp-info-cache
