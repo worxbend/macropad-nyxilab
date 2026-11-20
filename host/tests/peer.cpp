@@ -5,6 +5,13 @@
 
 #include "core/host_proto.h"
 
+// A JSON string: the parser leaves only printable ASCII, so '"' and '\\' are all that need escaping.
+static void put_str(const char* key, const char* s) {
+  fprintf(stderr, ", \"%s\": \"", key);
+  for (; *s; s++) fprintf(stderr, (*s == '"' || *s == '\\') ? "\\%c" : "%c", *s);
+  fputc('"', stderr);
+}
+
 int main() {
   mp::HostProto p;
   p.set_identity(2, 5, "peer firmware");
@@ -26,9 +33,25 @@ int main() {
   fprintf(stderr,
           "], \"mem_used\": %lu, \"mem_total\": %lu, \"swap\": %u, \"disk\": %u, \"temp10\": %d, \"load100\": %u, "
           "\"rx\": %lu, \"tx\": %lu, \"up\": %lu, \"gpu\": %u, \"gpu_temp10\": %d, \"h\": %u, \"m\": %u, "
-          "\"text\": [\"%s\", \"%s\", \"%s\", \"%s\"]}\n",
+          "\"text\": [\"%s\", \"%s\", \"%s\", \"%s\"]",
           (unsigned long)m.mem_used_mib, (unsigned long)m.mem_total_mib, m.swap_pct, m.disk_pct, m.cpu_temp_c10,
           m.load1_x100, (unsigned long)m.net_rx_bps, (unsigned long)m.net_tx_bps, (unsigned long)m.uptime_s,
           m.gpu_pct, m.gpu_temp_c10, m.clock_h, m.clock_m, d.text[0], d.text[1], d.text[2], d.text[3]);
+  const mp::HostSway& s = d.sway;
+  fprintf(stderr,
+          ", \"sway\": {\"running\": %d, \"focused\": %u, \"open\": %u, \"visible\": %u, \"urgent\": %u, "
+          "\"windows\": %u, \"layout\": %u",
+          s.running, s.focused, s.open, s.visible, s.urgent, s.windows, s.layout);
+  put_str("app_id", s.app_id);
+  put_str("title", s.title);
+  const mp::HostPlayer& pl = d.player;
+  fprintf(stderr,
+          "}, \"player\": {\"present\": %d, \"status\": %u, \"volume\": %u, \"position\": %u, \"length\": %u",
+          pl.present, pl.status, pl.volume, pl.position_s, pl.length_s);
+  put_str("name", pl.name);
+  put_str("title", pl.title);
+  put_str("artist", pl.artist);
+  put_str("album", pl.album);
+  fprintf(stderr, "}}\n");
   return 0;
 }

@@ -1,6 +1,6 @@
 //! nyxd: shows this computer's CPU, memory, ... on the Nyxilab macropad's HOST layer.
 
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::ExitCode;
 use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
@@ -11,13 +11,16 @@ use nyxd::device::{find_system_devices, Device, HidrawDevice};
 use nyxd::metrics::{Collector, Options, Source};
 use nyxd::{config, log};
 
+/// MPRIS through playerctl, found on PATH.
+const PLAYERCTL: &str = "playerctl";
+
 const USAGE: &str = "usage: nyxd [--config PATH] [--device /dev/hidrawN] [--interval S] [--socket PATH] [--probe] [-v]
 
   --config PATH    configuration file (default: ~/.config/nyxd/config.toml)
   --device PATH    use this hidraw node instead of searching
   --interval S     seconds between updates, 0.2 .. 4 (default 1)
   --socket PATH    control socket for nyxctl (default: $XDG_RUNTIME_DIR/nyxd.sock)
-  --probe          list macropads and print one metrics sample, then exit
+  --probe          list macropads, print one metrics sample, sway and the media player, then exit
   -v, --verbose    also log dashboard visibility changes
   --version";
 
@@ -104,6 +107,16 @@ fn main() -> ExitCode {
         let found = find_system_devices();
         println!("macropads: {}", if found.is_empty() { "none found".into() } else { found.join(", ") });
         println!("{}", serde_json::to_string_pretty(&collector.sample()).expect("metrics serialize"));
+        match nyxd::sway::socket_path().map(|p| nyxd::sway::Sway::connect(&p).and_then(|mut s| s.query())) {
+            Some(Ok(w)) => println!("sway: {w:?}"),
+            Some(Err(e)) => println!("sway: {e}"),
+            None => println!("sway: not running"),
+        }
+        match nyxd::player::probe(Path::new(PLAYERCTL)) {
+            Ok(s) if s.media.present => println!("player ({}): {:?}", s.instance, s.media),
+            Ok(_) => println!("player: none"),
+            Err(e) => println!("player: {PLAYERCTL}: {e}"),
+        }
         return ExitCode::SUCCESS;
     }
 
@@ -114,8 +127,10 @@ fn main() -> ExitCode {
         Box::new(find_system_devices),
         Box::new(|p| HidrawDevice::open(p).map(|d| Box::new(d) as Box<dyn Device>)),
         Box::new(move || start.elapsed().as_secs_f64()),
-        Box::new(daemon::spawn_shell),
+        Box::new(daemon::detach),
     );
+    d.enable_sway();
+    d.enable_player(PLAYERCTL.into());
     if let Err(e) = d.listen(&args.socket) {
         eprintln!("nyxd: {}: {e}", args.socket.display());
         return ExitCode::from(1);

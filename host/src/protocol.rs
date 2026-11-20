@@ -20,6 +20,9 @@ pub const HELLO: u8 = 0x01;
 pub const METRICS: u8 = 0x02;
 pub const TEXT: u8 = 0x03;
 pub const BYE: u8 = 0x04;
+pub const WORKSPACES: u8 = 0x05;
+pub const PLAYER: u8 = 0x06;
+pub const PLAYER_TEXT: u8 = 0x07;
 // device -> host
 pub const HELLO_ACK: u8 = 0x81;
 pub const KEY: u8 = 0x82;
@@ -31,6 +34,11 @@ pub const MAX_CORES: usize = 16;
 pub const TEXT_SLOTS: usize = 4;
 pub const TEXT_LEN: usize = 60;
 pub const HOSTNAME_LEN: usize = 31;
+/// sway workspaces 1..=8: the HOST layer's right block.
+pub const WORKSPACE_KEYS: u8 = 8;
+pub const TITLE_LEN: usize = 40;
+pub const APP_ID_LEN: usize = 12;
+pub const PLAYER_NAME_LEN: usize = 16;
 
 pub type Packet = [u8; PACKET];
 
@@ -51,6 +59,79 @@ pub struct Metrics {
     pub gpu_pct: Option<f64>,
     pub gpu_temp_c: Option<f64>,
     pub clock: Option<(u8, u8)>, // local (hour, minute)
+}
+
+/// The window manager's state.  Bit n-1 of a mask = workspace n (1..=8).
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct Workspaces {
+    pub running: bool,
+    /// 1..=8; 0 = a workspace outside 1..8, or none.
+    pub focused: u8,
+    pub open: u8,
+    pub visible: u8,
+    pub urgent: u8,
+    /// Windows on the focused workspace, tiling and floating.
+    pub windows: u8,
+    pub layout: Layout,
+    /// The focused window's app_id (XWayland: its class) and title.
+    pub app_id: String,
+    pub title: String,
+}
+
+/// The focused workspace's layout, as WORKSPACES sends it.
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub enum Layout {
+    #[default]
+    Unknown = 0,
+    SplitH = 1,
+    SplitV = 2,
+    Tabbed = 3,
+    Stacked = 4,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Status {
+    #[default]
+    Stopped = 0,
+    Playing = 1,
+    Paused = 2,
+}
+
+/// The media player (MPRIS), for PLAYER and PLAYER_TEXT.
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub struct Media {
+    pub present: bool,
+    pub status: Status,
+    /// 0..=100 %; None = unknown.
+    pub volume: Option<u8>,
+    pub position_s: u32,
+    /// 0 = unknown.
+    pub length_s: u32,
+    pub name: String,
+    pub title: String,
+    pub artist: String,
+    pub album: String,
+}
+
+/// PLAYER_TEXT's field byte.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Field {
+    Title = 0,
+    Artist = 1,
+    Album = 2,
+}
+
+impl Field {
+    pub const ALL: [Field; 3] = [Field::Title, Field::Artist, Field::Album];
+
+    pub fn of(self, m: &Media) -> &str {
+        match self {
+            Field::Title => &m.title,
+            Field::Artist => &m.artist,
+            Field::Album => &m.album,
+        }
+    }
 }
 
 /// What the macropad sends.
@@ -154,6 +235,38 @@ pub fn text(slot: usize, value: &str) -> Option<Packet> {
     Some(packet(TEXT, &payload))
 }
 
+/// `text` NUL-padded to `len` bytes, for fixed-width fields.
+fn fixed_text(text: &str, len: usize) -> Vec<u8> {
+    let mut b = ascii_text(text, len);
+    b.resize(len, 0);
+    b
+}
+
+pub fn workspaces(w: &Workspaces) -> Packet {
+    let mut payload = vec![u8::from(w.running), w.focused, w.open, w.visible, w.urgent, w.windows, w.layout as u8];
+    payload.extend(fixed_text(&w.app_id, APP_ID_LEN));
+    payload.extend(ascii_text(&w.title, TITLE_LEN));
+    packet(WORKSPACES, &payload)
+}
+
+/// PLAYER.  The position saturates at u16; a longer length is not a real track (a live stream
+/// reports i64::MAX), so it is sent as unknown.
+pub fn player(m: &Media) -> Packet {
+    let position = m.position_s.min(u32::from(u16::MAX)) as u16;
+    let length = u16::try_from(m.length_s).unwrap_or(0);
+    let mut payload = vec![u8::from(m.present), m.status as u8, m.volume.map_or(UNKNOWN, |v| v.min(100))];
+    payload.extend_from_slice(&position.to_le_bytes());
+    payload.extend_from_slice(&length.to_le_bytes());
+    payload.extend(ascii_text(&m.name, PLAYER_NAME_LEN));
+    packet(PLAYER, &payload)
+}
+
+pub fn player_text(field: Field, value: &str) -> Packet {
+    let mut payload = vec![field as u8];
+    payload.extend(ascii_text(value, TEXT_LEN));
+    packet(PLAYER_TEXT, &payload)
+}
+
 pub fn bye() -> Packet {
     packet(BYE, &[])
 }
@@ -235,6 +348,70 @@ mod tests {
         assert_eq!(g[0], 0.5);
         assert_eq!(g[15], 30.5);
         assert_eq!(group_cores(&[1.0, 2.0], 16), vec![1.0, 2.0]);
+    }
+
+    #[test]
+    fn workspaces_layout_matches_the_firmware_offsets() {
+        let w = Workspaces {
+            running: true,
+            focused: 3,
+            open: 0x17,
+            visible: 0x14,
+            urgent: 0x02,
+            windows: 4,
+            layout: Layout::Tabbed,
+            app_id: "firefox".into(),
+            title: "vím — notes".into(),
+        };
+        let p = workspaces(&w);
+        assert_eq!(&p[..9], &[WORKSPACES, PROTO_VERSION, 1, 3, 0x17, 0x14, 0x02, 4, 3]);
+        assert_eq!(&p[9..21], b"firefox\0\0\0\0\0");
+        assert_eq!(&p[21..32], b"vim ? notes");
+        assert!(p[32..].iter().all(|&b| b == 0));
+        let long = Workspaces { app_id: "a".repeat(20), title: "x".repeat(99), ..Workspaces::default() };
+        let p = workspaces(&long);
+        assert_eq!(p[2], 0); // not running
+        assert_eq!(p[9..21], [b'a'; APP_ID_LEN]);
+        assert_eq!(p[21..21 + TITLE_LEN], [b'x'; TITLE_LEN]);
+        assert!(p[21 + TITLE_LEN..].iter().all(|&b| b == 0)); // [61..63] stay 0
+    }
+
+    #[test]
+    fn player_layout_matches_the_firmware_offsets() {
+        let m = Media {
+            present: true,
+            status: Status::Paused,
+            volume: Some(42),
+            position_s: 0x1234,
+            length_s: 0x0345,
+            name: "spotify".into(),
+            title: "ignored here".into(),
+            ..Media::default()
+        };
+        let p = player(&m);
+        assert_eq!(&p[..9], &[PLAYER, PROTO_VERSION, 1, 2, 42, 0x34, 0x12, 0x45, 0x03]);
+        assert_eq!(&p[9..16], b"spotify");
+        assert!(p[16..].iter().all(|&b| b == 0));
+        let odd = Media { volume: None, position_s: 70_000, length_s: 70_000, name: "n".repeat(30), ..m };
+        let p = player(&odd);
+        assert_eq!(p[4], UNKNOWN);
+        assert_eq!(u16::from_le_bytes([p[5], p[6]]), u16::MAX); // the position saturates
+        assert_eq!(u16::from_le_bytes([p[7], p[8]]), 0); // no real track is that long: unknown
+        assert_eq!(p[9..25], [b'n'; PLAYER_NAME_LEN]);
+        assert!(p[25..].iter().all(|&b| b == 0));
+        assert_eq!(&player(&Media::default())[..5], &[PLAYER, PROTO_VERSION, 0, 0, UNKNOWN]);
+    }
+
+    #[test]
+    fn player_text_layout_matches_the_firmware_offsets() {
+        let p = player_text(Field::Artist, "Sigur Rós");
+        assert_eq!(&p[..12], b"\x07\x01\x01Sigur Ros");
+        assert!(p[12..].iter().all(|&b| b == 0));
+        let p = player_text(Field::Album, &"y".repeat(80));
+        assert_eq!(p[2], 2);
+        assert_eq!(p[3..63], [b'y'; TEXT_LEN]);
+        assert_eq!(p[63], 0);
+        assert_eq!(player_text(Field::Title, "")[2..], [0u8; 62]);
     }
 
     #[test]

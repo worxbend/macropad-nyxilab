@@ -9,4 +9,6 @@ pub mod daemon;
 pub mod device;
 pub mod log;
 pub mod metrics;
+pub mod player;
 pub mod protocol;
+pub mod sway;

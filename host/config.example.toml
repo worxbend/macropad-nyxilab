@@ -7,14 +7,16 @@ disk_path = "/"         # the file system the DISK bar shows
 gpu = "auto"            # auto (AMD via sysfs, else nvidia-smi if installed) | amd | nvidia | off
 # net_exclude = ["lo", "veth", "docker", "br-", "virbr"]  # interface name prefixes left out of NET
 
-# HOST(n) keys on the macropad's HOST layer (H1 .. H11 by default) run these on press.
+# HOST(n) keys run these on press: H1 .. H8 on the HOST (system) page are ids 1 .. 8.
+# Built in, unless an entry here takes the id: 201 .. 208 switch to sway workspace 1 .. 8
+# (the SWAY page), 211 .. 218 control the media player through playerctl (the PLAYER page:
+# play-pause, next, previous, stop, seek -10 s, seek +10 s, volume -5 %, volume +5 %).
 # Commands run through /bin/sh as you, detached from nyxd.
 [keys]
-# 1 = "playerctl play-pause"
-# 2 = "playerctl next"
-# 3 = "loginctl lock-session"
-# 4 = "xdg-open https://github.com"
-# 5 = "nyxctl text 0 \"$(date +%H:%M) checkpoint\""
+# 1 = "loginctl lock-session"
+# 2 = "xdg-open https://github.com"
+# 3 = "nyxctl text 0 \"$(date +%H:%M) checkpoint\""
+# 211 = "playerctl --player spotify play-pause"   # always this player, not the one shown
 
 # Text shown on the bar display at start-up (slots 0..3); change it with `nyxctl text`.
 [text]
