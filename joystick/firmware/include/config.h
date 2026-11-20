@@ -33,7 +33,7 @@ constexpr uint32_t JOY_PERIOD_MS = 8;
 //  5V from VBUS (pin 40) through a 1N4001 diode, so 3.3 V data is a valid "high".
 constexpr uint8_t LED_PIN = 28;
 constexpr uint8_t LED_COUNT = 16;            // 0 = no LED sticks fitted
-constexpr uint8_t LED_MAX_BRIGHTNESS = 160;  // cap on top of the display brightness (DIM-/DIM+)
+constexpr uint8_t LED_MAX_BRIGHTNESS = 89;   // 35 % of 255: the cap at LED level 8, on top of DIM-/DIM+
 constexpr uint16_t LED_BUDGET_MA = 250;      // hard limit for the sticks; USB 2.0 gives 500 mA in total
 
 // ---- main display: 1.9" 170x320 ST7789 on SPI0 ---------------------------------

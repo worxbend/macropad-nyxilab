@@ -12,13 +12,23 @@
 //   0x02 METRICS cpu, cores, memory, ...   0x82 KEY        HOST(id) pressed / released
 //   0x03 TEXT    slot, text                0x83 STATE      host view shown, base + top layer
 //   0x04 BYE     the daemon is stopping
+//   0x05 WORKSPACES   sway: workspaces 1-8, focused window
+//   0x06 PLAYER       MPRIS: status, volume, position, player name
+//   0x07 PLAYER_TEXT  field (title / artist / album), text
+//
+//   WORKSPACES  [2] running  [3] focused 1..8 (0 other/none)  [4] open  [5] visible  [6] urgent
+//               (masks: bit n-1 = workspace n)  [7] windows  [8] SwayLayout  [9..20] app_id  [21..60] title
+//   PLAYER      [2] present  [3] PlayerStatus  [4] volume % (255 unknown)  [5..6] position s
+//               [7..8] length s (0 unknown)  [9..24] player name
+//   PLAYER_TEXT [2] PlayerField  [3..62] text
+//   Strings are printable ASCII, NUL-padded.  running / present = 0: the rest is ignored.
 //
 // The device treats the host as connected while packets keep arriving
 // (HOST_TIMEOUT_MS); the daemon sends METRICS every second.  If the link comes
 // back without a HELLO (it timed out, e.g. while the computer slept), the device
 // sends an unrequested HELLO_ACK and the daemon replays HELLO and its text.
-// Packets of another protocol version are ignored.  docs/host-bridge.md has the
-// byte layouts.
+// Packets of another protocol version or an unknown type are ignored.
+// docs/host-bridge.md has the byte layouts.
 #pragma once
 #include <stdint.h>
 
@@ -34,6 +44,9 @@ enum HostPacket : uint8_t {
   PKT_METRICS = 0x02,
   PKT_TEXT = 0x03,
   PKT_BYE = 0x04,
+  PKT_WORKSPACES = 0x05,
+  PKT_PLAYER = 0x06,
+  PKT_PLAYER_TEXT = 0x07,
   PKT_HELLO_ACK = 0x81,
   PKT_KEY = 0x82,
   PKT_STATE = 0x83,
@@ -46,6 +59,15 @@ constexpr uint8_t HOST_TEXT_SLOTS = 4;
 constexpr uint8_t HOST_TEXT_LEN = 60;       // printable ASCII; the daemon transliterates
 constexpr uint8_t HOST_HOSTNAME_LEN = 31;
 constexpr uint8_t HOST_HISTORY = 36;        // one sample per METRICS packet (~1 s)
+constexpr uint8_t HOST_WORKSPACES = 8;      // sway workspaces 1..8: the HOST layer's right block
+constexpr uint8_t HOST_APP_ID_LEN = 12;     // the focused window's app_id (XWayland: its class)
+constexpr uint8_t HOST_TITLE_LEN = 40;      // the focused window's title
+constexpr uint8_t HOST_PLAYER_NAME_LEN = 16;
+constexpr uint8_t HOST_MEDIA_LEN = 60;      // a track's title, artist or album
+
+enum SwayLayout : uint8_t { SWAY_UNKNOWN, SWAY_SPLITH, SWAY_SPLITV, SWAY_TABBED, SWAY_STACKED };
+enum PlayerStatus : uint8_t { PLAYER_STOPPED, PLAYER_PLAYING, PLAYER_PAUSED };
+enum PlayerField : uint8_t { PLAYER_TITLE, PLAYER_ARTIST, PLAYER_ALBUM };
 
 struct HostMetrics {
   uint8_t cpu_pct = HOST_UNKNOWN;
@@ -67,6 +89,29 @@ struct HostMetrics {
   }
 };
 
+// The window manager's state (sway), from WORKSPACES packets.  Bit n-1 of a mask = workspace n.
+struct HostSway {
+  bool running = false;  // the daemon talks to a running sway
+  uint8_t focused = 0;   // 1..8; 0 = a workspace outside 1..8, or none
+  uint8_t open = 0;      // workspaces that exist (windows on them, or shown)
+  uint8_t visible = 0;   // shown on a monitor
+  uint8_t urgent = 0;
+  uint8_t windows = 0;   // on the focused workspace, tiling + floating
+  uint8_t layout = SWAY_UNKNOWN;
+  char app_id[HOST_APP_ID_LEN + 1] = {};
+  char title[HOST_TITLE_LEN + 1] = {};
+};
+
+// The media player (MPRIS through playerctl), from PLAYER and PLAYER_TEXT packets.
+struct HostPlayer {
+  bool present = false;  // the daemon sees a media player
+  uint8_t status = PLAYER_STOPPED;
+  uint8_t volume = HOST_UNKNOWN;  // 0..100 %
+  uint16_t position_s = 0, length_s = 0;  // length 0 = unknown
+  char name[HOST_PLAYER_NAME_LEN + 1] = {};
+  char title[HOST_MEDIA_LEN + 1] = {}, artist[HOST_MEDIA_LEN + 1] = {}, album[HOST_MEDIA_LEN + 1] = {};
+};
+
 // Everything the displays need, copied into the UI snapshot.
 struct HostData {
   bool linked = false;       // a daemon is talking to us
@@ -76,6 +121,8 @@ struct HostData {
   char text[HOST_TEXT_SLOTS][HOST_TEXT_LEN + 1] = {};
   uint8_t cpu_hist[HOST_HISTORY] = {};  // oldest first
   uint8_t mem_hist[HOST_HISTORY] = {};
+  HostSway sway;
+  HostPlayer player;
 };
 
 class HostProto {
@@ -101,6 +148,9 @@ class HostProto {
 
  private:
   void reset_data();
+  void on_workspaces(const uint8_t* p);
+  void on_player(const uint8_t* p);
+  bool on_player_text(const uint8_t* p);
   void link();  // queue HELLO_ACK and a state report
   void push(const uint8_t (&pkt)[HOST_PACKET]);
 

@@ -38,9 +38,10 @@ void JoystickCentre::begin(mp::Engine& engine, uint8_t* saved) {
 
 JoyMode JoystickCentre::mode() const {
   const auto& st = hw::settings();
-  const uint8_t base = engine_->base_layer(), top = engine_->top_layer();
+  const uint8_t top = engine_->top_layer();
+  const uint8_t base = mp::layer_group(engine_->base_layer());  // the pages of a layer share its mode
   const JoyMode top_mode = mp::LAYERS[top].centre.joy;
-  if (top_mode != JoyMode::Inherit && top != base) return top_mode;
+  if (top_mode != JoyMode::Inherit && top != engine_->base_layer()) return top_mode;
   const uint8_t user = st.centre_modes[base];
   if (user < uint8_t(JoyMode::Count)) return JoyMode(user);
   const JoyMode def = mp::LAYERS[base].centre.joy;
@@ -49,7 +50,7 @@ JoyMode JoystickCentre::mode() const {
 
 void JoystickCentre::on_mode(uint8_t mode_arg, uint32_t now) {
   auto& st = hw::settings();
-  const uint8_t base = engine_->base_layer();
+  const uint8_t base = mp::layer_group(engine_->base_layer());
   if (mode_arg == uint8_t(JoyMode::Cycle)) {
     st.centre_modes[base] = uint8_t((uint8_t(mode()) + 1) % uint8_t(JoyMode::Count));
   } else if (mode_arg < uint8_t(JoyMode::Count)) {

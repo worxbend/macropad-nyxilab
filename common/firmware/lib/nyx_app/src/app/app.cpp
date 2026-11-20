@@ -38,7 +38,7 @@ bool g_hit_seen = false;
 
 // host bridge (see core/host_proto.h and docs/host-bridge.md)
 mp::HostProto g_link;
-uint32_t g_host_layers = 0;  // layers with View::Host: left out of LayerNext while no daemon is connected
+uint32_t g_host_layers = 0;  // layers with a host view: left out of LayerNext while no daemon is connected
 uint8_t g_tx[mp::HOST_PACKET];
 bool g_tx_pending = false;
 uint8_t g_reported[3] = {0xFF, 0xFF, 0xFF};  // last STATE sent: host view, base, top
@@ -47,6 +47,10 @@ void Host::on_sys(mp::SysCmd cmd) {
   auto& st = hw::settings();
   const uint32_t now = millis();
   if (g_centre && g_centre->on_sys(cmd, now)) return;
+  if (hw::settings_apply(st, cmd)) {  // themes, LED colour and level
+    hw::settings_touch(now);
+    return;
+  }
   switch (cmd) {
     case mp::SYS_BOOTLOADER:
       hw::settings_flush();  // a change made in the last 3 s survives the reboot
@@ -87,7 +91,7 @@ void Host::on_centre(uint8_t mode) {
 void Host::on_host(uint8_t id, bool pressed) { g_link.send_key(id, pressed); }
 
 // ------------------------------------------------------------- host bridge
-bool host_view() { return mp::LAYERS[g_engine.top_layer()].view == mp::View::Host; }
+bool host_view() { return mp::is_host_view(mp::LAYERS[g_engine.top_layer()].view); }
 
 void host_task(uint32_t now) {
   if (!cfg::HOST_LINK) return;
@@ -156,6 +160,10 @@ void publish_ui(uint32_t now) {
     for (uint8_t c = 0; c < mp::COLS; c++) u.keys_down[r][c] = g_engine.key_down(r, c);
   if (g_centre) g_centre->fill_ui(u);
   u.led_mode = st.led_mode;
+  u.led_color = hw::saved_led_color(st);
+  u.led_level = hw::saved_led_level(st);
+  u.main_theme = hw::saved_main_theme(st);
+  u.bar_theme = hw::saved_bar_theme(st);
   u.last_hit_ms = g_last_hit_ms;
   u.hit_seen = g_hit_seen;
   u.usb_mounted = hw::usb_mounted();
@@ -209,8 +217,7 @@ void begin(Centre& centre) {
   centre.begin(g_engine, st.centre);
   g_engine.set_base_layer(st.base_layer < mp::NUM_LAYERS ? st.base_layer : 0);
   g_saved_base = g_engine.base_layer();
-  for (uint8_t l = 0; l < mp::NUM_LAYERS; l++)
-    if (mp::LAYERS[l].view == mp::View::Host) g_host_layers |= 1u << l;
+  g_host_layers = mp::host_layer_mask();
   g_engine.set_skip_layers(g_host_layers);  // until a daemon connects
   if (cfg::HOST_LINK) {
     g_link.set_identity(cfg::SETTINGS_EDITION, mp::NUM_LAYERS, cfg::USB_PRODUCT_NAME);

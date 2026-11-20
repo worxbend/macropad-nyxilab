@@ -58,6 +58,29 @@ const char* led_mode_name(LedMode m) {
   }
 }
 
+namespace {
+struct LedColor {
+  uint16_t c565;
+  const char* name;
+};
+// Saturated colours: they read best as light.  [0] stands for the layer colour.
+constexpr LedColor kLedColors[LED_COLOR_COUNT] = {
+    {0x0000, "LAYER"}, {0xFFFF, "WHITE"},  {0xF800, "RED"},  {0x07E0, "GREEN"},
+    {0x001F, "BLUE"},  {0x801F, "PURPLE"}, {0x07FF, "CYAN"}, {0xFD00, "AMBER"},  // 128,0,255 / 255,160,0
+};
+}  // namespace
+
+uint16_t led_color565(uint8_t index, uint16_t layer_color) {
+  return index > 0 && index < LED_COLOR_COUNT ? kLedColors[index].c565 : layer_color;
+}
+
+const char* led_color_name(uint8_t index) { return kLedColors[index < LED_COLOR_COUNT ? index : 0].name; }
+
+uint8_t led_level_cap(uint8_t max_level, uint8_t level) {
+  if (level < 1 || level > LED_LEVELS) level = LED_LEVELS;
+  return uint8_t(uint16_t(max_level) * level / LED_LEVELS);
+}
+
 void led_frame(const LedInput& in, uint32_t now, Rgb* out, uint8_t n) {
   // effect intensity 0..255, then a gamma-2 curve so fades look even to the eye
   uint8_t k = 0;

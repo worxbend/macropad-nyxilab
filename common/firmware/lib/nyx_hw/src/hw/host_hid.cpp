@@ -23,8 +23,11 @@ uint8_t const kReportDesc[] = {
 Adafruit_USBD_HID g_vendor;
 
 // Packets arrive in TinyUSB's task, a software interrupt on core 0: a
-// single-producer / single-consumer ring between it and the main loop.
-constexpr uint8_t kSlots = 4;
+// single-producer / single-consumer ring between it and the main loop.  A session
+// start sends about a dozen packets at once (HELLO, TEXT, WORKSPACES, PLAYER,
+// PLAYER_TEXT, METRICS) and the loop can be paused for a moment by a flash save:
+// 16 slots (15 usable, 1 KiB) hold them all.
+constexpr uint8_t kSlots = 16;
 uint8_t g_rx[kSlots][mp::HOST_PACKET];
 uint16_t g_rx_len[kSlots];
 std::atomic<uint8_t> g_rx_head{0}, g_rx_tail{0};
@@ -34,7 +37,9 @@ void on_set_report(uint8_t report_id, hid_report_type_t type, uint8_t const* buf
   (void)type;  // OUT endpoint data and SET_REPORT both carry a packet
   const uint8_t head = g_rx_head.load(std::memory_order_relaxed);
   const uint8_t next = uint8_t((head + 1) % kSlots);
-  if (next == g_rx_tail.load(std::memory_order_acquire) || !len) return;  // full: the daemon resends every second
+  // Full: drop it.  METRICS (and PLAYER while playing) repeat every second; a dropped TEXT, WORKSPACES
+  // or PLAYER_TEXT stays wrong until its next change.
+  if (next == g_rx_tail.load(std::memory_order_acquire) || !len) return;
   const uint16_t n = len < mp::HOST_PACKET ? len : mp::HOST_PACKET;
   memcpy(g_rx[head], buf, n);
   g_rx_len[head] = n;

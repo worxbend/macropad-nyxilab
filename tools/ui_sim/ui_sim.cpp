@@ -27,9 +27,9 @@ static void save_ppm(GFXcanvas16& c, const char* path) {
 static void save_leds(const UiState& s, uint32_t since_hit, const char* path) {
   mp::LedInput in;
   in.mode = mp::LedMode(s.led_mode);
-  in.color565 = mp::LAYERS[s.top_layer].color;
+  in.color565 = mp::led_color565(s.led_color, mp::LAYERS[s.top_layer].color);
   in.level = s.usb_suspended ? 0 : s.brightness;  // the firmware blanks everything while the host sleeps
-  in.max_level = cfg::LED_MAX_BRIGHTNESS;
+  in.max_level = mp::led_level_cap(cfg::LED_MAX_BRIGHTNESS, s.led_level);
   in.budget_ma = cfg::LED_BUDGET_MA;
   in.since_hit_ms = since_hit;
   mp::Rgb px[cfg::LED_COUNT];
@@ -58,11 +58,13 @@ void set_layer(UiState& s, uint8_t base, uint8_t top) {
   s.view = uint8_t(mp::LAYERS[top].view);
 }
 
-uint8_t host_layer() {
+uint8_t view_layer(mp::View v) {
   for (uint8_t l = 0; l < mp::NUM_LAYERS; l++)
-    if (mp::LAYERS[l].view == mp::View::Host) return l;
+    if (mp::LAYERS[l].view == v) return l;
   return 0;
 }
+
+uint8_t host_layer() { return view_layer(mp::View::Host); }
 
 void host_demo(UiState& s) {
   mp::HostData& d = s.host;
@@ -92,6 +94,32 @@ void host_demo(UiState& s) {
   }
   strcpy(d.text[0], "build #482 passed");
   strcpy(d.text[1], "3 unread mails");
+}
+
+void sway_demo(UiState& s) {
+  mp::HostSway& w = s.host.sway;
+  w.running = true;
+  w.focused = 3;
+  w.open = 0b01010111;     // 1 2 3 5 7
+  w.visible = 0b00010100;  // 3 here, 5 on the second monitor
+  w.urgent = 0b01000000;   // 7
+  w.windows = 4;
+  w.layout = mp::SWAY_TABBED;
+  strcpy(w.app_id, "firefox");
+  strcpy(w.title, "Pull request #96 - nyxd: sway pages");
+}
+
+void player_demo(UiState& s) {
+  mp::HostPlayer& p = s.host.player;
+  p.present = true;
+  p.status = mp::PLAYER_PLAYING;
+  p.volume = 64;
+  p.position_s = 83;
+  p.length_s = 296;
+  strcpy(p.name, "spotify");
+  strcpy(p.title, "Bohemian Rhapsody - Remastered 2011 (Live at Wembley Stadium)");
+  strcpy(p.artist, "Queen");
+  strcpy(p.album, "A Night at the Opera (2011 Remaster, Deluxe Edition)");
 }
 
 void scene(const char* name, const UiState& s, const char* outdir, uint32_t since_hit) {

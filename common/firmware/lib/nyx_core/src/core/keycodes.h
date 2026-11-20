@@ -16,7 +16,7 @@ enum class ActType : uint8_t {
   LayerMo,      // momentary layer while held
   LayerTg,      // toggle layer
   LayerTo,      // set base layer
-  LayerNext,    // cycle base layer (skips the FN layer)
+  LayerNext,    // cycle base layer (skips FN, further pages and off_cycle layers)
   TapHold,      // arg = index into TAP_HOLDS
   Macro,        // arg = index into MACROS
   Sys,          // arg = SysCmd
@@ -34,6 +34,13 @@ enum SysCmd : uint8_t {
   SYS_DISPLAYS_TOGGLE,
   SYS_ENC_REVERSE,  // rotary edition: flip the knob direction (saved)
   SYS_LED_MODE,     // next RGB LED effect (layer colour / breathe / rainbow / off, saved)
+  // the looks (CONFIG layer), all saved
+  SYS_MAIN_THEME,   // next theme of the main display (wraps)
+  SYS_BAR_THEME,    // next theme of the bar display (wraps)
+  SYS_LED_COLOR,    // next LED colour (wraps)
+  SYS_LED_UP,       // LED level +1, up to 8
+  SYS_LED_DOWN,     // LED level -1, down to 1
+  SYS_THEME_RESET,  // both themes, the LED colour and level back to the defaults
 };
 
 // Joystick edition: what the stick does.  Inherit = the layer below / the saved choice.

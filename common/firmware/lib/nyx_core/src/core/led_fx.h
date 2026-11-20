@@ -53,4 +53,15 @@ Rgb rgb565_to_rgb(uint16_t c);
 Rgb hsv(uint16_t hue, uint8_t sat, uint8_t val);  // hue 0..1535 (6 x 256)
 const char* led_mode_name(LedMode m);
 
+// LED colour presets (Settings.led_color): 0 = the top layer's accent, then fixed colours.  The choice replaces
+// the layer colour in the Layer and Breathe modes; Rainbow and the boot sequence ignore it.
+constexpr uint8_t LED_COLOR_COUNT = 8;
+uint16_t led_color565(uint8_t index, uint16_t layer_color);  // an index past the table = the layer colour
+const char* led_color_name(uint8_t index);                     // LAYER, WHITE, RED, ...
+
+// LED level (Settings.led_level) 1..LED_LEVELS scales the brightness cap linearly; level LED_LEVELS = the
+// whole cap.  A level outside 1..LED_LEVELS counts as LED_LEVELS.
+constexpr uint8_t LED_LEVELS = 8;
+uint8_t led_level_cap(uint8_t max_level, uint8_t level);
+
 }  // namespace mp

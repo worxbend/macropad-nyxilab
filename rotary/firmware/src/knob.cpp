@@ -28,7 +28,7 @@ void KnobCentre::begin(mp::Engine& engine, uint8_t* saved) {
 }
 
 void KnobCentre::on_mode(uint8_t mode, uint32_t now) {
-  const uint8_t base = engine_->base_layer();
+  const uint8_t base = mp::layer_group(engine_->base_layer());  // the pages of a layer share its preset
   if (mode == mp::ENC_CYCLE)
     engine_->cycle_enc_preset(base);
   else
@@ -101,6 +101,11 @@ void KnobCentre::info() {
 }
 
 bool KnobCentre::console(const char* line) {
+  if (!strcmp(line, "knob default")) {  // undo FN + KNOB on this layer: its own keymap binding again
+    on_mode(mp::ENC_LAYER_DEFAULT, millis());
+    Serial.printf("knob %s\n", engine_->encoder_binding().label);
+    return true;
+  }
   if (strcmp(line, "enc") != 0) return false;
   diagnostics_ = true;
   diagnostics_start_ = millis();

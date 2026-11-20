@@ -36,9 +36,9 @@ void leds_task(uint32_t now, const UiState& s) {
   mp::LedInput in;
   in.since_boot_ms = now - g_boot_ms;
   in.mode = mp::LedMode(s.led_mode < uint8_t(mp::LedMode::Count) ? s.led_mode : 0);
-  in.color565 = mp::LAYERS[s.top_layer].color;
+  in.color565 = mp::led_color565(s.led_color, mp::LAYERS[s.top_layer].color);
   in.level = s.brightness;  // follows the backlight: dims when idle, off while the host sleeps
-  in.max_level = cfg::LED_MAX_BRIGHTNESS;
+  in.max_level = mp::led_level_cap(cfg::LED_MAX_BRIGHTNESS, s.led_level);
   in.budget_ma = cfg::LED_BUDGET_MA;
   if (s.hit_seen) in.since_hit_ms = now - s.last_hit_ms;
   mp::Rgb px[cfg::LED_COUNT ? cfg::LED_COUNT : 1];

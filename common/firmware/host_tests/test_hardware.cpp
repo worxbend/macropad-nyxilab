@@ -1,5 +1,7 @@
 // Compile production hardware/control code against narrow Arduino/USB/EEPROM mocks.
+#include <algorithm>
 #include <cassert>
+#include <cmath>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -9,12 +11,15 @@
 #include "app/console_line.h"
 #include "config.h"
 #include "core/host_proto.h"
+#include "core/led_fx.h"
+#include "core/themes.h"
 #include "hw/host_hid.h"
 #include "hw/matrix.h"
 #include "hw/settings.h"
 #include "hw/usb_hid.h"
 #include "ui/dirty_tiles.h"
 #include "ui/host_fmt.h"
+#include "ui/theme.h"
 #ifdef TEST_JOYSTICK
 #include "stick.h"
 using Centre = JoystickCentre;
@@ -382,11 +387,15 @@ static void test_settings_isolate_editions() {
   const unsigned commits = EEPROM.commits;
   hw::settings_load();
   assert(EEPROM.commits == commits);
-  saved.version = 5;
+  saved.version = 6;  // before the HOST pages: centre_modes had 8 entries
   EEPROM.put(0, saved);
   EEPROM.commit();
+  const unsigned before_reset = EEPROM.commits;
   hw::settings_load();
   assert(hw::settings().brightness == cfg::BRIGHTNESS_DEFAULT);
+  assert(EEPROM.commits == before_reset + 1);
+  hw::settings_load();  // reset once, then the new version is kept
+  assert(EEPROM.commits == before_reset + 1);
 }
 
 static void test_diagnostics_do_not_block_input() {
@@ -663,6 +672,40 @@ static void test_keymap_fn_keys_reach_the_knob() {
   expected.insert(expected.end(), steps, ccw);
   expected.push_back(mp::SYS_DISPLAYS_TOGGLE);
   assert(host.sys == expected);
+}
+
+static void test_console_puts_the_knob_back_on_the_layer_binding() {
+  for (int& pin : mock_pins) pin = 1;
+  hw::settings_load();
+  Host host;
+  mp::Engine engine(host);
+  Centre centre;
+  centre.begin(engine, hw::settings().centre);
+  centre.on_mode(1, 100);  // SCROLL, as FN + KNOB leaves it saved for MEDIA
+  assert(strcmp(engine.encoder_binding().label, "SCROLL") == 0);
+  Serial.space = 128;
+  Serial.output.clear();
+  mock_now = 200;
+  assert(centre.console("knob default"));
+  assert(strcmp(engine.encoder_binding().label, "VOLUME") == 0);
+  assert(hw::settings().centre_modes[0] == mp::ENC_LAYER_DEFAULT);  // saved like FN + KNOB
+  assert(Serial.output == "knob VOLUME\n");
+  ui::UiState u;
+  centre.fill_ui(u);
+  assert(strcmp(u.enc_label, "VOLUME") == 0);  // and the displays name it
+  const unsigned commits = EEPROM.commits;
+  hw::settings_task(3201);
+  assert(EEPROM.commits == commits + 1);
+  assert(!centre.console("knob"));  // only the exact command
+  engine.set_base_layer(3);         // F9-16, the second page of F1-8 (layer 2)
+  assert(mp::layer_group(3) == 2);
+  centre.on_mode(mp::ENC_CYCLE, 3300);
+  assert(hw::settings().centre_modes[2] != mp::ENC_LAYER_DEFAULT);  // saved for the F-keys layer
+  assert(hw::settings().centre_modes[3] == mp::ENC_LAYER_DEFAULT);  // not for the page
+  engine.set_base_layer(2);
+  assert(engine.encoder_binding().label == engine.base_encoder_binding().label);
+  centre.on_mode(mp::ENC_LAYER_DEFAULT, 3400);
+  hw::settings_task(6401);
 }
 
 static void test_fn_knob_names_the_pick_while_fn_is_held() {
@@ -961,6 +1004,66 @@ static void test_host_dashboard_text_formats() {
   assert(std::string(host) == "ip-172-31-22-143.ec2.i");
   ui::fmt_header_host(host, "workstation");
   assert(std::string(host) == "workstation");
+  ui::fmt_header_host(host, "workstation", 4);  // a long layer name leaves less room
+  assert(std::string(host) == "work");
+
+  // SWAY page
+  assert(std::string(ui::sway_layout_name(mp::SWAY_SPLITH)) == "splith");
+  assert(std::string(ui::sway_layout_name(mp::SWAY_STACKED)) == "stacked");
+  assert(std::string(ui::sway_layout_name(mp::SWAY_UNKNOWN)).empty() && std::string(ui::sway_layout_name(9)).empty());
+  const auto windows = [&](uint8_t n) { return ui::fmt_windows(buf, sizeof buf, n), std::string(buf); };
+  assert(windows(0) == "0 windows" && windows(1) == "1 window" && windows(255) == "255 windows");
+
+  // a focused window title in 34 columns, at most 3 lines, the last cut with an ellipsis
+  char lines[3][ui::WRAP_MAX_COLS + 1];
+  assert(ui::wrap_lines("short title", 34, 3, lines) == 1 && std::string(lines[0]) == "short title");
+  assert(ui::wrap_lines("", 34, 3, lines) == 0);
+  assert(ui::wrap_lines("one two three", 8, 3, lines) == 2);
+  assert(std::string(lines[0]) == "one two" && std::string(lines[1]) == "three");
+  const std::string long_title(40, 'x');  // HOST_TITLE_LEN with no space
+  assert(ui::wrap_lines(long_title.c_str(), 12, 3, lines) == 3);
+  assert(std::string(lines[0]) == "xxxxxxxxxxxx" && std::string(lines[2]) == "xxxxxxxxx...");  // 4 left over
+  assert(ui::wrap_lines((long_title + "yyyyyyyy").c_str(), 16, 3, lines) == 3);
+  assert(std::string(lines[2]) == "xxxxxxxxyyyyyyyy");  // exactly 3 * 16: nothing to cut
+  assert(ui::wrap_lines((long_title + "yyyyyyyyyy").c_str(), 16, 3, lines) == 3);
+  assert(std::string(lines[2]) == "xxxxxxxxyyyyy...");
+  assert(ui::wrap_lines("aaaa bbbb cccc dddd", 5, 2, lines) == 2 && std::string(lines[1]) == "bb...");
+
+  // PLAYER page: position / length
+  const auto progress = [&](uint16_t pos, uint16_t len) {
+    char p[24];  // the buffer in render.cpp
+    return ui::fmt_progress(p, sizeof p, pos, len), std::string(p);
+  };
+  assert(progress(0, 0) == "0:00" && progress(83, 0) == "1:23");  // no length: the position only
+  assert(progress(83, 296) == "1:23 / 4:56" && progress(5, 3599) == "0:05 / 59:59");
+  assert(progress(5, 3600) == "0:00:05 / 1:00:00");  // an hour or more: h:mm:ss on both sides
+  assert(progress(4000, 0) == "1:06:40");
+  assert(progress(65535, 65535) == "18:12:15 / 18:12:15");
+
+  // the largest prefix that fits a width, with an ellipsis
+  const auto width6 = [](const char* s) { return 6 * int(strlen(s)); };
+  char fit[24];
+  ui::fit_width(fit, sizeof fit, "Bohemian Rhapsody", 120, width6);
+  assert(std::string(fit) == "Bohemian Rhapsody");  // 102 px fits
+  ui::fit_width(fit, sizeof fit, "Bohemian Rhapsody", 66, width6);
+  assert(std::string(fit) == "Bohemian...");  // the space before the cut goes too
+  ui::fit_width(fit, sizeof fit, std::string(60, 'w').c_str(), 600, width6);
+  assert(std::string(fit) == std::string(20, 'w') + "...");  // the buffer is the limit
+  ui::fit_width(fit, sizeof fit, "abc", 0, width6);
+  assert(std::string(fit) == "...");
+
+  // the bar display's page legend
+  char page[16];
+  uint8_t sys = 0, player = 0;
+  for (uint8_t l = 0; l < mp::NUM_LAYERS; l++) {
+    if (mp::LAYERS[l].view == mp::View::Host) sys = l;
+    if (mp::LAYERS[l].view == mp::View::Player) player = l;
+  }
+  ui::fmt_host_page(page, sizeof page, sys);
+  assert(std::string(page) == "1/3 SYS");
+  ui::fmt_host_page(page, sizeof page, player);
+  assert(std::string(page) == "3/3 PLAY");
+  assert(ui::host_page(player).index == 2 && ui::host_page(player).count == 3);
 }
 
 static void test_console_takes_one_line_per_line_end() {
@@ -1008,13 +1111,195 @@ static void test_host_link_round_trip() {
   assert(!hw::host_hid_write(out));  // nothing is sent to a sleeping host
   TinyUSBDevice.asleep = false;
 
-  for (int i = 0; i < 6; ++i) vendor->set_report(0, HID_REPORT_TYPE_OUTPUT, pkt, 8);  // short packets, ring full
-  int n = 0;
+  // a session start (HELLO, TEXT, WORKSPACES, PLAYER, PLAYER_TEXT, METRICS) while the main loop is busy
+  for (uint8_t i = 0; i < 16; ++i) {
+    pkt[1] = i;
+    vendor->set_report(0, HID_REPORT_TYPE_OUTPUT, pkt, 8);  // short packets
+  }
+  uint8_t n = 0;
   while (hw::host_hid_read(in, len)) {
-    assert(len == 8);
+    assert(len == 8 && in[1] == n);  // in order
     ++n;
   }
-  assert(n == 3);  // a full ring drops packets instead of overwriting one being read
+  assert(n == 15);  // the 16th is dropped: a full ring never overwrites one being read
+}
+
+static uint8_t layer_named(const char* name) {
+  for (uint8_t l = 0; l < mp::NUM_LAYERS; ++l)
+    if (strcmp(mp::LAYERS[l].name, name) == 0) return l;
+  assert(false && "no such layer");
+  return 0xFF;
+}
+
+struct HostKeys : Host {
+  std::vector<uint8_t> pressed;
+  void on_host(uint8_t id, bool down) override {
+    if (down) pressed.push_back(id);
+  }
+};
+
+static void tap_key(mp::Engine& engine, uint8_t row, uint8_t col, uint32_t& now) {
+  engine.process({row, col, true, now});
+  engine.tick(now += 10);
+  engine.process({row, col, false, now});
+  engine.tick(now += 10);
+}
+
+static void test_host_pages_share_the_left_column() {
+  const uint8_t sys = layer_named("HOST"), sway = layer_named("SWAY"), player = layer_named("PLAYER");
+  const uint8_t pages[3] = {sys, sway, player};
+  assert(sway == sys + 1 && player == sys + 2 && player + 2 == mp::FN_LAYER);
+  assert(mp::LAYERS[sys].view == mp::View::Host && mp::LAYERS[sys].page_of == mp::NOT_A_PAGE);
+  assert(mp::LAYERS[sway].view == mp::View::Sway && mp::LAYERS[sway].page_of == sys);
+  assert(mp::LAYERS[player].view == mp::View::Player && mp::LAYERS[player].page_of == sys);
+  assert(mp::host_layer_mask() == (1u << sys | 1u << sway | 1u << player));
+
+  const char* const play_labels[8] = {"PLAY", "NEXT", "PREV", "STOP", "-10s", "+10s", "VOL-", "VOL+"};
+  const uint8_t first_id[3] = {0, 200, 210};
+  HostKeys host;
+  mp::Engine engine(host);
+  uint32_t now = 1000;
+  for (uint8_t p = 0; p < 3; ++p) {
+    const mp::Layer& layer = mp::LAYERS[pages[p]];
+    assert(layer.color == mp::LAYERS[sys].color);
+#ifdef TEST_JOYSTICK
+    assert(layer.centre.joy == mp::JoyMode::Mouse);
+#else
+    assert(strcmp(layer.centre.knob.label, "VOLUME") == 0);
+#endif
+    assert(layer.keys[3][0].action == mp::TH(0) && strcmp(layer.keys[3][0].label, "LAYER") == 0);
+    assert(strcmp(layer.keys[2][0].label, "SYS") == 0);
+    assert(strcmp(layer.keys[1][0].label, "SWAY") == 0);
+    assert(strcmp(layer.keys[0][0].label, "PLAY") == 0);
+    for (uint8_t to = 0; to < 3; ++to) {  // back row = PLAY: page 3 at the top, page 1 nearest the LAYER key
+      engine.set_base_layer(pages[p]);
+      tap_key(engine, uint8_t(2 - to), 0, now);
+      assert(engine.base_layer() == pages[to]);
+    }
+    host.pressed.clear();
+    engine.set_base_layer(pages[p]);
+    for (uint8_t n = 1; n <= 8; ++n) {  // numbered from the front row up, left to right
+      const uint8_t row = uint8_t(3 - (n - 1) / 2), col = uint8_t(1 + (n - 1) % 2);
+      const mp::KeyDef& key = layer.keys[row][col];
+      assert(key.action == mp::HOST(uint8_t(first_id[p] + n)));
+      if (p == 0) assert(std::string(key.label) == "H" + std::to_string(n));
+      if (p == 1) assert(std::string(key.label) == std::to_string(n));
+      if (p == 2) assert(strcmp(key.label, play_labels[n - 1]) == 0);
+      tap_key(engine, row, col, now);
+    }
+    assert(host.pressed.size() == 8 && host.pressed[7] == first_id[p] + 8);
+    tap_key(engine, 3, 0, now);  // LAYER: past the pages and FN, back to the first layer
+    assert(engine.base_layer() == 0 && !mp::is_host_view(mp::LAYERS[0].view));
+  }
+
+  const uint8_t fkeys = layer_named("F1-8");
+  engine.set_base_layer(fkeys);
+  tap_key(engine, 3, 0, now);
+  assert(engine.base_layer() == sys);  // linked: LAYER reaches the HOST pages
+  engine.set_skip_layers(mp::host_layer_mask());  // what the app sets while no daemon is linked
+  engine.set_base_layer(fkeys);
+  tap_key(engine, 3, 0, now);
+  assert(engine.base_layer() == 0);
+}
+
+static void test_config_layer_keys_and_way_in() {
+  const uint8_t cfg = layer_named("CONFIG");
+  assert(cfg == layer_named("PLAYER") + 1 && cfg + 1 == mp::FN_LAYER);
+  const mp::Layer& layer = mp::LAYERS[cfg];
+  assert(layer.view == mp::View::Config && !mp::is_host_view(layer.view));
+  assert(layer.off_cycle && layer.page_of == mp::NOT_A_PAGE && !mp::in_layer_cycle(cfg));
+  assert(layer.color == 0x9517);  // rgb565(148, 163, 184)
+  struct Want {
+    mp::Action action;
+    const char* label;
+  };
+  const Want want[mp::ROWS][mp::COLS] = {
+      {{mp::TO(0), "BACK"}, {mp::SYS(mp::SYS_MAIN_THEME), "MAIN"}, {mp::SYS(mp::SYS_BAR_THEME), "BAR"}},
+      {{mp::SYS(mp::SYS_THEME_RESET), "RESET"}, {mp::SYS(mp::SYS_LED_COLOR), "LEDCOL"}, {mp::SYS(mp::SYS_LED_MODE), "LEDFX"}},
+      {{mp::SYS(mp::SYS_DISPLAYS_TOGGLE), "SCRN"}, {mp::SYS(mp::SYS_LED_DOWN), "LED-"}, {mp::SYS(mp::SYS_LED_UP), "LED+"}},
+      {{mp::TH(0), "LAYER"}, {mp::SYS(mp::SYS_BRIGHT_DOWN), "DIM-"}, {mp::SYS(mp::SYS_BRIGHT_UP), "DIM+"}},
+  };
+  for (uint8_t r = 0; r < mp::ROWS; ++r)
+    for (uint8_t c = 0; c < mp::COLS; ++c)
+      assert(layer.keys[r][c].action == want[r][c].action && strcmp(layer.keys[r][c].label, want[r][c].label) == 0);
+#ifdef TEST_JOYSTICK
+  assert(layer.centre.joy == mp::JoyMode::Mouse);
+#else
+  const mp::EncoderDef& knob = layer.centre.knob;
+  assert(knob.cw == mp::SYS(mp::SYS_BRIGHT_UP) && knob.ccw == mp::SYS(mp::SYS_BRIGHT_DOWN));
+  assert(knob.press == mp::SYS(mp::SYS_DISPLAYS_TOGGLE) && strcmp(knob.label, "BRIGHT") == 0);
+#endif
+  const mp::KeyDef& way_in = mp::LAYERS[mp::FN_LAYER].keys[3][1];
+  assert(way_in.action == mp::TO(cfg) && strcmp(way_in.label, "CFG") == 0);
+  assert(mp::NUM_MACROS == 1);  // HELLO stays defined
+
+  Host host;
+  mp::Engine engine(host);
+  uint32_t now = 1000;
+  engine.set_base_layer(0);
+  engine.process({3, 0, true, now});  // hold LAYER: FN
+  engine.tick(now += 300);
+  assert(engine.top_layer() == mp::FN_LAYER);
+  tap_key(engine, 3, 1, now);  // CFG
+  engine.process({3, 0, false, now});
+  engine.tick(now += 10);
+  assert(engine.base_layer() == cfg && engine.top_layer() == cfg);
+  tap_key(engine, 3, 0, now);  // LAYER: on past FN to the first layer
+  assert(engine.base_layer() == 0);
+  engine.set_base_layer(layer_named("PLAYER"));
+  tap_key(engine, 3, 0, now);
+  assert(engine.base_layer() == 0);  // the cycle never lands on CONFIG
+  engine.set_base_layer(cfg);
+  tap_key(engine, 0, 0, now);  // BACK
+  assert(engine.base_layer() == 0);
+}
+
+static void test_config_commands_change_and_reset_the_looks() {
+  hw::settings_load();
+  auto saved = hw::settings();
+  saved.version = 7;  // before the themes: reset once
+  EEPROM.put(0, saved);
+  EEPROM.commit();
+  hw::settings_load();
+  hw::Settings& st = hw::settings();
+  assert(st.main_theme == 0 && st.bar_theme == 0 && st.led_color == 0 && st.led_level == 8);
+
+  assert(hw::settings_apply(st, mp::SYS_MAIN_THEME) && st.main_theme == 1 && st.bar_theme == 0);
+  for (uint8_t i = 1; i < mp::THEME_COUNT; ++i) hw::settings_apply(st, mp::SYS_MAIN_THEME);
+  assert(st.main_theme == 0);  // wraps
+  assert(hw::settings_apply(st, mp::SYS_BAR_THEME) && st.bar_theme == 1 && st.main_theme == 0);
+  for (uint8_t i = 0; i < mp::LED_COLOR_COUNT; ++i) assert(hw::settings_apply(st, mp::SYS_LED_COLOR));
+  assert(st.led_color == 0);  // wraps
+  for (uint8_t i = 0; i < 10; ++i) assert(hw::settings_apply(st, mp::SYS_LED_DOWN));
+  assert(st.led_level == 1);  // stops at 1
+  hw::settings_apply(st, mp::SYS_LED_UP);
+  assert(st.led_level == 2);
+  for (uint8_t i = 0; i < 10; ++i) hw::settings_apply(st, mp::SYS_LED_UP);
+  assert(st.led_level == 8);  // stops at 8
+
+  st.main_theme = 3;
+  st.bar_theme = 4;
+  st.led_color = 5;
+  st.led_level = 2;
+  st.brightness = 50;
+  st.led_mode = 2;
+  assert(hw::settings_apply(st, mp::SYS_THEME_RESET));
+  assert(st.main_theme == 0 && st.bar_theme == 0 && st.led_color == 0 && st.led_level == 8);
+  assert(st.brightness == 50 && st.led_mode == 2);  // not part of the looks reset
+  assert(!hw::settings_apply(st, mp::SYS_BRIGHT_UP) && st.brightness == 50);  // not a settings-only command
+
+  st.main_theme = 200;  // bad flash bytes read as the defaults
+  st.bar_theme = mp::THEME_COUNT;
+  st.led_color = mp::LED_COLOR_COUNT;
+  st.led_level = 0;
+  assert(hw::saved_main_theme(st) == 0 && hw::saved_bar_theme(st) == 0);
+  assert(hw::saved_led_color(st) == 0 && hw::saved_led_level(st) == 8);
+  st.led_level = 9;
+  assert(hw::saved_led_level(st) == 8);
+  hw::settings_apply(st, mp::SYS_MAIN_THEME);
+  assert(st.main_theme == 1);  // stepped from the default
+  hw::settings_apply(st, mp::SYS_LED_DOWN);
+  assert(st.led_level == 7);
 }
 
 // The wiring as the matrix sees it: a held key pulls its column low while its row is driven low.
@@ -1061,7 +1346,45 @@ static void test_matrix_scans_col2row_and_reads_the_boot_combo() {
   mock_read = nullptr;
 }
 
+// WCAG contrast ratio of two RGB565 colours (1 = none, 21 = black on white).
+static double luminance(uint16_t c) {
+  const double ch[3] = {((c >> 11) & 0x1F) / 31.0, ((c >> 5) & 0x3F) / 63.0, (c & 0x1F) / 31.0};
+  double lin[3];
+  for (int i = 0; i < 3; ++i) lin[i] = ch[i] <= 0.03928 ? ch[i] / 12.92 : std::pow((ch[i] + 0.055) / 1.055, 2.4);
+  return 0.2126 * lin[0] + 0.7152 * lin[1] + 0.0722 * lin[2];
+}
+static double contrast(uint16_t a, uint16_t b) {
+  const double la = luminance(a), lb = luminance(b);
+  return (std::max(la, lb) + 0.05) / (std::min(la, lb) + 0.05);
+}
+
+static void test_themes_keep_every_page_readable() {
+  const ui::Theme& nyx = ui::theme(mp::THEME_NYX);  // today's colours, unchanged
+  assert(nyx.bg == ui::rgb(9, 10, 15) && nyx.panel == ui::rgb(22, 24, 32) && nyx.cell == ui::rgb(28, 30, 40));
+  assert(nyx.muted == ui::rgb(88, 92, 108) && nyx.text == ui::rgb(236, 236, 242));
+  assert(nyx.subtle == ui::rgb(150, 154, 170) && !nyx.light);
+  assert(&ui::theme(mp::THEME_COUNT) == &nyx && &ui::theme(0xFF) == &nyx);  // a bad flash byte reads as NYX
+  assert(ui::theme(mp::THEME_LIGHT).light && ui::ink(nyx, ui::WARN) == ui::WARN);
+
+  const uint16_t status[] = {ui::GOOD, ui::WARN, ui::FN_RED};
+  for (uint8_t t = 0; t < mp::THEME_COUNT; ++t) {
+    const ui::Theme& th = ui::theme(t);
+    for (uint16_t ground : {th.bg, th.panel}) {
+      assert(contrast(th.text, ground) >= 4.5);
+      assert(contrast(th.subtle, ground) >= 3.0);
+      assert(contrast(th.muted, ground) >= 2.4);  // hints and empty labels
+    }
+    std::vector<uint16_t> accents(status, status + 3);
+    for (uint8_t l = 0; l < mp::NUM_LAYERS; ++l) accents.push_back(mp::LAYERS[l].color);
+    for (uint16_t a : accents) {
+      for (uint16_t ground : {th.bg, th.panel, th.cell}) assert(contrast(ui::ink(th, a), ground) >= 3.0);
+      assert(contrast(ui::on_fill(th), a) >= 3.0);  // a pressed key, the active pill, a lit lock LED
+    }
+  }
+}
+
 int main() {
+  test_themes_keep_every_page_readable();
   test_usb_drops_keys_pressed_before_the_first_mount();
   test_usb_preserves_press_and_release();
   test_usb_retries_failed_reports();
@@ -1079,6 +1402,7 @@ int main() {
   test_button_report_in_flight_is_not_delivered();
   test_motion_waits_for_a_busy_endpoint_but_not_without_limit();
   test_settings_isolate_editions();
+  test_config_commands_change_and_reset_the_looks();
   test_diagnostics_do_not_block_input();
   test_settings_save_waits_after_a_late_stamp();
   test_settings_flush_saves_before_a_reboot();
@@ -1091,14 +1415,19 @@ int main() {
   test_stick_saves_the_learned_range_not_the_centre();
   test_stick_motion_wakes_and_does_not_starve_the_save();
   test_host_link_round_trip();
-  puts("28 hardware/control regression groups passed");
+  test_host_pages_share_the_left_column();
+  test_config_layer_keys_and_way_in();
+  puts("32 hardware/control regression groups passed");
 #else
   test_enc_diagnostic_reports_the_pins();
   test_knob_turns_reverses_and_keeps_its_preset();
   test_knob_switch_is_debounced();
   test_keymap_fn_keys_reach_the_knob();
   test_fn_knob_names_the_pick_while_fn_is_held();
+  test_console_puts_the_knob_back_on_the_layer_binding();
   test_host_link_round_trip();
-  puts("30 hardware/control regression groups passed");
+  test_host_pages_share_the_left_column();
+  test_config_layer_keys_and_way_in();
+  puts("35 hardware/control regression groups passed");
 #endif
 }

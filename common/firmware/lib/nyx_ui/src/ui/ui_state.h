@@ -37,6 +37,12 @@ struct UiState {
   uint8_t led_mode = 0;         // mp::LedMode
   uint32_t last_hit_ms = 0;     // last key press or knob detent (Layer mode flash)
   bool hit_seen = false;        // false until the first press, so boot does not flash
+  uint8_t led_color = 0;        // mp::led_color565() index, 0 = the layer colour
+  uint8_t led_level = 8;        // 1..mp::LED_LEVELS: scales the LED brightness cap
+
+  // display themes (mp::THEME_*), one per display
+  uint8_t main_theme = 0;
+  uint8_t bar_theme = 0;
 
   // host bridge: what the daemon on the computer sent (see core/host_proto.h)
   uint8_t view = 0;  // mp::View of the top layer: the key labels or the host dashboard

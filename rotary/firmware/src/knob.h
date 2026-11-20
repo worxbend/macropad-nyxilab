@@ -18,7 +18,7 @@ class KnobCentre : public app::Centre {
   bool on_sys(mp::SysCmd cmd, uint32_t now) override;
   bool console(const char* line) override;
   void info() override;
-  const char* help() const override { return "enc (knob pins for 5 s)"; }
+  const char* help() const override { return "enc (knob pins for 5 s) | knob default (this layer's own knob)"; }
 
   bool reversed() const;
 

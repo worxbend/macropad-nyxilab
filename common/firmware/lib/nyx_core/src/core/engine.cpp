@@ -231,7 +231,7 @@ void Engine::press_action(Action a, uint32_t now) {
       uint8_t n = base_;
       for (uint8_t i = 0; i < NUM_LAYERS; i++) {
         n = uint8_t((n + 1) % NUM_LAYERS);
-        if (n != FN_LAYER && !(skip_ & (1u << n))) break;
+        if (in_layer_cycle(n) && !(skip_ & (1u << n))) break;
       }
       set_base_layer(n);
       break;
@@ -353,7 +353,7 @@ const EncoderDef& Engine::binding_among(uint32_t layers) const {
   static const EncoderDef kNone = {XX, XX, XX, ""};
   for (int l = NUM_LAYERS - 1; l >= 0; l--) {
     if (!(layers & (1u << l))) continue;
-    if (l == base_ && enc_preset_[l] < n_presets_) return presets_[enc_preset_[l]];
+    if (l == base_ && enc_preset_[layer_group(l)] < n_presets_) return presets_[enc_preset_[layer_group(l)]];
     if (act_type(LAYERS[l].centre.knob.cw) != ActType::Transparent) return LAYERS[l].centre.knob;
   }
   return n_presets_ ? presets_[0] : kNone;

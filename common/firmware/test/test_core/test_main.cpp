@@ -10,6 +10,7 @@
 #include "core/engine.h"
 #include "core/host_proto.h"
 #include "core/led_fx.h"
+#include "core/themes.h"
 
 using namespace mp;
 
@@ -41,8 +42,20 @@ const Layer LAYERS[] = {
         {{K(hid::F5), "f5"}, {K(hid::F6), "f6"}, {___, ""}},
         {{___, ""}, {K(hid::F2), "f2"}, {___, ""}},
     }},
+    {"SECOND2", 0, CENTRE_INHERIT, {  // a further page of SECOND
+        {{K(hid::Y), "y"}, {___, ""}, {___, ""}},
+        {{___, ""}, {___, ""}, {___, ""}},
+        {{___, ""}, {___, ""}, {___, ""}},
+        {{TH(0), "L"}, {___, ""}, {___, ""}},
+    }, View::Keys, 1},
+    {"CFG", 0, CENTRE_INHERIT, {  // outside the LAYER cycle, reached with TO()
+        {{TO(0), "back"}, {___, ""}, {___, ""}},
+        {{___, ""}, {___, ""}, {___, ""}},
+        {{___, ""}, {___, ""}, {___, ""}},
+        {{TH(0), "L"}, {___, ""}, {___, ""}},
+    }, View::Config, NOT_A_PAGE, true},
 };
-const uint8_t NUM_LAYERS = 3;
+const uint8_t NUM_LAYERS = 5;
 const uint8_t FN_LAYER = 2;
 const uint8_t NUM_TAP_HOLDS = 2;
 const uint8_t NUM_MACROS = 2;
@@ -249,6 +262,31 @@ void test_transparent_falls_through() {
   e.tick(300);                  // FN held
   e.process(press(3, 2, 310));  // FN is transparent here -> base 'c'
   TEST_ASSERT_TRUE(e.hid().has_key(hid::C));
+}
+
+void test_pages_are_one_layer_for_the_layer_key_and_the_knob() {
+  Host h;
+  Engine e(h);
+  e.set_encoder_presets(PRESETS, 3);
+  TEST_ASSERT_EQUAL(1, layer_group(3));  // SECOND2 is a page of SECOND
+  TEST_ASSERT_EQUAL(1, layer_group(1));
+  TEST_ASSERT_EQUAL(2, layer_group(2));
+  e.set_base_layer(3);  // a page is reached with TO(), like any layer
+  TEST_ASSERT_EQUAL(3, e.base_layer());
+  e.process(press(0, 0, 0));  // a key of the page itself
+  TEST_ASSERT_TRUE(e.hid().has_key(hid::Y));
+  e.process(release(0, 0, 5));
+  e.process(press(3, 0, 10));  // LAYER tap: on to the next layer, not the next page
+  e.process(release(3, 0, 20));
+  TEST_ASSERT_EQUAL(0, e.base_layer());
+  e.set_base_layer(1);
+  e.process(press(3, 0, 100));
+  e.process(release(3, 0, 110));
+  TEST_ASSERT_EQUAL(0, e.base_layer());  // FN and the further page are both skipped
+  e.set_enc_preset(1, 1);                // SCROLL picked on SECOND ...
+  e.set_base_layer(3);
+  TEST_ASSERT_EQUAL_STRING("SCROLL", e.encoder_binding().label);  // ... holds on its other pages
+  TEST_ASSERT_EQUAL_STRING("SCROLL", e.base_encoder_binding().label);
 }
 
 void test_to_layer_from_fn() {
@@ -1143,6 +1181,33 @@ void test_led_colour_conversions() {
   expect_rgb(255, 255, 255, rgb565_to_rgb(0xFFFF));
 }
 
+void test_led_colour_presets_and_levels() {
+  const char* const names[] = {"LAYER", "WHITE", "RED", "GREEN", "BLUE", "PURPLE", "CYAN", "AMBER"};
+  TEST_ASSERT_EQUAL(8, LED_COLOR_COUNT);
+  for (uint8_t i = 0; i < LED_COLOR_COUNT; i++) TEST_ASSERT_EQUAL_STRING(names[i], led_color_name(i));
+  TEST_ASSERT_EQUAL_STRING("LAYER", led_color_name(LED_COLOR_COUNT));  // a bad flash byte
+  TEST_ASSERT_EQUAL_HEX16(0x1234, led_color565(0, 0x1234));  // LAYER: the layer's accent
+  TEST_ASSERT_EQUAL_HEX16(0x1234, led_color565(LED_COLOR_COUNT, 0x1234));
+  TEST_ASSERT_EQUAL_HEX16(0xFFFF, led_color565(1, 0x1234));
+  TEST_ASSERT_EQUAL_HEX16(0xF800, led_color565(2, 0x1234));
+  TEST_ASSERT_EQUAL_HEX16(0x07E0, led_color565(3, 0x1234));
+  TEST_ASSERT_EQUAL_HEX16(0x001F, led_color565(4, 0x1234));
+  TEST_ASSERT_EQUAL(8, LED_LEVELS);
+  TEST_ASSERT_EQUAL(89, led_level_cap(89, 8));  // level 8 = the whole cap
+  TEST_ASSERT_EQUAL(44, led_level_cap(89, 4));
+  TEST_ASSERT_EQUAL(11, led_level_cap(89, 1));
+  TEST_ASSERT_EQUAL(89, led_level_cap(89, 0));  // outside 1..8: the default level
+  TEST_ASSERT_EQUAL(89, led_level_cap(89, 9));
+  TEST_ASSERT_EQUAL(255, led_level_cap(255, 8));
+}
+
+void test_theme_names() {
+  const char* const names[] = {"NYX", "MIDNIGHT", "FOREST", "AMBER", "MONO", "LIGHT"};
+  TEST_ASSERT_EQUAL(6, THEME_COUNT);
+  for (uint8_t i = 0; i < THEME_COUNT; i++) TEST_ASSERT_EQUAL_STRING(names[i], theme_name(i));
+  TEST_ASSERT_EQUAL_STRING("NYX", theme_name(THEME_COUNT));  // a bad flash byte
+}
+
 // ------------------------------------------------------------- host bridge
 void test_host_action_reports_press_and_release() {
   Host h;
@@ -1155,6 +1220,30 @@ void test_host_action_reports_press_and_release() {
   TEST_ASSERT_EQUAL(7 * 2 + 1, h.host[0]);
   TEST_ASSERT_EQUAL(7 * 2, h.host[1]);
   TEST_ASSERT_EQUAL(0, e.hid().keys[0]);  // nothing for the USB keyboard
+}
+
+void test_layer_outside_the_cycle_is_reached_with_to_only() {
+  TEST_ASSERT_TRUE(in_layer_cycle(0));
+  TEST_ASSERT_TRUE(in_layer_cycle(1));
+  TEST_ASSERT_FALSE(in_layer_cycle(2));  // FN
+  TEST_ASSERT_FALSE(in_layer_cycle(3));  // a further page
+  TEST_ASSERT_FALSE(in_layer_cycle(4));  // CFG
+  TEST_ASSERT_FALSE(is_host_view(View::Config));  // never skipped for a missing daemon
+  TEST_ASSERT_FALSE(is_host_view(View::Keys));
+  TEST_ASSERT_TRUE(is_host_view(View::Host) && is_host_view(View::Sway) && is_host_view(View::Player));
+  TEST_ASSERT_EQUAL_HEX32(0, host_layer_mask());
+  Host h;
+  Engine e(h);
+  e.set_base_layer(1);
+  e.process(press(3, 0, 0));
+  e.process(release(3, 0, 50));
+  TEST_ASSERT_EQUAL(0, e.base_layer());  // LAYER never lands on CFG
+  e.set_base_layer(4);
+  TEST_ASSERT_EQUAL(4, e.base_layer());
+  e.tick(100);
+  e.process(press(3, 0, 200));
+  e.process(release(3, 0, 250));
+  TEST_ASSERT_EQUAL(0, e.base_layer());  // on from CFG's index to the next layer of the cycle
 }
 
 void test_layer_next_skips_masked_layers() {
@@ -1203,6 +1292,129 @@ void test_host_hello_links_and_acks() {
   TEST_ASSERT_EQUAL(PROTO_VERSION, out[4]);
   TEST_ASSERT_EQUAL_STRING("Nyxilab rotary", reinterpret_cast<const char*>(out + 5));
   TEST_ASSERT_FALSE(hp.next_tx(out));
+}
+
+void test_host_workspaces_from_sway() {
+  HostProto hp;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'h'});
+  hp.on_packet(hello.data(), HOST_PACKET, 0);
+  TEST_ASSERT_FALSE(hp.data().sway.running);  // nothing until the daemon reports sway
+  // running, workspace 3 focused, 1 2 3 5 open, 3 and 5 on a monitor, 2 urgent, 4 windows, tabbed
+  auto w = pkt({PKT_WORKSPACES, PROTO_VERSION, 1, 3, 0x17, 0x14, 0x02, 4, SWAY_TABBED, 'f', 'o', 'o', 't'});
+  const char* title = "vim\xC3 x";  // a non-ASCII byte
+  memcpy(&w[21], title, strlen(title));
+  TEST_ASSERT_TRUE(hp.on_packet(w.data(), HOST_PACKET, 100));
+  const HostSway& s = hp.data().sway;
+  TEST_ASSERT_TRUE(s.running);
+  TEST_ASSERT_EQUAL(3, s.focused);
+  TEST_ASSERT_EQUAL_HEX8(0x17, s.open);
+  TEST_ASSERT_EQUAL_HEX8(0x14, s.visible);
+  TEST_ASSERT_EQUAL_HEX8(0x02, s.urgent);
+  TEST_ASSERT_EQUAL(4, s.windows);
+  TEST_ASSERT_EQUAL(SWAY_TABBED, s.layout);
+  TEST_ASSERT_EQUAL_STRING("foot", s.app_id);
+  TEST_ASSERT_EQUAL_STRING("vim? x", s.title);
+  std::vector<uint8_t> full(HOST_PACKET, 'a');  // no NUL anywhere: each string stops at its own field
+  full[0] = PKT_WORKSPACES;
+  full[1] = PROTO_VERSION;
+  full[2] = 1;
+  full[3] = 9;  // a focused number beyond the 8 keys
+  full[8] = 5;  // a layout this firmware does not know
+  for (int i = 9; i < 21; i++) full[i] = 'b';
+  hp.on_packet(full.data(), HOST_PACKET, 200);
+  TEST_ASSERT_EQUAL(0, s.focused);
+  TEST_ASSERT_EQUAL(SWAY_UNKNOWN, s.layout);
+  TEST_ASSERT_EQUAL(HOST_APP_ID_LEN, strlen(s.app_id));
+  TEST_ASSERT_EQUAL('b', s.app_id[HOST_APP_ID_LEN - 1]);
+  TEST_ASSERT_EQUAL(HOST_TITLE_LEN, strlen(s.title));  // cut at 40, not read past the packet
+  TEST_ASSERT_EQUAL('a', s.title[0]);
+  auto stopped = pkt({PKT_WORKSPACES, PROTO_VERSION, 0, 3, 0x04, 0x04, 0, 2, SWAY_SPLITH, 'x'});
+  hp.on_packet(stopped.data(), HOST_PACKET, 300);
+  TEST_ASSERT_FALSE(s.running);  // the rest of a "not running" packet is ignored
+  TEST_ASSERT_EQUAL(0, s.focused);
+  TEST_ASSERT_EQUAL(0, s.open);
+  TEST_ASSERT_EQUAL(0, s.windows);
+  TEST_ASSERT_EQUAL_STRING("", s.app_id);
+  TEST_ASSERT_EQUAL_STRING("", s.title);
+  hp.on_packet(w.data(), HOST_PACKET, 400);
+  auto bye = pkt({PKT_BYE, PROTO_VERSION});
+  hp.on_packet(bye.data(), HOST_PACKET, 500);
+  TEST_ASSERT_FALSE(s.running);  // a new session starts without sway until the daemon says so
+}
+
+void test_host_player_from_mpris() {
+  HostProto hp;
+  auto hello = pkt({PKT_HELLO, PROTO_VERSION, 'h'});
+  hp.on_packet(hello.data(), HOST_PACKET, 0);
+  const HostPlayer& pl = hp.data().player;
+  TEST_ASSERT_FALSE(pl.present);  // nothing until the daemon reports a player
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, pl.volume);
+  // playing at 40 %, 1:05 of 3:40 (0x00DC), "spotify"
+  auto p = pkt({PKT_PLAYER, PROTO_VERSION, 1, PLAYER_PLAYING, 40, 65, 0, 0xDC, 0, 's', 'p', 'o', 't', 'i', 'f', 'y'});
+  TEST_ASSERT_TRUE(hp.on_packet(p.data(), HOST_PACKET, 100));
+  TEST_ASSERT_TRUE(pl.present);
+  TEST_ASSERT_EQUAL(PLAYER_PLAYING, pl.status);
+  TEST_ASSERT_EQUAL(40, pl.volume);
+  TEST_ASSERT_EQUAL(65, pl.position_s);
+  TEST_ASSERT_EQUAL(220, pl.length_s);
+  TEST_ASSERT_EQUAL_STRING("spotify", pl.name);
+  auto big = pkt({PKT_PLAYER, PROTO_VERSION, 1, 3, 101, 0x10, 0x0E});  // 3600 s, an unknown status and volume
+  for (int i = 9; i < HOST_PACKET; i++) big[i] = 'n';
+  TEST_ASSERT_TRUE(hp.on_packet(big.data(), HOST_PACKET, 200));
+  TEST_ASSERT_EQUAL(PLAYER_STOPPED, pl.status);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, pl.volume);
+  TEST_ASSERT_EQUAL(3600, pl.position_s);
+  TEST_ASSERT_EQUAL(0, pl.length_s);
+  TEST_ASSERT_EQUAL(HOST_PLAYER_NAME_LEN, strlen(pl.name));  // cut at 16
+  big[4] = 254;
+  hp.on_packet(big.data(), HOST_PACKET, 210);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, pl.volume);
+  big[4] = 100;
+  hp.on_packet(big.data(), HOST_PACKET, 220);
+  TEST_ASSERT_EQUAL(100, pl.volume);
+
+  auto title = pkt({PKT_PLAYER_TEXT, PROTO_VERSION, PLAYER_TITLE, 'S', 'o', 'n', 'g', 0xE9});
+  auto artist = pkt({PKT_PLAYER_TEXT, PROTO_VERSION, PLAYER_ARTIST, 'B', 'a', 'n', 'd'});
+  auto album = pkt({PKT_PLAYER_TEXT, PROTO_VERSION, PLAYER_ALBUM, 'L', 'P'});
+  TEST_ASSERT_TRUE(hp.on_packet(title.data(), HOST_PACKET, 300));
+  TEST_ASSERT_TRUE(hp.on_packet(artist.data(), HOST_PACKET, 300));
+  TEST_ASSERT_TRUE(hp.on_packet(album.data(), HOST_PACKET, 300));
+  TEST_ASSERT_EQUAL_STRING("Song?", pl.title);
+  TEST_ASSERT_EQUAL_STRING("Band", pl.artist);
+  TEST_ASSERT_EQUAL_STRING("LP", pl.album);
+  auto bad_field = pkt({PKT_PLAYER_TEXT, PROTO_VERSION, 3, 'x'});
+  TEST_ASSERT_FALSE(hp.on_packet(bad_field.data(), HOST_PACKET, 300));
+  TEST_ASSERT_EQUAL_STRING("Song?", pl.title);
+  TEST_ASSERT_EQUAL_STRING("Band", pl.artist);
+  TEST_ASSERT_EQUAL_STRING("LP", pl.album);
+  std::vector<uint8_t> long_title(HOST_PACKET, 't');  // no NUL: cut at 60, not read past the packet
+  long_title[0] = PKT_PLAYER_TEXT;
+  long_title[1] = PROTO_VERSION;
+  long_title[2] = PLAYER_TITLE;
+  TEST_ASSERT_TRUE(hp.on_packet(long_title.data(), HOST_PACKET, 300));
+  TEST_ASSERT_EQUAL(HOST_MEDIA_LEN, strlen(pl.title));
+  TEST_ASSERT_EQUAL_STRING("Band", pl.artist);  // the next field is untouched
+
+  auto gone = pkt({PKT_PLAYER, PROTO_VERSION, 0, PLAYER_PLAYING, 50, 1, 0, 2, 0, 'x'});
+  hp.on_packet(gone.data(), HOST_PACKET, 400);
+  TEST_ASSERT_FALSE(pl.present);  // the rest of a "no player" packet is ignored
+  TEST_ASSERT_EQUAL(PLAYER_STOPPED, pl.status);
+  TEST_ASSERT_EQUAL(HOST_UNKNOWN, pl.volume);
+  TEST_ASSERT_EQUAL(0, pl.position_s);
+  TEST_ASSERT_EQUAL_STRING("", pl.name);
+  TEST_ASSERT_EQUAL_STRING("", pl.title);  // and the old track's text goes with the player
+
+  hp.on_packet(p.data(), HOST_PACKET, 500);
+  hp.on_packet(artist.data(), HOST_PACKET, 500);
+  auto bye = pkt({PKT_BYE, PROTO_VERSION});
+  hp.on_packet(bye.data(), HOST_PACKET, 600);
+  TEST_ASSERT_FALSE(pl.present);  // a new session starts without a player until the daemon says so
+  TEST_ASSERT_EQUAL_STRING("", pl.artist);
+  TEST_ASSERT_EQUAL_STRING("", pl.name);
+  hp.on_packet(hello.data(), HOST_PACKET, 700);
+  hp.on_packet(p.data(), HOST_PACKET, 700);
+  hp.tick(700 + HOST_TIMEOUT_MS);
+  TEST_ASSERT_FALSE(pl.present);  // and so does the link timeout
 }
 
 void test_host_metrics_text_and_timeout() {
@@ -1396,6 +1608,7 @@ int main() {
   RUN_TEST(test_hold_timeout_activates_fn);
   RUN_TEST(test_hold_on_other_key_press);
   RUN_TEST(test_transparent_falls_through);
+  RUN_TEST(test_pages_are_one_layer_for_the_layer_key_and_the_knob);
   RUN_TEST(test_to_layer_from_fn);
   RUN_TEST(test_toggle_layer);
   RUN_TEST(test_layer_actions_ignore_undefined_layers);
@@ -1448,10 +1661,15 @@ int main() {
   RUN_TEST(test_led_levels_budget_and_off);
   RUN_TEST(test_led_rainbow_and_breathe);
   RUN_TEST(test_led_colour_conversions);
+  RUN_TEST(test_led_colour_presets_and_levels);
+  RUN_TEST(test_theme_names);
+  RUN_TEST(test_layer_outside_the_cycle_is_reached_with_to_only);
   RUN_TEST(test_host_action_reports_press_and_release);
   RUN_TEST(test_layer_next_skips_masked_layers);
   RUN_TEST(test_host_hello_links_and_acks);
   RUN_TEST(test_host_metrics_text_and_timeout);
+  RUN_TEST(test_host_workspaces_from_sway);
+  RUN_TEST(test_host_player_from_mpris);
   RUN_TEST(test_host_packet_limits);
   RUN_TEST(test_host_timeout_across_millis_wrap);
   RUN_TEST(test_host_relink_without_hello_asks_for_it);

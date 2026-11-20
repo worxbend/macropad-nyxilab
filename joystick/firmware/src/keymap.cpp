@@ -13,10 +13,23 @@
 //  with Mouse / Scroll / Arrows / Off, or CENTRE_INHERIT to keep the current
 //  choice.  FN + JOY cycles the mode of the current layer (saved in flash).
 //
-//  The HOST layer shows the computer's CPU, memory, ... instead of key labels
-//  (View::Host).  It needs the daemon in host/ (nyxd) and is left out of the
-//  LAYER cycle until it connects.  HOST(n) keys send event n to the daemon,
-//  which runs the command its config maps to n.
+//  F1-F24 are on three pages of 8 (the right block, row by row from the back): the left
+//  column is LAYER, NEXT, PREV, FIRST from the front.  The pages are layers marked as
+//  further pages of L_F1 (View::Keys, L_F1): LAYER skips them, the displays show one layer.
+//
+//  The HOST layer shows a dashboard from the computer instead of key labels, on
+//  three pages (L_SWAY and L_PLAYER are further pages of L_HOST): SYS = CPU,
+//  memory, ... (View::Host), SWAY = sway workspaces (View::Sway), PLAY = the
+//  media player (View::Player).  The left column is LAYER, SYS, SWAY, PLAY from
+//  the front.  It needs the daemon in host/ (nyxd) and is left out of the LAYER
+//  cycle until it connects.  HOST(n) keys send event n to the daemon: 1-8 run the
+//  commands its config maps to them, 201-208 switch to sway workspace 1-8,
+//  211-218 control the player (a config entry for any id runs that instead).
+//
+//  CONFIG (FN + CFG) sets the looks: the display themes, the LED colour, level and
+//  effect, and the display brightness; the main display shows each current value
+//  (View::Config).  Like FN it is outside the LAYER cycle (off_cycle): BACK or LAYER
+//  leaves it.
 // ============================================================================
 #include "core/keymap.h"
 
@@ -26,7 +39,7 @@ constexpr uint16_t rgb565(uint8_t r, uint8_t g, uint8_t b) {
   return uint16_t(((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3));
 }
 
-enum LayerId : uint8_t { L_MEDIA, L_EDIT, L_FKEYS, L_HOST, L_FN };
+enum LayerId : uint8_t { L_MEDIA, L_EDIT, L_F1, L_F9, L_F17, L_HOST, L_SWAY, L_PLAYER, L_CFG, L_FN };
 enum TapHoldId : uint8_t { TH_LAYER };
 enum MacroId : uint8_t { M_HELLO };
 
@@ -53,23 +66,53 @@ const Layer LAYERS[] = {
         {{KC(MOD_LCTRL, hid::F), "FIND"}, {K(hid::HOME), "HOME"},                          {K(hid::END), "END"}},
         {{TH(TH_LAYER), "LAYER"},         {K(hid::ENTER), "ENTER"},                        {K(hid::BSPC), "BKSP"}},
     }},
-    /* L_FKEYS */ {"F13-24", rgb565(245, 158, 11), STICK(JoyMode::Scroll), {
-        {{K(hid::F13), "F13"},    {K(hid::F14), "F14"}, {K(hid::F15), "F15"}},
-        {{K(hid::F16), "F16"},    {K(hid::F17), "F17"}, {K(hid::F18), "F18"}},
-        {{K(hid::F19), "F19"},    {K(hid::F20), "F20"}, {K(hid::F21), "F21"}},
-        {{TH(TH_LAYER), "LAYER"}, {K(hid::F22), "F22"}, {K(hid::F23), "F23"}},
+    /* L_F1 */ {"F1-8", rgb565(245, 158, 11), STICK(JoyMode::Scroll), {
+        {{TO(L_F1), "FIRST"},      {K(hid::F1), "F1"},   {K(hid::F2), "F2"}},
+        {{TO(L_F17), "PREV"},      {K(hid::F3), "F3"},   {K(hid::F4), "F4"}},
+        {{TO(L_F9), "NEXT"},       {K(hid::F5), "F5"},   {K(hid::F6), "F6"}},
+        {{TH(TH_LAYER), "LAYER"},  {K(hid::F7), "F7"},   {K(hid::F8), "F8"}},
     }},
+    /* L_F9 */ {"F9-16", rgb565(245, 158, 11), STICK(JoyMode::Scroll), {
+        {{TO(L_F1), "FIRST"},      {K(hid::F9), "F9"},   {K(hid::F10), "F10"}},
+        {{TO(L_F1), "PREV"},       {K(hid::F11), "F11"}, {K(hid::F12), "F12"}},
+        {{TO(L_F17), "NEXT"},      {K(hid::F13), "F13"}, {K(hid::F14), "F14"}},
+        {{TH(TH_LAYER), "LAYER"},  {K(hid::F15), "F15"}, {K(hid::F16), "F16"}},
+    }, View::Keys, L_F1},
+    /* L_F17 */ {"F17-24", rgb565(245, 158, 11), STICK(JoyMode::Scroll), {
+        {{TO(L_F1), "FIRST"},      {K(hid::F17), "F17"}, {K(hid::F18), "F18"}},
+        {{TO(L_F9), "PREV"},       {K(hid::F19), "F19"}, {K(hid::F20), "F20"}},
+        {{TO(L_F1), "NEXT"},       {K(hid::F21), "F21"}, {K(hid::F22), "F22"}},
+        {{TH(TH_LAYER), "LAYER"},  {K(hid::F23), "F23"}, {K(hid::F24), "F24"}},
+    }, View::Keys, L_F1},
     /* L_HOST */ {"HOST", rgb565(56, 189, 248), STICK(JoyMode::Mouse), {
-        {{HOST(1), "H1"},         {HOST(2), "H2"},   {HOST(3), "H3"}},
-        {{HOST(4), "H4"},         {HOST(5), "H5"},   {HOST(6), "H6"}},
-        {{HOST(7), "H7"},         {HOST(8), "H8"},   {HOST(9), "H9"}},
-        {{TH(TH_LAYER), "LAYER"}, {HOST(10), "H10"}, {HOST(11), "H11"}},
+        {{TO(L_PLAYER), "PLAY"},   {HOST(7), "H7"},       {HOST(8), "H8"}},
+        {{TO(L_SWAY), "SWAY"},     {HOST(5), "H5"},       {HOST(6), "H6"}},
+        {{TO(L_HOST), "SYS"},      {HOST(3), "H3"},       {HOST(4), "H4"}},
+        {{TH(TH_LAYER), "LAYER"},  {HOST(1), "H1"},       {HOST(2), "H2"}},
     }, View::Host},
+    /* L_SWAY */ {"SWAY", rgb565(56, 189, 248), STICK(JoyMode::Mouse), {
+        {{TO(L_PLAYER), "PLAY"},   {HOST(207), "7"},      {HOST(208), "8"}},
+        {{TO(L_SWAY), "SWAY"},     {HOST(205), "5"},      {HOST(206), "6"}},
+        {{TO(L_HOST), "SYS"},      {HOST(203), "3"},      {HOST(204), "4"}},
+        {{TH(TH_LAYER), "LAYER"},  {HOST(201), "1"},      {HOST(202), "2"}},
+    }, View::Sway, L_HOST},
+    /* L_PLAYER */ {"PLAYER", rgb565(56, 189, 248), STICK(JoyMode::Mouse), {
+        {{TO(L_PLAYER), "PLAY"},   {HOST(217), "VOL-"},   {HOST(218), "VOL+"}},
+        {{TO(L_SWAY), "SWAY"},     {HOST(215), "-10s"},   {HOST(216), "+10s"}},
+        {{TO(L_HOST), "SYS"},      {HOST(213), "PREV"},   {HOST(214), "STOP"}},
+        {{TH(TH_LAYER), "LAYER"},  {HOST(211), "PLAY"},   {HOST(212), "NEXT"}},
+    }, View::Player, L_HOST},
+    /* L_CFG */ {"CONFIG", rgb565(148, 163, 184), STICK(JoyMode::Mouse), {
+        {{TO(L_MEDIA), "BACK"},             {SYS(SYS_MAIN_THEME), "MAIN"},  {SYS(SYS_BAR_THEME), "BAR"}},
+        {{SYS(SYS_THEME_RESET), "RESET"},   {SYS(SYS_LED_COLOR), "LEDCOL"}, {SYS(SYS_LED_MODE), "LEDFX"}},
+        {{SYS(SYS_DISPLAYS_TOGGLE), "SCRN"}, {SYS(SYS_LED_DOWN), "LED-"},   {SYS(SYS_LED_UP), "LED+"}},
+        {{TH(TH_LAYER), "LAYER"},           {SYS(SYS_BRIGHT_DOWN), "DIM-"}, {SYS(SYS_BRIGHT_UP), "DIM+"}},
+    }, View::Config, NOT_A_PAGE, true},
     /* L_FN */ {"FN", rgb565(239, 68, 68), CENTRE_INHERIT, {
         {{SYS(SYS_BOOTLOADER), "BOOT"},   {SYS(SYS_BRIGHT_DOWN), "DIM-"},   {SYS(SYS_BRIGHT_UP), "DIM+"}},
         {{JOY(JoyMode::Cycle), "JOY"},    {SYS(SYS_JOY_CALIBRATE), "CAL"},  {SYS(SYS_DISPLAYS_TOGGLE), "SCRN"}},
-        {{TO(L_MEDIA), "MEDIA"},          {TO(L_EDIT), "EDIT"},             {TO(L_FKEYS), "FKEYS"}},
-        {{___, "(held)"},                 {MACRO(M_HELLO), "HELLO"},        {SYS(SYS_LED_MODE), "LED"}},
+        {{TO(L_MEDIA), "MEDIA"},          {TO(L_EDIT), "EDIT"},             {TO(L_F1), "FKEYS"}},
+        {{___, "(held)"},                 {TO(L_CFG), "CFG"},               {SYS(SYS_LED_MODE), "LED"}},
     }},
 };
 

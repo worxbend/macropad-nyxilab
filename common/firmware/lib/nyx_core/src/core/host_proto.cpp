@@ -79,6 +79,15 @@ bool HostProto::on_packet(const uint8_t* buf, uint16_t len, uint32_t now) {
       if (p[2] >= HOST_TEXT_SLOTS) return false;
       copy_text(data_.text[p[2]], HOST_TEXT_LEN, p + 3, HOST_TEXT_LEN);
       break;
+    case PKT_WORKSPACES:
+      on_workspaces(p);
+      break;
+    case PKT_PLAYER:
+      on_player(p);
+      break;
+    case PKT_PLAYER_TEXT:
+      if (!on_player_text(p)) return false;
+      break;
     case PKT_BYE:
       reset_data();
       tx_n_ = 0;
@@ -88,6 +97,44 @@ bool HostProto::on_packet(const uint8_t* buf, uint16_t len, uint32_t now) {
   }
   if (!was_linked && p[0] != PKT_HELLO) link();  // back after a timeout: ask for HELLO again
   last_rx_ = now;
+  return true;
+}
+
+// p is the zero-padded 64-byte packet: every field below lies inside it.
+void HostProto::on_workspaces(const uint8_t* p) {
+  HostSway& s = data_.sway;
+  s = HostSway{};  // not running: the rest of the packet means nothing
+  if (!(p[2] & 1)) return;
+  s.running = true;
+  s.focused = p[3] <= HOST_WORKSPACES ? p[3] : 0;
+  s.open = p[4];
+  s.visible = p[5];
+  s.urgent = p[6];
+  s.windows = p[7];
+  s.layout = p[8] <= SWAY_STACKED ? p[8] : uint8_t(SWAY_UNKNOWN);
+  copy_text(s.app_id, HOST_APP_ID_LEN, p + 9, HOST_APP_ID_LEN);
+  copy_text(s.title, HOST_TITLE_LEN, p + 21, HOST_TITLE_LEN);
+}
+
+void HostProto::on_player(const uint8_t* p) {
+  HostPlayer& pl = data_.player;
+  if (!(p[2] & 1)) {
+    pl = HostPlayer{};  // the player went away, and its track with it
+    return;
+  }
+  pl.present = true;
+  pl.status = p[3] <= PLAYER_PAUSED ? p[3] : uint8_t(PLAYER_STOPPED);
+  pl.volume = pct(p[4]);
+  pl.position_s = rd16(p + 5);
+  pl.length_s = rd16(p + 7);
+  copy_text(pl.name, HOST_PLAYER_NAME_LEN, p + 9, HOST_PLAYER_NAME_LEN);
+}
+
+bool HostProto::on_player_text(const uint8_t* p) {
+  HostPlayer& pl = data_.player;
+  char* const fields[] = {pl.title, pl.artist, pl.album};
+  if (p[2] >= sizeof fields / sizeof fields[0]) return false;
+  copy_text(fields[p[2]], HOST_MEDIA_LEN, p + 3, HOST_MEDIA_LEN);
   return true;
 }
 
