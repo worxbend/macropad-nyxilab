@@ -4429,7 +4429,7 @@
   {
    "a": "hat",
    "b": "hat headers",
-   "overlap_mm3": 0.0,
+   "overlap_mm3": -0.0,
    "ok": true,
    "by_design": true
   },

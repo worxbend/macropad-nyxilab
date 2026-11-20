@@ -100,7 +100,9 @@ class Board:
                 seg.SetLayer(pcbnew.Edge_Cuts)
                 seg.SetWidth(mm(EDGE_W))
                 self.board.Add(seg)
-        self.polygons = [[to_board(x, y) for x, y in poly] for poly in polygons]
+        pts = [[to_board(x, y) for x, y in poly] for poly in polygons]
+        pts.sort(key=lambda poly: -abs(area(poly)))
+        self.polygons, self.holes = pts[:1], pts[1:]  # one board: the largest contour, the rest are cut-outs
 
     def footprint(self, kind: str, ref: str, value: str, bottom: bool = False) -> pcbnew.FOOTPRINT:
         lib, name = FOOTPRINTS[kind]
@@ -156,8 +158,11 @@ class Board:
                    (box.GetRight() + mm(margin), box.GetTop() - mm(margin)),
                    (box.GetLeft() - mm(margin), box.GetBottom() + mm(margin)),
                    (box.GetRight() + mm(margin), box.GetBottom() + mm(margin))]
-        return all(any(point_in(pcbnew.ToMM(cx), pcbnew.ToMM(cy), poly) for poly in self.polygons)
-                   for cx, cy in corners)
+        on_board = all(point_in(pcbnew.ToMM(cx), pcbnew.ToMM(cy), self.polygons[0]) for cx, cy in corners)
+        hole_boxes = [pcbnew.BOX2I(pcbnew.VECTOR2I(mm(min(x for x, _ in h)), mm(min(y for _, y in h))),
+                                   pcbnew.VECTOR2L(mm(max(x for x, _ in h) - min(x for x, _ in h)),
+                                                   mm(max(y for _, y in h) - min(y for _, y in h)))) for h in self.holes]
+        return on_board and not any(box.Intersects(h) for h in hole_boxes)
 
     def place_near(self, fp, x: float, y: float, keep_off: list[pcbnew.BOX2I] = ()) -> None:
         """Put a small part at the free spot nearest (x, y): on the board, clear of every placed courtyard."""
@@ -285,6 +290,10 @@ def clean(poly: list, eps: float = 0.01) -> list:
         if abs(cross) > eps * ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5:
             out.append((x, y))
     return out
+
+
+def area(poly: list) -> float:
+    return sum(x0 * y1 - x1 * y0 for (x0, y0), (x1, y1) in zip(poly, poly[1:] + poly[:1])) / 2
 
 
 def point_in(x: float, y: float, poly: list) -> bool:

@@ -47,6 +47,9 @@ PCB_T = 1.6
 SMD = 1.0  # height of the SMD parts (diodes, resistors, the level shifter)
 UNDER = 4.6  # switch board: board + the tallest part below it (JST-SH with its plug, 2.9 + margin)
 HAT_Z = (9.5, 17.5)  # hat bottom (2.5 mm header spacer on the Pico) .. the tallest part on it
+# Through the hat over the Pico's two M2 holes, 3.2 mm from pins 19-22: 4.0 mm keeps 0.3 mm to their pads and passes an
+# M2 x 5 button-head screw (ISO 7380, 3.5 mm head, 1.3 mm hex key); a pan head (4.0 mm) does not fit through.
+SCREW_HOLE = 4.0
 SWITCH_PAD = 7.0  # half the board area a switch's pins and diode need
 # MX switch, below its housing: the two contact pins and the centre post (x, y from the switch centre, diameter,
 # length) - they come through the board, so nothing may sit under them.  Solder joints add 0.5 mm.
@@ -321,6 +324,14 @@ class Design:
         xs, ys = [p["x"] for p in pins], [p["y"] for p in pins]
         region = rect(min(xs) - 25, max(xs) + 25, min(ys) - 20, L.D)
         self.hat = free_piece(region, self.hat_shadow, [(sum(xs) / 40, sum(ys) / 40)])
+        pc = L.p.pico  # the Pico is screwed down through the hat, which is soldered on before it goes in
+        self.screw_holes = []
+        for side in (-1, 1):
+            q = (L.loc_pico * Pos(pc.length - pc.hole_from_end, side * pc.hole_spacing / 2, 0)).position
+            self.screw_holes.append((round(q.X, 3), round(q.Y, 3)))
+            self.hat = self.hat - m3d.CrossSection.circle(SCREW_HOLE / 2, 48).translate((q.X, q.Y))
+        if len(self.hat.decompose()) != 1:
+            raise SystemExit(f"{self.name}: the screw holes split the hat")
         for p in pins:
             if p["net"] != f"pin {p['pin']}" and not inside(self.hat, (p["x"], p["y"]), 1.0):
                 raise SystemExit(f"{self.name}: Pico pin {p['pin']} ({p['net']}) is not on the hat")
@@ -528,6 +539,7 @@ def build(name: str) -> int:
     report["boards"]["hat"] = {"frame": "world: x along the case's width, y from the front edge to the back",
                                "height_mm": {"bottom": HAT_Z[0], "parts_up_to": HAT_Z[1]}, "outline": bounds(d.hat),
                                "area_mm2": round(d.hat.area(), 1), "pico_pins": d.pins,
+                               "pico_screw_holes": {"diameter_mm": SCREW_HOLE, "centres": d.screw_holes},
                                "polygons": [[[round(x, 4), round(y, 4)] for x, y in poly] for poly in polygons(d.hat)]}
     (out / "positions.json").write_text(json.dumps(report, indent=2) + "\n")
 
