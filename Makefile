@@ -15,6 +15,7 @@
 #   make site-renders      the product page's renders and scroll sequences (docs/images/site, needs EGL)
 #   make pcb               the PCB version: board outlines, connectors, cable routes, fit check, ballast (pcb/)
 #   make pcb-kicad         the four KiCad boards from it, routed by Freerouting, with KiCad's DRC (needs KiCad)
+#   make pcb-fab           order files per board (Gerbers, drill, pick-and-place, BOM) + renders for the guide
 #   make all               everything above
 
 PY          := $(CURDIR)/.venv/bin/python
@@ -24,7 +25,7 @@ EDITIONS    := joystick rotary
 
 .PHONY: help setup cad cad-check cad-joystick cad-rotary firmware firmware-all firmware-joystick firmware-rotary \
         firmware-joystick-pico firmware-rotary-pico uf2 flash-joystick flash-rotary monitor test test-core \
-        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site site-dev site-renders docs guide-pdf pcb pcb-kicad all clean
+        test-joystick test-rotary test-hardware test-sanitize test-host host-run host-install ui-sim diagrams viewer site site-dev site-renders docs guide-pdf pcb pcb-kicad pcb-fab all clean
 
 help:
 	@grep -E '^#   make' Makefile | sed 's/^#   //'
@@ -148,6 +149,9 @@ pcb:
 # KiCad's pcbnew module belongs to the system Python, not the venv
 pcb-kicad: pcb
 	/usr/bin/python3 tools/pcb_kicad.py --route
+
+pcb-fab:
+	/usr/bin/python3 tools/pcb_fab.py
 
 docs: ui-sim diagrams viewer site-renders site
 

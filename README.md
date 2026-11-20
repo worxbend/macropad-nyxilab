@@ -273,6 +273,7 @@ everything below is also on the **[guide site](https://worxbend.github.io/macrop
 - [design notes](docs/design.md): layout, the 3-layer stack, how each part is held, what the checks verify
 - [printing](docs/printing.md): orientation, settings, colors, the knob, the dimensions to verify first
 - [build guide](docs/build-guide.md): solder, wire, flash, assemble, in order, with a test after every stage
+- [PCB build](docs/pcb-build.md): the same pad with three boards and two flat cables instead of hand wiring: what PCBWay makes turnkey, what to buy, print and assemble
 - [soldering](docs/soldering.md): tools, the matrix, diodes step by step, displays, LEDs, the Pico, wiring maps, troubleshooting
 - [wiring](docs/wiring.md): Pico pin map, matrix, displays, joystick, encoder, LED sticks
 - [assembly](docs/assembly.md): bill of materials + step-by-step build, both editions

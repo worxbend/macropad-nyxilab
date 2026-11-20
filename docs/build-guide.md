@@ -7,6 +7,9 @@ you start the next one: a fault is easy to fix on the bench and hard to fix in a
 The illustrated guide, with the figures for printing, wiring, soldering and flashing, is
 [nyxilab-build-guide.pdf](nyxilab-build-guide.pdf).
 
+No hand wiring: the [PCB build](pcb-build.md) replaces every wire inside the case with three boards
+(made turnkey) and two flat cables, in the same case.
+
 | Stage | What you do | Time |
 |---|---|---|
 | [1 · Prepare](#1-prepare) | parts, tools, inserts, switches and modules into the plate | 1 h |

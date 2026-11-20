@@ -1,0 +1,6 @@
+Item,Designator,Qty,Manufacturer,Mfg Part #,Description,Package / Footprint,Type,Side,Note
+1,C1,1,any,,"capacitor 100 nF, X7R, 16 V, 0402",C_0402_1005Metric,SMD,bottom,
+2,"D_R0C1,D_R0C2,D_R1C1,D_R1C2,D_R2C1,D_R2C2,D_R3C1,D_R3C2",8,any (e.g. Changjiang CJ),1N4148W,"switching diode, 75 V, SOD-123",D_SOD-123,SMD,bottom,
+3,J1,1,Hirose,FH12-20S-0.5SH(55),"FPC connector, 20 pins, 0.5 mm, bottom contact, ZIF",Hirose_FH12-20S-0.5SH_1x20-1MP_P0.50mm_Horizontal,SMD,bottom,
+4,J2,1,JST,SM08B-SRSS-TB(LF)(SN),"JST-SH header, 8 pins, 1.0 mm, side entry",JST_SH_SM08B-SRSS-TB_1x08-1MP_P1.00mm_Horizontal,SMD,bottom,
+5,"SW_R0C1,SW_R0C2,SW_R1C1,SW_R1C2,SW_R2C1,SW_R2C2,SW_R3C1,SW_R3C2",8,,,"MX switch, plate-mounted",SW_Cherry_MX_1.00u_Plate,THT,top,do not assemble: you fit your own switches through the top plate

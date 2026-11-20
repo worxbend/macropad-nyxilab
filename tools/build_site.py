@@ -36,6 +36,7 @@ PAGES = [
     ("docs/design.md", "design", "Design"),
     ("docs/printing.md", "printing", "Printing"),
     ("docs/build-guide.md", "build-guide", "Build guide"),
+    ("docs/pcb-build.md", "pcb-build", "PCB build"),
     ("docs/soldering.md", "soldering", "Soldering"),
     ("docs/wiring.md", "wiring", "Wiring"),
     ("docs/assembly.md", "assembly", "Assembly"),

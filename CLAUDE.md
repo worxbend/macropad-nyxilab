@@ -25,7 +25,9 @@ Four projects plus the shared code, and the host bridge:
   dashboard over a vendor HID interface (system metrics, sway workspaces via sway IPC, the MPRIS player via a `playerctl`
   child) and runs commands for `HOST(n)` keys; `nyxctl` talks to it over a Unix socket.
   Design + protocol: `docs/host-bridge.md`.
-- `docs/` - guides (design, printing, build guide, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
+- `pcb/` - the PCB version (no hand wiring): fit check outputs per edition, `netlist.json` / `pinout.md`, the four
+  KiCad boards in `pcb/kicad/`, order files in `pcb/fab/`; guide `docs/pcb-build.md`.
+- `docs/` - guides (design, printing, build guide, PCB build, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
   `docs/images/` (wiring diagrams, wiring maps, soldering figures), `docs/viewer.html` (both editions).
 - `web/` - the product page (`index.html`, `site.css`, `site.js`; plain HTML, no build step), copied to the site root.
   Its renders and the two scroll-scrubbed frame sequences are `docs/images/site/` from `tools/site_renders.py`.
@@ -51,6 +53,9 @@ make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figu
 make site               # site/ for GitHub Pages; python3 -m http.server -d site to look at it
 make site-dev           # work on the site: build, serve on :8000, rebuild + reload the browser on every save
 make site-renders       # docs/images/site (product-page renders + frame sequences); rerun after a CAD change
+make pcb                # PCB version: outlines, connectors, cable routes, fit check, PCB ballast, nets (pcb/)
+make pcb-kicad          # the four KiCad boards, routed by Freerouting, with KiCad's DRC (KiCad 10, system Python)
+make pcb-fab            # order files per board (Gerbers, drill, pick-and-place, BOM) + docs/images/pcb renders
 ```
 
 CI (`.github/workflows/ci.yml`) installs Python tools only from the hash-locked, wheel-only files in

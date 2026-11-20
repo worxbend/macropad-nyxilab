@@ -1,0 +1,9 @@
+Item,Designator,Qty,Manufacturer,Mfg Part #,Description,Package / Footprint,Type,Side,Note
+1,C1,1,any,,"capacitor 10 uF, X5R, 10 V, 0805",C_0805_2012Metric,SMD,top,
+2,"C2,C3,C4",3,any,,"capacitor 100 nF, X7R, 16 V, 0402",C_0402_1005Metric,SMD,top,
+3,D1,1,any in stock (e.g. MDD),B5819W,"Schottky diode, 40 V 1 A, SOD-123",D_SOD-123,SMD,top,
+4,H1,1,,,"2 x 1x20 pin header, 2.54 mm, straight, to the Pico 2",RaspberryPi_Pico_Common_THT,THT,bottom,through-hole: assemble the two 1x20 headers into the hat (long pins down); the Pico itself is yours
+5,"J1,J2",2,Hirose,FH12-20S-0.5SH(55),"FPC connector, 20 pins, 0.5 mm, bottom contact, ZIF",Hirose_FH12-20S-0.5SH_1x20-1MP_P0.50mm_Horizontal,SMD,top,
+6,J4,1,JST,S3B-PH-SM4-TB(LF)(SN),"JST-PH header, 3 pins, 2.0 mm, side entry, SMD",JST_PH_S3B-PH-SM4-TB_1x03-1MP_P2.00mm_Horizontal,SMD,top,
+7,R1,1,any,,"resistor 330 R, 1 %, 0402",R_0402_1005Metric,SMD,top,
+8,U1,1,Texas Instruments,SN74AHCT1G125DBVR,"single buffer, 3-state, 5 V TTL-level inputs",SOT-23-5,SMD,top,
