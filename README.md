@@ -121,8 +121,10 @@ from your computer, and a keys-per-second graph so you can watch yourself go fer
 
 run `nyxd` on linux (one small rust binary) and the HOST layer becomes a live dashboard:
 CPU per core, temps, RAM, swap, disk, network, GPU, the clock, plus up to four lines of
-whatever you pipe in with `nyxctl text 0 "build passed"`. its keys fire shell commands
-on your PC. no daemon? the layer just hides itself. setup + protocol:
+whatever you pipe in with `nyxctl text 0 "build passed"`. two more pages: SWAY (your sway
+workspaces + the focused window, keys 1-8 jump there) and PLAY (whatever MPRIS player is
+playing, with play/pause, skip, seek and volume keys, via `playerctl`). the H1-H8 keys fire
+shell commands on your PC. no daemon? the layer just hides itself. setup + protocol:
 [docs/host-bridge.md](docs/host-bridge.md).
 
 <img src="docs/images/rotary/ui/ui_06_host_dashboard.png" alt="HOST layer dashboard" width="70%">
@@ -256,7 +258,7 @@ the screens and switch off when your computer sleeps.
 **can I use the OG Pico (RP2040)?** yes bestie, `make firmware-joystick-pico` (or `-rotary-pico`)
 and flash the `…-pico.uf2`. same footprint, same case.
 
-**what do the keys do?** four layers out of the box: MEDIA, EDIT, F13–F24 and a hold-for-FN layer.
+**what do the keys do?** four layers out of the box: MEDIA, EDIT, F1–F24 (three pages of eight) and a hold-for-FN layer.
 tap the front-left key for the next layer, hold it for FN. the knob does volume, undo/redo,
 scroll and screen brightness depending on the layer, and FN + KNOB swaps in volume / scroll /
 zoom / arrows. remap everything in `<edition>/firmware/src/keymap.cpp`.

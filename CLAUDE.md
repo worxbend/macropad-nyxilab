@@ -22,7 +22,8 @@ Four projects plus the shared code, and the host bridge:
   pure C++, tests in `common/firmware/test`), `nyx_hw` (matrix, USB HID, settings), `nyx_ui` (renderer, panels, LEDs),
   `nyx_app` (the application loop; `app::Centre` is the edition interface).
 - `host/` - `nyxd`, the optional Linux daemon (a Rust crate: `nyxd` + `nyxctl` binaries) that feeds the HOST layer's
-  dashboard over a vendor HID interface and runs commands for `HOST(n)` keys; `nyxctl` talks to it over a Unix socket.
+  dashboard over a vendor HID interface (system metrics, sway workspaces via sway IPC, the MPRIS player via a `playerctl`
+  child) and runs commands for `HOST(n)` keys; `nyxctl` talks to it over a Unix socket.
   Design + protocol: `docs/host-bridge.md`.
 - `docs/` - guides (design, printing, build guide, soldering, wiring, assembly, host bridge), generated images in `docs/images/<edition>/` and
   `docs/images/` (wiring diagrams, wiring maps, soldering figures), `docs/viewer.html` (both editions).
@@ -43,7 +44,7 @@ make cad-joystick CMD=check   # one edition, one step (check | export | render |
 make cad-check          # 192 (joystick) / 215 (rotary) interference pairs + clearances + printability; non-zero exit on failure
 make firmware           # both editions for the Pico 2 -> <ed>/firmware/dist/nyxilab-macropad-<ed>-pico2.uf2
 make firmware-all       # + the RP2040 builds; firmware-joystick, firmware-rotary(-pico), flash-joystick, flash-rotary
-make test               # native tests: common (74), joystick (11), rotary (10), mocked hardware (28 + 30 groups), host daemon (18, cargo)
+make test               # native tests: common (80), joystick (11), rotary (10), mocked hardware (32 + 35 groups), host daemon (39, cargo)
 make test-sanitize      # the native C++ tests again under ASan + UBSan
 make host-run           # nyxd from the source tree (cargo run); host-install = cargo install --path host
 make docs               # ui-sim + diagrams (wiring, wiring maps, soldering figures) + viewer + site-renders + site
@@ -91,5 +92,6 @@ unchanged unless asked (its STLs are the regression reference).
   (`host/tests/interop.rs` compiles the C++ parser and runs it against the Rust encoder). `make test-host` also runs
   clippy with `-D warnings` and `cargo fmt --check` (rustfmt.toml: 120 columns). `hw/host_hid` is a second HID interface (usage page
   0xFF4E) registered before `usb_begin()`; its receive callback runs in TinyUSB's soft IRQ, hence the SPSC ring.
-  `Layer.view = View::Host` selects the dashboard; such layers are skipped by `LNEXT` while no daemon is linked.
+  Any `Layer.view` but `View::Keys` (`Host`, `Sway`, `Player`: `mp::is_host_view`) is a dashboard page; such layers are
+  skipped by `LNEXT` while no daemon is linked. The HOST layer is three pages (`L_SWAY`, `L_PLAYER` have `page_of = L_HOST`).
   Adding a layer shifts `FN_LAYER`: UI scenes use `mp::FN_LAYER`, never a number.

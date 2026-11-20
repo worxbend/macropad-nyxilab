@@ -144,8 +144,8 @@ Pico GND  ───────────────────────�
   work, but the diode needs no board.
 - **The 330 Ω resistor** sits in the data wire close to the first stick's DIN. It damps
   ringing on the wire and protects the first LED. Heat-shrink it inline.
-- **Current:** the firmware caps the sticks at 250 mA (`LED_BUDGET_MA`) and at 160/255
-  brightness (`LED_MAX_BRIGHTNESS`), so the whole pad stays well inside a USB 2.0 port's
+- **Current:** the firmware caps the sticks at 250 mA (`LED_BUDGET_MA`) and at 89/255 (35 %)
+  brightness (`LED_MAX_BRIGHTNESS`, at LED level 8; lower levels scale it down), so the whole pad stays well inside a USB 2.0 port's
   500 mA. The LEDs follow the display brightness, dim with it when idle, and go dark
   while the computer sleeps.
 - The sticks have their pads on the back at both ends. The posts hold them 3 mm above
