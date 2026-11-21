@@ -1008,26 +1008,27 @@ static void test_host_dashboard_text_formats() {
   assert(std::string(host) == "work");
 
   // SWAY page
-  assert(std::string(ui::sway_layout_name(mp::SWAY_SPLITH)) == "splith");
-  assert(std::string(ui::sway_layout_name(mp::SWAY_STACKED)) == "stacked");
-  assert(std::string(ui::sway_layout_name(mp::SWAY_UNKNOWN)).empty() && std::string(ui::sway_layout_name(9)).empty());
-  const auto windows = [&](uint8_t n) { return ui::fmt_windows(buf, sizeof buf, n), std::string(buf); };
-  assert(windows(0) == "0 windows" && windows(1) == "1 window" && windows(255) == "255 windows");
-
-  // a focused window title in 34 columns, at most 3 lines, the last cut with an ellipsis
+  // a focused window title in at most 3 lines by width (here 6 px a character), the last cut with an ellipsis
   char lines[3][ui::WRAP_MAX_COLS + 1];
-  assert(ui::wrap_lines("short title", 34, 3, lines) == 1 && std::string(lines[0]) == "short title");
-  assert(ui::wrap_lines("", 34, 3, lines) == 0);
-  assert(ui::wrap_lines("one two three", 8, 3, lines) == 2);
-  assert(std::string(lines[0]) == "one two" && std::string(lines[1]) == "three");
-  const std::string long_title(40, 'x');  // HOST_TITLE_LEN with no space
-  assert(ui::wrap_lines(long_title.c_str(), 12, 3, lines) == 3);
+  const auto px6 = [](const char* t) { return 6 * int(strlen(t)); };
+  const auto wrap = [&](const std::string& t, int cols, int max_lines) {
+    return ui::wrap_width(t.c_str(), 6 * cols, max_lines, lines, px6);
+  };
+  assert(wrap("short title", 34, 3) == 1 && std::string(lines[0]) == "short title");
+  assert(wrap("", 34, 3) == 0 && wrap("   ", 34, 3) == 0);
+  assert(wrap("one two three", 8, 3) == 2);
+  assert(std::string(lines[0]) == "one two" && std::string(lines[1]) == "three");  // between words
+  const std::string long_title(40, 'x');  // no space: broken inside the word
+  assert(wrap(long_title, 12, 3) == 3);
   assert(std::string(lines[0]) == "xxxxxxxxxxxx" && std::string(lines[2]) == "xxxxxxxxx...");  // 4 left over
-  assert(ui::wrap_lines((long_title + "yyyyyyyy").c_str(), 16, 3, lines) == 3);
+  assert(wrap(long_title + "yyyyyyyy", 16, 3) == 3);
   assert(std::string(lines[2]) == "xxxxxxxxyyyyyyyy");  // exactly 3 * 16: nothing to cut
-  assert(ui::wrap_lines((long_title + "yyyyyyyyyy").c_str(), 16, 3, lines) == 3);
+  assert(wrap(long_title + "yyyyyyyyyy", 16, 3) == 3);
   assert(std::string(lines[2]) == "xxxxxxxxyyyyy...");
-  assert(ui::wrap_lines("aaaa bbbb cccc dddd", 5, 2, lines) == 2 && std::string(lines[1]) == "bb...");
+  assert(wrap("aaaa bbbb cccc dddd", 5, 2) == 2 && std::string(lines[1]) == "bb...");
+  const auto wide_m = [](const char* t) { int w = 0; for (; *t; t++) w += *t == 'M' ? 12 : 6; return w; };
+  assert(ui::wrap_width("MMMM ii", 48, 3, lines, wide_m) == 2 && std::string(lines[0]) == "MMMM");  // measured, not counted
+  assert(std::string(lines[1]) == "ii");
 
   // PLAYER page: position / length
   const auto progress = [&](uint16_t pos, uint16_t len) {

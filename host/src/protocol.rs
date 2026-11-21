@@ -8,7 +8,7 @@
 use serde::Serialize;
 use unicode_normalization::{char::is_combining_mark, UnicodeNormalization};
 
-pub const PROTO_VERSION: u8 = 1;
+pub const PROTO_VERSION: u8 = 2; // 2: the window text moved to WINDOW_TEXT
 pub const PACKET: usize = 64;
 pub const USAGE_PAGE: u16 = 0xFF4E;
 pub const USAGE: u8 = 0x58;
@@ -23,6 +23,7 @@ pub const BYE: u8 = 0x04;
 pub const WORKSPACES: u8 = 0x05;
 pub const PLAYER: u8 = 0x06;
 pub const PLAYER_TEXT: u8 = 0x07;
+pub const WINDOW_TEXT: u8 = 0x08;
 // device -> host
 pub const HELLO_ACK: u8 = 0x81;
 pub const KEY: u8 = 0x82;
@@ -36,8 +37,6 @@ pub const TEXT_LEN: usize = 60;
 pub const HOSTNAME_LEN: usize = 31;
 /// sway workspaces 1..=8: the HOST layer's right block.
 pub const WORKSPACE_KEYS: u8 = 8;
-pub const TITLE_LEN: usize = 40;
-pub const APP_ID_LEN: usize = 12;
 pub const PLAYER_NAME_LEN: usize = 16;
 
 pub type Packet = [u8; PACKET];
@@ -73,9 +72,27 @@ pub struct Workspaces {
     /// Windows on the focused workspace, tiling and floating.
     pub windows: u8,
     pub layout: Layout,
-    /// The focused window's app_id (XWayland: its class) and title.
-    pub app_id: String,
+    /// The focused window's app, as `sway::app_name` names it, and its title: WINDOW_TEXT.
+    pub app: String,
     pub title: String,
+}
+
+/// WINDOW_TEXT's field byte.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum WindowField {
+    App = 0,
+    Title = 1,
+}
+
+impl WindowField {
+    pub const ALL: [WindowField; 2] = [WindowField::App, WindowField::Title];
+
+    pub fn of(self, w: &Workspaces) -> &str {
+        match self {
+            WindowField::App => &w.app,
+            WindowField::Title => &w.title,
+        }
+    }
 }
 
 /// The focused workspace's layout, as WORKSPACES sends it.
@@ -235,18 +252,15 @@ pub fn text(slot: usize, value: &str) -> Option<Packet> {
     Some(packet(TEXT, &payload))
 }
 
-/// `text` NUL-padded to `len` bytes, for fixed-width fields.
-fn fixed_text(text: &str, len: usize) -> Vec<u8> {
-    let mut b = ascii_text(text, len);
-    b.resize(len, 0);
-    b
+/// WORKSPACES: everything but the window text, which goes in WINDOW_TEXT.
+pub fn workspaces(w: &Workspaces) -> Packet {
+    packet(WORKSPACES, &[u8::from(w.running), w.focused, w.open, w.visible, w.urgent, w.windows, w.layout as u8])
 }
 
-pub fn workspaces(w: &Workspaces) -> Packet {
-    let mut payload = vec![u8::from(w.running), w.focused, w.open, w.visible, w.urgent, w.windows, w.layout as u8];
-    payload.extend(fixed_text(&w.app_id, APP_ID_LEN));
-    payload.extend(ascii_text(&w.title, TITLE_LEN));
-    packet(WORKSPACES, &payload)
+pub fn window_text(field: WindowField, value: &str) -> Packet {
+    let mut payload = vec![field as u8];
+    payload.extend(ascii_text(value, TEXT_LEN));
+    packet(WINDOW_TEXT, &payload)
 }
 
 /// PLAYER.  The position saturates at u16; a longer length is not a real track (a live stream
@@ -360,20 +374,20 @@ mod tests {
             urgent: 0x02,
             windows: 4,
             layout: Layout::Tabbed,
-            app_id: "firefox".into(),
+            app: "Firefox".into(),
             title: "vím — notes".into(),
         };
         let p = workspaces(&w);
         assert_eq!(&p[..9], &[WORKSPACES, PROTO_VERSION, 1, 3, 0x17, 0x14, 0x02, 4, 3]);
-        assert_eq!(&p[9..21], b"firefox\0\0\0\0\0");
-        assert_eq!(&p[21..32], b"vim ? notes");
-        assert!(p[32..].iter().all(|&b| b == 0));
-        let long = Workspaces { app_id: "a".repeat(20), title: "x".repeat(99), ..Workspaces::default() };
-        let p = workspaces(&long);
-        assert_eq!(p[2], 0); // not running
-        assert_eq!(p[9..21], [b'a'; APP_ID_LEN]);
-        assert_eq!(p[21..21 + TITLE_LEN], [b'x'; TITLE_LEN]);
-        assert!(p[21 + TITLE_LEN..].iter().all(|&b| b == 0)); // [61..63] stay 0
+        assert!(p[9..].iter().all(|&b| b == 0)); // the text goes in WINDOW_TEXT
+        assert_eq!(p[2], workspaces(&Workspaces::default())[2] + 1); // 0: not running
+        let app = window_text(WindowField::App, WindowField::App.of(&w));
+        assert_eq!(&app[..10], b"\x08\x02\x00Firefox");
+        let title = window_text(WindowField::Title, WindowField::Title.of(&w));
+        assert_eq!(&title[..14], b"\x08\x02\x01vim ? notes");
+        let long = window_text(WindowField::Title, &"x".repeat(99));
+        assert_eq!(long[3..3 + TEXT_LEN], [b'x'; TEXT_LEN]);
+        assert_eq!(long[63], 0); // 60 characters, the last byte stays 0
     }
 
     #[test]
@@ -405,7 +419,7 @@ mod tests {
     #[test]
     fn player_text_layout_matches_the_firmware_offsets() {
         let p = player_text(Field::Artist, "Sigur Rós");
-        assert_eq!(&p[..12], b"\x07\x01\x01Sigur Ros");
+        assert_eq!(&p[..12], b"\x07\x02\x01Sigur Ros");
         assert!(p[12..].iter().all(|&b| b == 0));
         let p = player_text(Field::Album, &"y".repeat(80));
         assert_eq!(p[2], 2);
@@ -422,7 +436,7 @@ mod tests {
         assert_eq!(decode(&ack), Some(Event::HelloAck { edition: 2, n_layers: 5, proto: 1, firmware: "fw 1".into() }));
         assert_eq!(decode(&[KEY, PROTO_VERSION, 7, 1]), Some(Event::Key { id: 7, pressed: true }));
         assert_eq!(decode(&[STATE, PROTO_VERSION, 1, 3, 3]), Some(Event::State { host_view: true, base: 3, top: 3 }));
-        assert_eq!(decode(&[KEY, 2, 7, 1]), None); // other protocol version
+        assert_eq!(decode(&[KEY, PROTO_VERSION + 1, 7, 1]), None); // other protocol version
         assert_eq!(decode(&[0x99, PROTO_VERSION, 0, 0]), None);
         assert_eq!(edition_name(1), "joystick");
     }

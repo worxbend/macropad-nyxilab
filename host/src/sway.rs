@@ -80,7 +80,7 @@ pub fn state(workspaces: &Value, tree: &Value) -> Workspaces {
     let mut w = Workspaces { running: true, ..Workspaces::default() };
     if let Some(window) = focused_window(tree) {
         w.title = text(window, "name");
-        w.app_id = app_id(window);
+        w.app = app(window);
     }
     for ws in workspaces.as_array().into_iter().flatten() {
         let flag = |key: &str| ws.get(key).and_then(Value::as_bool).unwrap_or(false);
@@ -138,12 +138,23 @@ fn focused_window(node: &Value) -> Option<&Value> {
     children(node).find_map(focused_window)
 }
 
-/// Wayland windows have an app_id; XWayland ones a class instead.
-fn app_id(window: &Value) -> String {
+/// The window's app as a readable name (`app_name`): Wayland windows have an app_id, XWayland ones a class.
+fn app(window: &Value) -> String {
     match window.get("app_id").and_then(Value::as_str) {
-        Some(id) => id.to_string(),
-        None => window.get("window_properties").map(|p| text(p, "class")).unwrap_or_default(),
+        Some(id) => app_name(id),
+        None => app_name(&window.get("window_properties").map(|p| text(p, "class")).unwrap_or_default()),
     }
+}
+
+/// "org.telegram.telegram-desktop" -> "Telegram Desktop": the part after the last dot (a Flatpak id's app
+/// name), its words split at '-' and '_', each capitalised.
+pub fn app_name(id: &str) -> String {
+    let last = id.rsplit('.').next().filter(|s| !s.is_empty()).unwrap_or(id);
+    let capitalised = |word: &str| {
+        let mut chars = word.chars();
+        chars.next().map(|first| first.to_uppercase().chain(chars).collect::<String>()).unwrap_or_default()
+    };
+    last.split(['-', '_']).filter(|w| !w.is_empty()).map(capitalised).collect::<Vec<_>>().join(" ")
 }
 
 fn find_workspace<'a>(node: &'a Value, name: &str) -> Option<&'a Value> {
@@ -247,7 +258,19 @@ mod tests {
     fn app_id_of_a_wayland_window_wins() {
         let w = json!({"type": "root", "nodes": [{"type": "con", "name": "t", "app_id": "foot",
             "window_properties": {"class": "x"}, "focused": true}]});
-        assert_eq!(state(&json!([]), &w).app_id, "foot");
+        assert_eq!(state(&json!([]), &w).app, "Foot");
+    }
+
+    #[test]
+    fn app_names_are_readable() {
+        assert_eq!(app_name("org.telegram.telegram-desktop"), "Telegram Desktop");
+        assert_eq!(app_name("org.gnome.Nautilus"), "Nautilus");
+        assert_eq!(app_name("com.github.tchx84.Flatseal"), "Flatseal");
+        assert_eq!(app_name("firefox"), "Firefox");
+        assert_eq!(app_name("jetbrains-idea_ce"), "Jetbrains Idea Ce");
+        assert_eq!(app_name("ärger"), "Ärger");
+        assert_eq!(app_name(""), "");
+        assert_eq!(app_name("trailing."), "Trailing.");
     }
 
     #[test]
@@ -302,7 +325,7 @@ mod tests {
                 urgent: 0x02,
                 windows: 4, // terminal, a, b and the floating Firefox; not the split con
                 layout: Layout::Tabbed,
-                app_id: "firefox-esr".into(), // XWayland: the class
+                app: "Firefox Esr".into(), // XWayland: the class
                 title: "Firefox".into(),
             }
         );

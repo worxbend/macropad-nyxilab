@@ -65,7 +65,7 @@ fn client_subscribes_queries_and_switches() {
             visible: 0x02,
             windows: 1,
             layout: Layout::SplitV,
-            app_id: "code".into(),
+            app: "Code".into(),
             title: "editor".into(),
             ..Workspaces::default()
         }

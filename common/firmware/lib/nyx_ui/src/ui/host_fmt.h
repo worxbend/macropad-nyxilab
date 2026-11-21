@@ -66,25 +66,6 @@ inline int wrap_cols(const char* t, char* part, int cols) {
 }
 inline int wrap12(const char* t, char part[13]) { return wrap_cols(t, part, 12); }
 
-// Up to `max_lines` lines of at most `cols` (<= WRAP_MAX_COLS) characters; returns how many.  When text is
-// left over, the last line ends in "...".
-constexpr int WRAP_MAX_COLS = 53;  // 320 px of the 6 px font
-inline int wrap_lines(const char* t, int cols, int max_lines, char (*out)[WRAP_MAX_COLS + 1]) {
-  int n = 0;
-  while (*t && n < max_lines) {
-    t += wrap_cols(t, out[n++], cols);
-    while (*t == ' ') t++;
-  }
-  if (*t && n) {
-    char* last = out[n - 1];
-    int len = int(strlen(last));
-    if (len > cols - 3) len = cols - 3;
-    while (len > 0 && last[len - 1] == ' ') len--;
-    memcpy(last + len, "...", 4);
-  }
-  return n;
-}
-
 // The longest prefix of `s` that is at most `max_w` wide by `width(const char*)`, cut with "..." (also when
 // `s` does not fit the buffer).  For the proportional fonts, whose width only the canvas can measure.
 template <class Width>
@@ -101,14 +82,35 @@ inline void fit_width(char* o, size_t n, const char* s, int max_w, Width width) 
   }
 }
 
-// ------------------------------------------------------------------ SWAY page
-inline const char* sway_layout_name(uint8_t layout) {
-  static const char* const kNames[] = {"", "splith", "splitv", "tabbed", "stacked"};
-  return layout < sizeof kNames / sizeof kNames[0] ? kNames[layout] : "";
-}
-
-inline void fmt_windows(char* o, size_t n, uint8_t windows) {
-  snprintf(o, n, "%u window%s", windows, windows == 1 ? "" : "s");
+// Up to `max_lines` lines at most `max_w` wide by `width(const char*)`, broken between words (inside a word only
+// when it is wider than a line); returns how many.  When text is left over, the last line ends in "...".
+constexpr int WRAP_MAX_COLS = 60;  // the longest text a line can hold (HOST_MEDIA_LEN)
+template <class Width>
+inline int wrap_width(const char* t, int max_w, int max_lines, char (*out)[WRAP_MAX_COLS + 1], Width width) {
+  int n = 0;
+  while (*t == ' ') t++;
+  while (*t && n < max_lines) {
+    char* line = out[n++];
+    if (n == max_lines) {  // the last line takes the rest, cut to fit
+      fit_width(line, WRAP_MAX_COLS + 1, t, max_w, width);
+      return n;
+    }
+    const int len = int(strnlen(t, WRAP_MAX_COLS));
+    int at_space = 0, fits = 0;
+    for (int i = 1; i <= len; i++) {
+      memcpy(line, t, i);
+      line[i] = 0;
+      if (width(line) > max_w) break;
+      fits = i;
+      if (t[i] == ' ' || t[i] == 0) at_space = i;
+    }
+    const int take = at_space ? at_space : (fits ? fits : 1);
+    memcpy(line, t, take);
+    line[take] = 0;
+    t += take;
+    while (*t == ' ') t++;
+  }
+  return n;
 }
 
 // ---------------------------------------------------------------- PLAYER page

@@ -8,7 +8,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 
 use common::TempDir;
-use nyxd::protocol::{self as proto, Event, Field, Layout, Media, Metrics, Status, Workspaces};
+use nyxd::protocol::{self as proto, Event, Field, Layout, Media, Metrics, Status, WindowField, Workspaces};
 
 #[test]
 fn firmware_parser_understands_the_daemon() {
@@ -53,7 +53,7 @@ fn firmware_parser_understands_the_daemon() {
     input.extend(proto::hello("désk-01"));
     input.extend(proto::metrics(&m));
     input.extend(proto::text(2, "build ✓ ok").unwrap());
-    input.extend(proto::workspaces(&Workspaces {
+    let sway = Workspaces {
         running: true,
         focused: 3,
         open: 0b1000_1101,
@@ -61,9 +61,13 @@ fn firmware_parser_understands_the_daemon() {
         urgent: 0b1000_0000,
         windows: 7,
         layout: Layout::Tabbed,
-        app_id: "org.mozilla.firefox".into(),
-        title: r#"Résumé — draft "v2" \ notes.odt - LibreOffice Writer"#.into(),
-    }));
+        app: "LibreOffice Writer".into(),
+        title: r#"Résumé — draft "v2" \ notes.odt - LibreOffice Writer, the long window title"#.into(),
+    };
+    input.extend(proto::workspaces(&sway));
+    for f in WindowField::ALL {
+        input.extend(proto::window_text(f, f.of(&sway)));
+    }
     let media = Media {
         present: true,
         status: Status::Paused,
@@ -118,13 +122,13 @@ fn firmware_parser_understands_the_daemon() {
     assert_eq!((seen["h"].clone(), seen["m"].clone()), (14.into(), 7.into()));
     assert_eq!(seen["text"], serde_json::json!(["", "", "build ? ok", ""]));
 
-    // Accents stripped, other non-ASCII -> '?', app_id cut at 12 and title at 40 (counted after that).
+    // Accents stripped, other non-ASCII -> '?', the title cut at 60 (counted after that).
     assert_eq!(
         seen["sway"],
         serde_json::json!({
             "running": 1, "focused": 3, "open": 0b1000_1101, "visible": 0b0000_0101, "urgent": 0b1000_0000,
-            "windows": 7, "layout": 3, "app_id": "org.mozilla.",
-            "title": r#"Resume ? draft "v2" \ notes.odt - LibreO"#,
+            "windows": 7, "layout": 3, "app": "LibreOffice Writer",
+            "title": r#"Resume ? draft "v2" \ notes.odt - LibreOffice Writer, the lo"#,
         })
     );
     // u16 LE seconds; name cut at 16, title at 60 (the ligature and "No" sign expand under NFKD).

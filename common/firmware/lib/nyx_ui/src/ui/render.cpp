@@ -164,13 +164,6 @@ void label_centered(GFXcanvas16& c, const char* s, int cx, int cy, int max_w, ui
   text_centered(c, s, cx, cy, f, col);
 }
 
-// `s` in font `f`, cut with an ellipsis to `max_w` px
-void text_fit(GFXcanvas16& c, const char* s, int x, int baseline, int max_w, const GFXfont* f, uint16_t col) {
-  char buf[mp::HOST_MEDIA_LEN + 4];
-  fit_width(buf, sizeof buf, s, max_w, [&](const char* t) { return text_width(c, t, f); });
-  text_at(c, buf, x, baseline, f, col);
-}
-
 // Every HOST page: layer name, one dot per page, host name, host clock, link dot.
 void render_host_header(GFXcanvas16& c, const UiState& s) {
   const mp::Layer& top = mp::LAYERS[s.top_layer];
@@ -245,6 +238,35 @@ void workspace_grid(GFXcanvas16& c, const mp::HostSway& w, uint16_t accent) {
   }
 }
 
+// The focused workspace's layout as a 16 x 14 icon at (x, y): side by side, top to bottom, tabs, title bars.
+void layout_icon(GFXcanvas16& c, uint8_t layout, int x, int y, uint16_t col) {
+  constexpr int W = 16, H = 14;
+  switch (layout) {
+    case mp::SWAY_SPLITH:
+      c.drawRect(x, y, W, H, col);
+      c.drawFastVLine(x + W / 2, y, H, col);
+      break;
+    case mp::SWAY_SPLITV:
+      c.drawRect(x, y, W, H, col);
+      c.drawFastHLine(x, y + H / 2, W, col);
+      break;
+    case mp::SWAY_TABBED:
+      c.drawRect(x, y, W, H, col);
+      c.fillRect(x, y, W / 3, 4, col);  // the active tab
+      c.drawFastHLine(x, y + 4, W, col);
+      c.drawFastVLine(x + W / 3, y, 4, col);
+      c.drawFastVLine(x + 2 * W / 3, y, 4, col);
+      break;
+    case mp::SWAY_STACKED:
+      c.drawRect(x, y, W, H, col);
+      c.fillRect(x, y, W, 3, col);  // the active title bar
+      c.drawFastHLine(x, y + 4, W, col);
+      c.drawFastHLine(x, y + 7, W, col);
+      break;
+    default: break;  // unknown: no icon
+  }
+}
+
 void render_sway_page(GFXcanvas16& c, const UiState& s) {
   const uint16_t accent = mp::LAYERS[s.top_layer].color;
   const mp::HostSway& w = s.host.sway;
@@ -256,28 +278,30 @@ void render_sway_page(GFXcanvas16& c, const UiState& s) {
     return;
   }
 
-  // focused workspace: number, layout, window count
-  char buf[16];
-  small(c, "WORKSPACE", 14, 37, th->subtle);
+  // focused workspace: window count with the layout icon, then the workspace number
+  char buf[8];
+  small(c, "WINDOWS", 14, 37, th->subtle);
+  snprintf(buf, sizeof buf, "%u", w.windows);
+  text_at(c, buf, 14, 76, &FreeSansBold18pt7b, ink(*th, accent));
+  layout_icon(c, w.layout, 14 + text_width(c, buf, &FreeSansBold18pt7b) + 8, 62, th->subtle);
+  small(c, "WORKSPACE", 150, 37, th->subtle);
   if (w.focused)
     snprintf(buf, sizeof buf, "%u", w.focused);
   else
     strcpy(buf, "-");  // a workspace outside 1..8
-  text_at(c, buf, 14, 76, &FreeSansBold18pt7b, ink(*th, accent));
-  text_at(c, sway_layout_name(w.layout), 54, 60, &FreeSansBold9pt7b, th->text);
-  fmt_windows(buf, sizeof buf, w.windows);
-  small(c, buf, 54, 67, th->subtle);
+  text_at(c, buf, 150, 76, &FreeSansBold12pt7b, th->text);
   c.drawFastHLine(14, 86, 202, th->cell);
 
-  // focused window: app_id, title in up to 3 lines
-  if (!*w.app_id && !*w.title) {
+  // focused window: the app's name (nyxd makes it readable), then its title in up to 3 lines
+  if (!*w.app && !*w.title) {
     small(c, "no window", 14, 96, th->muted);
     return;
   }
-  text_fit(c, w.app_id, 14, 106, 202, &FreeSansBold9pt7b, th->text);
   char lines[3][WRAP_MAX_COLS + 1];
-  const int n = wrap_lines(w.title, 33, 3, lines);
-  for (int i = 0; i < n; i++) small(c, lines[i], 14, 116 + i * 12, th->subtle);
+  fit_width(lines[0], sizeof lines[0], w.app, 202, [](const char* t) { return 6 * int(strlen(t)); });
+  small(c, lines[0], 14, 93, ink(*th, accent));
+  const int n = wrap_width(w.title, 202, 3, lines, [&](const char* t) { return text_width(c, t, &FreeSansBold9pt7b); });
+  for (int i = 0; i < n; i++) text_at(c, lines[i], 14, 116 + i * 19, &FreeSansBold9pt7b, i ? th->subtle : th->text);
 }
 
 // ---------------------------------------------------- PLAYER page (View::Player)
@@ -300,6 +324,60 @@ void accent_bar(GFXcanvas16& c, int x, int y, int w, uint32_t num, uint32_t den,
   if (f > 0) c.fillRoundRect(x, y, f < 6 ? 6 : f, 6, 3, accent);
 }
 
+// A font for wrapped text: `ascent` moves the top of a line to the baseline (0 for the built-in font, which draws
+// from the top), `step` is the line pitch.
+struct WrapFont {
+  const GFXfont* f;
+  int ascent, step;
+};
+constexpr WrapFont W12{&FreeSansBold12pt7b, 17, 23}, W9{&FreeSansBold9pt7b, 13, 18}, W6{nullptr, 0, 10};
+
+// Title, artist and album wrapped in full between the status line and the progress bar: the first layout, from
+// large to small, whose fields all fit their lines without a cut.  The last always fits 60 characters a field.
+void media_text(GFXcanvas16& c, const mp::HostPlayer& p) {
+  struct Field { const char* text; uint16_t col; };
+  struct Slot { WrapFont font; int max_lines; };
+  struct Layout { Slot slot[3]; };
+  static const Layout kLayouts[] = {
+      {{{W12, 2}, {W9, 1}, {W6, 1}}},
+      {{{W12, 2}, {W9, 2}, {W6, 2}}},
+      {{{W9, 2}, {W9, 2}, {W6, 2}}},
+      {{{W9, 3}, {W6, 1}, {W6, 1}}},
+      {{{W9, 3}, {W6, 2}, {W6, 2}}},
+      {{{W6, 2}, {W6, 2}, {W6, 2}}},  // 48 characters a line: any 60 fit in 2
+  };
+  constexpr int kTop = 50, kBottom = 136, kWidth = 292, kGap = 4;
+  const Field fields[3] = {{p.title, th->text}, {p.artist, th->subtle}, {p.album, th->muted}};
+  char lines[3][4][WRAP_MAX_COLS + 1];
+  int count[3] = {};
+  const Layout* chosen = &kLayouts[0];
+  for (const Layout& l : kLayouts) {
+    chosen = &l;
+    int height = 0;
+    bool cut = false;
+    for (int i = 0; i < 3; i++) {
+      const WrapFont& wf = l.slot[i].font;
+      // one line more than allowed: a field that needs it does not fit this layout
+      count[i] = wrap_width(fields[i].text, kWidth, l.slot[i].max_lines + 1, lines[i],
+                            [&](const char* t) { return text_width(c, t, wf.f); });
+      if (count[i] > l.slot[i].max_lines) cut = true;
+      if (count[i]) height += count[i] * wf.step + kGap;
+    }
+    if (!cut && kTop + height <= kBottom) break;
+  }
+  int y = kTop;
+  for (int i = 0; i < 3; i++) {
+    const Slot& slot = chosen->slot[i];
+    if (count[i] > slot.max_lines) {  // only on the last layout: cut the last line
+      count[i] = wrap_width(fields[i].text, kWidth, slot.max_lines, lines[i],
+                            [&](const char* t) { return text_width(c, t, slot.font.f); });
+    }
+    for (int j = 0; j < count[i]; j++, y += slot.font.step)
+      text_at(c, lines[i][j], 14, y + slot.font.ascent, slot.font.f, fields[i].col);
+    if (count[i]) y += kGap;
+  }
+}
+
 void render_player_page(GFXcanvas16& c, const UiState& s) {
   const uint16_t accent = mp::LAYERS[s.top_layer].color;
   const mp::HostPlayer& p = s.host.player;
@@ -316,21 +394,17 @@ void render_player_page(GFXcanvas16& c, const UiState& s) {
   small(c, p.name, 32, 38, th->subtle);
   small_right(c, kStatus[p.status <= mp::PLAYER_PAUSED ? p.status : 0], 306, 38, th->muted);
 
-  text_fit(c, p.title, 14, 70, 292, &FreeSansBold12pt7b, th->text);
-  text_fit(c, p.artist, 14, 92, 292, &FreeSansBold9pt7b, th->subtle);
-  char buf[mp::HOST_MEDIA_LEN + 4];
-  fit_width(buf, sizeof buf, p.album, 292, [](const char* t) { return 6 * int(strlen(t)); });
-  small(c, buf, 14, 100, th->muted);
+  media_text(c, p);
 
-  accent_bar(c, 14, 118, 292, p.position_s, p.length_s, accent);
+  char buf[24];
+  accent_bar(c, 14, 140, 292, p.position_s, p.length_s, accent);
   fmt_progress(buf, sizeof buf, p.position_s, p.length_s);
-  small(c, buf, 14, 130, th->text);
-
+  small(c, buf, 14, 152, th->text);
   if (p.volume <= 100) {
-    small(c, "VOL", 14, 149, th->subtle);
-    accent_bar(c, 40, 150, 230, p.volume, 100, accent);
+    small(c, "VOL", 150, 152, th->subtle);
+    accent_bar(c, 172, 153, 100, p.volume, 100, accent);
     fmt_pct(buf, sizeof buf, p.volume);
-    small_right(c, buf, 306, 149, th->text);
+    small_right(c, buf, 306, 152, th->text);
   }
 }
 

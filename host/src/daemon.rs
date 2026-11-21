@@ -20,7 +20,7 @@ use crate::config::Config;
 use crate::device::Device;
 use crate::metrics::Source;
 use crate::player::{self, Action, Follower, Snapshot};
-use crate::protocol::{self as proto, Event, Field, Media, Packet, Status, Workspaces, TEXT_SLOTS};
+use crate::protocol::{self as proto, Event, Field, Media, Packet, Status, WindowField, Workspaces, TEXT_SLOTS};
 use crate::sway::{self, Sway};
 use crate::{debug, info, warn};
 
@@ -192,6 +192,9 @@ impl Daemon {
             }
             let pkt = proto::workspaces(&self.workspaces);
             self.send(&pkt);
+            for field in WindowField::ALL {
+                self.send(&proto::window_text(field, field.of(&self.workspaces)));
+            }
             self.send_player();
             for field in Field::ALL {
                 self.send(&proto::player_text(field, field.of(&self.player.media)));
@@ -309,13 +312,25 @@ impl Daemon {
         }
     }
 
+    /// Send what changed: WORKSPACES, and WINDOW_TEXT for each changed field (after it: a WORKSPACES
+    /// with sway gone clears the device's window text).
     fn show_workspaces(&mut self, w: Workspaces) {
-        if w == self.workspaces {
-            return;
+        let old = std::mem::replace(&mut self.workspaces, w);
+        let new = &self.workspaces;
+        let header = |w: &Workspaces| proto::workspaces(w);
+        let send_header = header(new) != header(&old);
+        let changed: Vec<Packet> = WindowField::ALL
+            .into_iter()
+            .filter(|f| f.of(new) != f.of(&old))
+            .map(|f| proto::window_text(f, f.of(new)))
+            .collect();
+        if send_header {
+            let pkt = proto::workspaces(&self.workspaces);
+            self.send(&pkt);
         }
-        self.workspaces = w;
-        let pkt = proto::workspaces(&self.workspaces);
-        self.send(&pkt);
+        for pkt in changed {
+            self.send(&pkt);
+        }
     }
 
     fn switch_workspace(&mut self, n: u8) {
@@ -447,7 +462,7 @@ impl Daemon {
                     "focused": self.workspaces.focused,
                     "open": self.workspaces.open,
                     "windows": self.workspaces.windows,
-                    "app_id": self.workspaces.app_id,
+                    "app": self.workspaces.app,
                     "title": self.workspaces.title,
                 })),
                 "player": self.player.media.present.then_some(&self.player.media),

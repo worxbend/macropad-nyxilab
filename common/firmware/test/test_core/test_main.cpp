@@ -1300,10 +1300,14 @@ void test_host_workspaces_from_sway() {
   hp.on_packet(hello.data(), HOST_PACKET, 0);
   TEST_ASSERT_FALSE(hp.data().sway.running);  // nothing until the daemon reports sway
   // running, workspace 3 focused, 1 2 3 5 open, 3 and 5 on a monitor, 2 urgent, 4 windows, tabbed
-  auto w = pkt({PKT_WORKSPACES, PROTO_VERSION, 1, 3, 0x17, 0x14, 0x02, 4, SWAY_TABBED, 'f', 'o', 'o', 't'});
-  const char* title = "vim\xC3 x";  // a non-ASCII byte
-  memcpy(&w[21], title, strlen(title));
+  auto w = pkt({PKT_WORKSPACES, PROTO_VERSION, 1, 3, 0x17, 0x14, 0x02, 4, SWAY_TABBED});
   TEST_ASSERT_TRUE(hp.on_packet(w.data(), HOST_PACKET, 100));
+  auto app = pkt({PKT_WINDOW_TEXT, PROTO_VERSION, WINDOW_APP, 'F', 'o', 'o', 't'});
+  auto title = pkt({PKT_WINDOW_TEXT, PROTO_VERSION, WINDOW_TITLE, 'v', 'i', 'm', 0xC3, ' ', 'x'});  // non-ASCII
+  TEST_ASSERT_TRUE(hp.on_packet(app.data(), HOST_PACKET, 110));
+  TEST_ASSERT_TRUE(hp.on_packet(title.data(), HOST_PACKET, 120));
+  auto bad_field = pkt({PKT_WINDOW_TEXT, PROTO_VERSION, 2, 'x'});
+  TEST_ASSERT_FALSE(hp.on_packet(bad_field.data(), HOST_PACKET, 130));
   const HostSway& s = hp.data().sway;
   TEST_ASSERT_TRUE(s.running);
   TEST_ASSERT_EQUAL(3, s.focused);
@@ -1312,21 +1316,24 @@ void test_host_workspaces_from_sway() {
   TEST_ASSERT_EQUAL_HEX8(0x02, s.urgent);
   TEST_ASSERT_EQUAL(4, s.windows);
   TEST_ASSERT_EQUAL(SWAY_TABBED, s.layout);
-  TEST_ASSERT_EQUAL_STRING("foot", s.app_id);
+  TEST_ASSERT_EQUAL_STRING("Foot", s.app);
   TEST_ASSERT_EQUAL_STRING("vim? x", s.title);
+  hp.on_packet(w.data(), HOST_PACKET, 140);
+  TEST_ASSERT_EQUAL_STRING("Foot", s.app);  // a WORKSPACES update keeps the window text
   std::vector<uint8_t> full(HOST_PACKET, 'a');  // no NUL anywhere: each string stops at its own field
   full[0] = PKT_WORKSPACES;
   full[1] = PROTO_VERSION;
   full[2] = 1;
   full[3] = 9;  // a focused number beyond the 8 keys
   full[8] = 5;  // a layout this firmware does not know
-  for (int i = 9; i < 21; i++) full[i] = 'b';
   hp.on_packet(full.data(), HOST_PACKET, 200);
   TEST_ASSERT_EQUAL(0, s.focused);
   TEST_ASSERT_EQUAL(SWAY_UNKNOWN, s.layout);
-  TEST_ASSERT_EQUAL(HOST_APP_ID_LEN, strlen(s.app_id));
-  TEST_ASSERT_EQUAL('b', s.app_id[HOST_APP_ID_LEN - 1]);
-  TEST_ASSERT_EQUAL(HOST_TITLE_LEN, strlen(s.title));  // cut at 40, not read past the packet
+  full[0] = PKT_WINDOW_TEXT;
+  full[2] = WINDOW_TITLE;
+  full[3] = 'a';
+  hp.on_packet(full.data(), HOST_PACKET, 210);
+  TEST_ASSERT_EQUAL(HOST_TEXT_LEN, strlen(s.title));  // cut at 60, not read past the packet
   TEST_ASSERT_EQUAL('a', s.title[0]);
   auto stopped = pkt({PKT_WORKSPACES, PROTO_VERSION, 0, 3, 0x04, 0x04, 0, 2, SWAY_SPLITH, 'x'});
   hp.on_packet(stopped.data(), HOST_PACKET, 300);
@@ -1334,7 +1341,7 @@ void test_host_workspaces_from_sway() {
   TEST_ASSERT_EQUAL(0, s.focused);
   TEST_ASSERT_EQUAL(0, s.open);
   TEST_ASSERT_EQUAL(0, s.windows);
-  TEST_ASSERT_EQUAL_STRING("", s.app_id);
+  TEST_ASSERT_EQUAL_STRING("", s.app);  // and the window text with it
   TEST_ASSERT_EQUAL_STRING("", s.title);
   hp.on_packet(w.data(), HOST_PACKET, 400);
   auto bye = pkt({PKT_BYE, PROTO_VERSION});
@@ -1458,7 +1465,7 @@ void test_host_metrics_text_and_timeout() {
   TEST_ASSERT_EQUAL_STRING("build ok", d.text[2]);
   auto bad_slot = pkt({PKT_TEXT, PROTO_VERSION, 9, 'x'});
   TEST_ASSERT_FALSE(hp.on_packet(bad_slot.data(), HOST_PACKET, 1500));
-  auto other_version = pkt({PKT_TEXT, 2, 1, 'x'});
+  auto other_version = pkt({PKT_TEXT, PROTO_VERSION + 1, 1, 'x'});
   TEST_ASSERT_FALSE(hp.on_packet(other_version.data(), HOST_PACKET, 1500));
   TEST_ASSERT_EQUAL_STRING("", d.text[1]);
 

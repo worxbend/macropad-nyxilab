@@ -88,6 +88,9 @@ bool HostProto::on_packet(const uint8_t* buf, uint16_t len, uint32_t now) {
     case PKT_PLAYER_TEXT:
       if (!on_player_text(p)) return false;
       break;
+    case PKT_WINDOW_TEXT:
+      if (!on_window_text(p)) return false;
+      break;
     case PKT_BYE:
       reset_data();
       tx_n_ = 0;
@@ -103,8 +106,10 @@ bool HostProto::on_packet(const uint8_t* buf, uint16_t len, uint32_t now) {
 // p is the zero-padded 64-byte packet: every field below lies inside it.
 void HostProto::on_workspaces(const uint8_t* p) {
   HostSway& s = data_.sway;
-  s = HostSway{};  // not running: the rest of the packet means nothing
-  if (!(p[2] & 1)) return;
+  if (!(p[2] & 1)) {
+    s = HostSway{};  // sway went away, and its windows with it; the rest of the packet means nothing
+    return;
+  }
   s.running = true;
   s.focused = p[3] <= HOST_WORKSPACES ? p[3] : 0;
   s.open = p[4];
@@ -112,8 +117,14 @@ void HostProto::on_workspaces(const uint8_t* p) {
   s.urgent = p[6];
   s.windows = p[7];
   s.layout = p[8] <= SWAY_STACKED ? p[8] : uint8_t(SWAY_UNKNOWN);
-  copy_text(s.app_id, HOST_APP_ID_LEN, p + 9, HOST_APP_ID_LEN);
-  copy_text(s.title, HOST_TITLE_LEN, p + 21, HOST_TITLE_LEN);
+}
+
+bool HostProto::on_window_text(const uint8_t* p) {
+  HostSway& s = data_.sway;
+  char* const fields[] = {s.app, s.title};
+  if (p[2] >= sizeof fields / sizeof fields[0]) return false;
+  copy_text(fields[p[2]], HOST_TEXT_LEN, p + 3, HOST_TEXT_LEN);
+  return true;
 }
 
 void HostProto::on_player(const uint8_t* p) {

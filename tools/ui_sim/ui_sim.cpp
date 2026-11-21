@@ -105,8 +105,8 @@ void sway_demo(UiState& s) {
   w.urgent = 0b01000000;   // 7
   w.windows = 4;
   w.layout = mp::SWAY_TABBED;
-  strcpy(w.app_id, "firefox");
-  strcpy(w.title, "Pull request #96 - nyxd: sway pages");
+  strcpy(w.app, "Firefox");
+  strcpy(w.title, "Pull request #96 - nyxd: sway pages - Mozilla Firefox");
 }
 
 void player_demo(UiState& s) {
@@ -117,8 +117,8 @@ void player_demo(UiState& s) {
   p.position_s = 83;
   p.length_s = 296;
   strcpy(p.name, "spotify");
-  strcpy(p.title, "Bohemian Rhapsody - Remastered 2011 (Live at Wembley Stadium)");
-  strcpy(p.artist, "Queen");
+  strcpy(p.title, "Bohemian Rhapsody - Live at Wembley Stadium, Remastered 2011");
+  strcpy(p.artist, "Queen, David Bowie and the London Symphony Orchestra");
   strcpy(p.album, "A Night at the Opera (2011 Remaster, Deluxe Edition)");
 }
 

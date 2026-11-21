@@ -106,8 +106,16 @@ impl Rig {
     }
 }
 
-const SESSION: [u8; 6] =
-    [proto::WORKSPACES, proto::PLAYER, proto::PLAYER_TEXT, proto::PLAYER_TEXT, proto::PLAYER_TEXT, proto::METRICS];
+const SESSION: [u8; 8] = [
+    proto::WORKSPACES,
+    proto::WINDOW_TEXT,
+    proto::WINDOW_TEXT,
+    proto::PLAYER,
+    proto::PLAYER_TEXT,
+    proto::PLAYER_TEXT,
+    proto::PLAYER_TEXT,
+    proto::METRICS,
+];
 
 fn player_line(fields: [&str; 9]) -> String {
     fields.join("\x1f")

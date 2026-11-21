@@ -123,12 +123,17 @@ it a further page of another layer (`View::Sway, L_HOST`). See the keymap of you
 - **SWAY:** on the right a 2 × 4 grid of workspaces laid out like the keys that switch to
   them (7 8 at the top, 1 2 at the bottom): focused = filled with the accent colour,
   urgent = red, visible on another monitor = accent outline, open = light outline, not
-  open = dim. On the left the focused workspace number ("-" outside 1-8), its layout
-  (splith, splitv, tabbed, stacked), the window count, the focused window's app_id and
-  its title (at most 3 lines, cut with "..."); "no window" on an empty workspace.
+  open = dim. On the left the focused workspace's window count, large, with a small icon
+  for its layout (two panes side by side for splith, one above the other for splitv,
+  tabs for tabbed, title bars for stacked), and its number ("-" outside 1-8); then the
+  focused window's app name and its title wrapped over up to 3 lines; "no window" on an
+  empty workspace. nyxd makes the app name readable: the part of the app_id (or X11
+  class) after the last dot, words split at `-` and `_`, each capitalised
+  (`org.telegram.telegram-desktop` -> `Telegram Desktop`).
 - **PLAY:** a status icon (triangle playing, two bars paused, square stopped) with the
-  player name and a status word, the title (large), artist and album (each cut to fit),
-  a progress bar with `m:ss / m:ss` (`h:mm:ss` from an hour on; only the position when
+  player name and a status word, then title, artist and album wrapped in full: the
+  largest fonts in which all three fit without a cut (the title from 12 pt down to the
+  small font), a progress bar with `m:ss / m:ss` (`h:mm:ss` from an hour on; only the position when
   the length is unknown), and a volume bar when the player reports its volume.
 - **Bar display (every page):** CPU and memory history, GPU and the text slots, and at
   the bottom a legend that the LAYER key still works: the page (`1/3 SYS`, `2/3 SWAY`,
@@ -177,13 +182,15 @@ it a further page of another layer (`View::Sway, L_HOST`). See the keymap of you
 | a custom kernel driver / vendor class | hidraw already does it, on every distribution, without root (udev `uaccess`) |
 | QMK's raw-HID usage page (0xFF60) | VIA and other QMK tools would try to talk to the macropad |
 
-## Protocol (version 1)
+## Protocol (version 2)
 
 Every packet in both directions is 64 bytes: `[0]` type, `[1]` protocol version,
 `[2..63]` payload, little-endian. Packets with another version are ignored. The
 source of truth is [`host_proto.h`](../common/firmware/lib/nyx_core/src/core/host_proto.h);
 `host/src/protocol.rs` must match it. `host/tests/interop.rs` runs the
-firmware's parser against the daemon's encoder.
+firmware's parser against the daemon's encoder. Version 2 moved the focused window's
+app and title out of WORKSPACES into WINDOW_TEXT, 60 characters each (version 1 had
+12 and 40); the daemon and the firmware must both be version 2.
 
 **Host → device**
 
@@ -196,6 +203,7 @@ firmware's parser against the daemon's encoder.
 | `0x05` WORKSPACES | sway's state, see below. Sent on change |
 | `0x06` PLAYER | the media player, see below. Sent on change, and every `interval` while playing (the position advances) |
 | `0x07` PLAYER_TEXT | `[2]` field: 0 title, 1 artist, 2 album (3 or more: the packet is rejected), `[3..62]` text |
+| `0x08` WINDOW_TEXT | `[2]` field: 0 app, 1 title of the focused window (2 or more: rejected), `[3..62]` text |
 
 METRICS (`0xFF` = unknown percentage or clock field, `-32768` = unknown temperature):
 
@@ -225,10 +233,12 @@ WORKSPACES (`[2]` = 0: sway is not running, the rest is ignored and the device c
 | 6 | urgent mask |
 | 7 | windows on the focused workspace, tiling + floating (saturates at 255) |
 | 8 | layout of the focused workspace: 0 unknown, 1 splith, 2 splitv, 3 tabbed, 4 stacked (> 4 = unknown) |
-| 9..20 | focused window's app_id, 12 characters (XWayland windows: `window_properties.class`) |
-| 21..60 | focused window's title, 40 characters |
+| 9..63 | 0 (the window text is in WINDOW_TEXT) |
 
-The two strings are empty when an empty workspace has the focus.
+WINDOW_TEXT carries the focused window's app (its readable name, from the app_id or for
+XWayland windows `window_properties.class`) and its title; both are empty when an empty
+workspace has the focus. The device keeps them across WORKSPACES updates, and a
+WORKSPACES with `[2]` = 0 clears them, so the daemon sends WORKSPACES before them.
 
 PLAYER (`[2]` = 0: no media player, the rest is ignored and the device clears its player state, track text included):
 
@@ -255,8 +265,8 @@ The device stores PLAYER_TEXT even while no player is present, and a PLAYER with
 **Link rules**
 
 - **A HELLO starts a session.** The device clears all host data (metrics, text, sway,
-  player). The daemon then sends its text, WORKSPACES, PLAYER and all three PLAYER_TEXT
-  fields, even when sway or a player is absent. BYE and the link timeout clear the same
+  player). The daemon then sends its text, WORKSPACES, both WINDOW_TEXT fields, PLAYER
+  and all three PLAYER_TEXT fields, even when sway or a player is absent. BYE and the link timeout clear the same
   data.
 - **Unknown packets are ignored.** The firmware drops packet types it does not know.
 - **Connected while packets arrive.** The device treats the host as connected
@@ -267,14 +277,14 @@ The device stores PLAYER_TEXT even while no player is present, and a PLAYER with
   daemon answers with HELLO and its text again.
 - **Queue limits.** The device queues at most 8 outgoing packets and only while
   connected. Its receive ring holds 15, enough for a whole session start. METRICS (and PLAYER while playing) repeat every
-  second, so a dropped one costs a second. WORKSPACES, TEXT and PLAYER_TEXT are sent only
+  second, so a dropped one costs a second. WORKSPACES, WINDOW_TEXT, TEXT and PLAYER_TEXT are sent only
   on a change or after a HELLO: a dropped one stays wrong until the next change.
 
 ## Testing without the hardware
 
 | what | how |
 |---|---|
-| protocol (WORKSPACES, PLAYER, PLAYER_TEXT included), link timeout, queues, `HOST` action, LAYER-cycle skipping | `make test-core` (Unity, `common/firmware/test/test_core`) |
+| protocol (WORKSPACES, WINDOW_TEXT, PLAYER, PLAYER_TEXT included), link timeout, queues, `HOST` action, LAYER-cycle skipping | `make test-core` (Unity, `common/firmware/test/test_core`) |
 | the USB interface code (ring buffer, busy endpoint, suspended host); the three HOST pages' keys and links; the dashboard's text formats | `make test-hardware` (mocked TinyUSB) |
 | both screens on every page | `make ui-sim` → `docs/images/<edition>/ui/ui_06_*`, `ui_07_*`, `ui_09_*` … `ui_13_*` |
 | daemon: metrics, discovery, reconnects, key commands, nyxctl, sway against a fake sway socket, the player against a fake `playerctl`, firmware ↔ daemon bytes; clippy, rustfmt | `make test-host` (`cargo test`) |

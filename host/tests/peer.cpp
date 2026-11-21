@@ -42,7 +42,7 @@ int main() {
           ", \"sway\": {\"running\": %d, \"focused\": %u, \"open\": %u, \"visible\": %u, \"urgent\": %u, "
           "\"windows\": %u, \"layout\": %u",
           s.running, s.focused, s.open, s.visible, s.urgent, s.windows, s.layout);
-  put_str("app_id", s.app_id);
+  put_str("app", s.app);
   put_str("title", s.title);
   const mp::HostPlayer& pl = d.player;
   fprintf(stderr,
